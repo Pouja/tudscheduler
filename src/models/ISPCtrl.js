@@ -2,6 +2,7 @@ import _ from 'lodash';
 import EventServer from '../models/EventServer.js';
 import CourseCtrl from './CourseCtrl.js';
 import request from 'superagent';
+import FacultyCtrl from './FacultyCtrl.js';
 const id = 'ISPCtrl';
 
 /**
@@ -26,13 +27,10 @@ var ISPCtrl = {
     },
     fetch() {
         return new Promise(function(resolve, reject) {
-            Promise.all([request.get('http://localhost:8000/masters')
-                .set('Accept', 'application/json'),
-                request.get('http://localhost:8000/categories')
-                .set('Accept', 'application/json')
-            ])
-                .then(function(responses) {
-                    resolve(_.map(responses, 'body'));
+            request.get('http://localhost:8000/categories')
+                .accept('application/json')
+                .then(function(response) {
+                    resolve(response.body);
                 }, reject);
         });
     },
@@ -40,17 +38,7 @@ var ISPCtrl = {
      * Should be called when ISPCtrl is being used for the first time.
      */
     init() {
-        ISPCtrl.fetch().then(function(responses) {
-            var selectedTrack;
-            const faculties = responses[0];
-            const categories = responses[1];
-            const selected = _.each(faculties, function(faculty) {
-                return _.each(faculty.masters, function(master) {
-                    selectedTrack = _.find(master.tracks, {
-                        selected: true
-                    });
-                });
-            });
+        ISPCtrl.fetch().then(function(categories) {
             ISPCtrl.categories = categories;
             ISPCtrl.unlisted = categories.find(category => category.id === 'unlisted');
             ISPCtrl.unlisted.courses = _.union(ISPCtrl.unlisted.courses,
@@ -141,6 +129,6 @@ var ISPCtrl = {
         EventServer.emit('isp.field.removed::' + categoryIdFrom, course.id);
     }
 };
-
+EventServer.on('courses.loaded', ISPCtrl.init);
 export
 default ISPCtrl;

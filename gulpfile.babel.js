@@ -57,17 +57,16 @@ gulp.task('browserSync', () => {
 });
 
 gulp.task('run', function () {
-    // Options not require
     var options = {
         port: 8000,
         root: ['./'],
         rewriteNotFound: false,
         rewriteTemplate: 'index.html',
-        corsEnable: true, // Set true to enable CORS
-        corsOptions: {}, // CORS options, default all origins
+        corsEnable: true,
+        corsOptions: {},
         headers: {
             'Content-Type': 'application/json'
-        } // Set headers for all response, default blank
+        }
     };
     return gulp.src('./mocks/**/*.js')
         .pipe(restEmulator(options));

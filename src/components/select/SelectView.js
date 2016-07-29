@@ -17,7 +17,6 @@ const SelectView = React.createClass({
         };
     },
     componentWillMount() {
-        ISPCtrl.init();
         EventServer.on('ispfields.loaded', () => this.setState({
             loaded: true
         }));

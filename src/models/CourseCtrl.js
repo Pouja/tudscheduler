@@ -1,16 +1,18 @@
 import _ from 'lodash';
 import EventServer from './EventServer.js';
 import request from 'superagent';
+import FacultyCtrl from './FacultyCtrl.js';
 
 var CourseCtrl = {
     tree: [],
     courses: [],
     added: [],
     init() {
-        Promise.all([request.get('http://localhost:8000/courseTree/3')
-            .set('Accept', 'application/json'),
-            request.get('http://localhost:8000/courses/3')
-            .set('Accept', 'application/json')
+        const masterId = FacultyCtrl.selectedMaster().masterid;
+        Promise.all([request.get('http://localhost:8000/courseTree/' + masterId)
+            .accept('application/json'),
+            request.get('http://localhost:8000/courses/' + masterId)
+            .accept('application/json')
         ])
             .then(function(responses) {
                 CourseCtrl.tree = responses[0].body;
@@ -202,6 +204,7 @@ var CourseCtrl = {
         EventServer.emit('reset');
     }
 };
+EventServer.on('masters.loaded', CourseCtrl.init);
 
 export
 default CourseCtrl;

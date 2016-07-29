@@ -24,7 +24,6 @@ default React.createClass({
         };
     },
     componentDidMount() {
-        CourseCtrl.init();
         EventServer.on('courses.loaded', ()=> this.setState({
             tree: CourseCtrl.flatten(null, null, 'nr')
         }));
