@@ -1,7 +1,7 @@
 import React from 'react';
 import {render} from 'react-dom';
 import {Router, Route, hashHistory, IndexRedirect} from 'react-router';
-import SideBar from './components/SideBar.js';
+import SideBar from './components/sidebar/SideBar.js';
 import YearView from './components/year/YearView.js';
 import Notifications from './components/Notifications.js';
 import SelectView from './components/select/SelectView.js';

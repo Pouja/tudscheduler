@@ -13,7 +13,7 @@ import EventServer from '../../models/EventServer.js';
 const SelectView = React.createClass({
     getInitialState() {
         return {
-            loaded: false
+            loaded: ISPCtrl.categories.length > 0
         };
     },
     componentWillMount() {

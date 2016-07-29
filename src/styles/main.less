@@ -1,27 +1,34 @@
 @import "bootstrap";
 @import "font-awesome";
 @import "notifications";
-@import "print";
-@import "isp-form";
-@import "select-view";
 
 body{
-    margin: 10px;
+    margin: 10px 0;
     .row {
-        margin-right: -10px;
+        margin-right: 0;
+        margin-left:0;
     }
 }
+
+[class^="col-"] {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 .text-danger, .text-success{
     font-weight: bold;
 }
+
 .sidebar{
     padding-right: 0;
+
 }
 .text-bold{
     font-weight: bold;
 }
 .list-group{
     font-size: 12px;
+    margin-bottom: 0;
     .form-group{
         margin-bottom: 0;
     }
@@ -31,6 +38,14 @@ body{
 }
 .list-group-item{
     padding: 8px 10px;
+    border: none;
+    &:not(:first-child){
+        border-top: 1px solid #ddd;
+    }
+    &:last-child{
+        border-bottom-left-radius: 0.25em;
+        border-bottom-right-radius: 0.25em;
+    }
     .fa-chevron-down, .fa-chevron-right{
         margin-right: 5px;
     }
@@ -47,6 +62,7 @@ body{
     }
 }
 .panel-body {
+    padding: 0;
     .list-item{
         margin: 0 -1px -1px -1px;
         padding: 8px 10px;
@@ -145,4 +161,14 @@ ul.compact {
         margin: 0;
         padding: 0;
     }
+}
+.item-hovering .panel{
+    border:2px dotted #AFB2B5;
+}
+hr{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.panel, .btn-block {
+    margin-bottom: 10px;
 }

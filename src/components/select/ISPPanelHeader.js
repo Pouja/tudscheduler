@@ -4,17 +4,6 @@ import classnames from 'classnames';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import EventServer from '../../models/EventServer.js';
 import _ from 'lodash';
-import CourseCtrl from '../../models/CourseCtrl';
-
-/**
- * Checks if a given option field contains an error
- * @param  {Object}  mapping One of the optionMapping values
- * @param  {Object}  errors  The errors returned by ISPField::getErrors
- * @return {Boolean}         true iff the mapping attribute is present in the errors.
- */
-let hasError = function hasError(mapping, errors) {
-    return errors.indexOf(mapping.attribute) !== -1;
-};
 
 /**
  * Renders the header of an ISPPanel
@@ -43,8 +32,7 @@ default React.createClass({
      */
     startListening() {
         const id = this.props.category.id;
-        EventServer.on('isp.field.added::' + id, () => this.forceUpdate(), id + 'header');
-        EventServer.on('isp.field.removed::' + id, () => this.forceUpdate(), id + 'header');
+        EventServer.on('isp.field.error::' + id, () => this.forceUpdate(), id + 'header');
     },
     /**
      * Toggles the panel body visibility
@@ -54,14 +42,6 @@ default React.createClass({
         this.setState({
             collapsed: collapsed
         }, () => this.props.toggleView(collapsed));
-    },
-    /**
-     * Toggles the visibility of the rules.
-     */
-    toggleRules() {
-        this.setState({
-            showRules: !this.state.showRules
-        });
     },
     /**
      * Toggles the visibility of the rules.
@@ -82,10 +62,7 @@ default React.createClass({
      * @param  {Object} event The event object of the change event.
      */
     onChange(event) {
-        const nextSearch = event.target.value;
-        this.setState({
-            searchValue: nextSearch
-        }, this.props.setSearch(nextSearch));
+        this.props.setSearch(event.target.value);
     },
     /**
      * Renders the rules of an isp field.
@@ -138,19 +115,16 @@ default React.createClass({
     },
     /**
      * Renders the search input
-     * TODO merge this into SearchInput.js
      * @return {React} A react component
      */
     renderSearch() {
         if (this.state.search) {
             return <div><hr/>
             <DebounceInput
-                    minLength={2}
                     debounceTimeout={200}
                     type='text'
-                    value={this.state.searchValue}
                     className='form-control'
-                    placeholder='search on code or name, atleast 2 characters'
+                    placeholder='search on code or name'
                     onChange={this.onChange}/>
             </div>;
         }

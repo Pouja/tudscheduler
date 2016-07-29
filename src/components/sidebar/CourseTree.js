@@ -1,11 +1,11 @@
-import CourseCtrl from '../models/CourseCtrl.js';
+import CourseCtrl from '../../models/CourseCtrl.js';
 import React, {PropTypes} from 'react';
 import {
     ListGroupItem, Badge
 }
 from 'react-bootstrap';
-import EventServer from '../models/EventServer.js';
-import AddRemove from './AddRemove.js';
+import EventServer from '../../models/EventServer.js';
+import AddRemove from './../AddRemove.js';
 
 /**
  * A list group item for in the sidebar.
@@ -15,7 +15,7 @@ export default React.createClass({
     propTypes:{
         course: PropTypes.object.isRequired,
         visible: PropTypes.bool.isRequired,
-        search: PropTypes.string.isRequired
+        filter: PropTypes.string.isRequired
     },
     getInitialState() {
         return {
@@ -51,7 +51,7 @@ export default React.createClass({
         }, compId);
     },
     isSearching(){
-        return this.props.search.length > 0;
+        return this.props.filter.length > 0;
     },
     isLeaf(){
         return !this.props.course.children || this.props.course.children.length === 0;
