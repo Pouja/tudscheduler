@@ -43,7 +43,7 @@ default React.createClass({
         EventServer.remove('loaded', 'main');
     },
     render() {
-        var panelHeader = <div className="row">
+        const panelHeader = <div className="row">
             <span className="col-xs-12">
                 Total ects: {CourseCtrl.addedEcts()}
             </span>
@@ -55,22 +55,30 @@ default React.createClass({
             })}
         </div>;
 
-        var gridItems = CourseCtrl.added.map(function(course, index) {
+        const gridItems = CourseCtrl.added.map(function(course, index) {
             return <CourseGridItem _grid={courseGrid(course, index)}
                 key={course.id} course={course}/>;
         });
 
+        let body;
+        if(gridItems.length === 0) {
+            body = <span className='empty'>
+                    No courses added yet
+                </span>;
+        } else {
+            body = <div className="row">
+                <DecoratedReactGridLayout
+                    isResizable={false}
+                    isDraggable={false}
+                    rowHeight={100}
+                    cols={4}>
+                    {gridItems}
+                </DecoratedReactGridLayout>
+            </div>;
+        }
         return <div id="year-view">
             <Panel header={panelHeader}>
-                <div className="row">
-                    <DecoratedReactGridLayout
-                        isResizable={false}
-                        isDraggable={false}
-                        rowHeight={100}
-                        cols={4}>
-                        {gridItems}
-                    </DecoratedReactGridLayout>
-                </div>
+                {body}
             </Panel>
         </div>;
     }
