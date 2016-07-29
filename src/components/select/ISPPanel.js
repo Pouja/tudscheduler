@@ -7,7 +7,7 @@ import ISPPanelHeader from './ISPPanelHeader.js';
 export
 default React.createClass({
     propTypes:{
-        ispModel: PropTypes.object.isRequired,
+        category: PropTypes.object.isRequired,
         options: PropTypes.object.isRequired
     },
     getInitialState() {
@@ -41,17 +41,17 @@ default React.createClass({
         });
     },
     render() {
-        const ispModel = this.props.ispModel;
+        const category = this.props.category;
         const bodyClasses = classnames({'hide':this.state.collapsed});
         const header = <ISPPanelHeader
-            ispModel={this.props.ispModel}
+            category={this.props.category}
             options={this.props.options}
             setSearch={this.setSearch}
             toggleView={this.toggleView}/>;
         return <div className='panel panel-default'>
             {header}
             <ISPPanelBody className={bodyClasses}
-                ispModel={this.props.ispModel}
+                category={this.props.category}
                 isOver={this.state.isOver}
                 options={this.props.options}
                 filter={this.state.searchValue}/>

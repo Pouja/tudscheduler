@@ -4,7 +4,6 @@ import {Router, Route, hashHistory, IndexRedirect} from 'react-router';
 import SideBar from './components/SideBar.js';
 import YearView from './components/year/YearView.js';
 import Notifications from './components/Notifications.js';
-import Header from './components/Header.js';
 import SelectView from './components/select/SelectView.js';
 
 window.React = React;
@@ -13,7 +12,6 @@ window.React = React;
 const App = React.createClass({
     render() {
         return (<div className="row">
-            <Header className='col-xs-12'/>
             <Notifications/>
             <SideBar className="col-xs-12 col-md-5 col-lg-4"/>
             <div className="col-xs-12 col-md-7 col-lg-8">

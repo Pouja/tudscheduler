@@ -22,7 +22,7 @@ let hasError = function hasError(mapping, errors) {
 export
 default React.createClass({
     propTypes: {
-        ispModel: PropTypes.object.isRequired,
+        category: PropTypes.object.isRequired,
         toggleView: PropTypes.func.isRequired,
         className: PropTypes.string,
         setSearch: PropTypes.func.isRequired
@@ -42,7 +42,7 @@ default React.createClass({
      * Starts listening to events for the given isp field.
      */
     startListening() {
-        const id = this.props.ispModel.getID();
+        const id = this.props.category.id;
         EventServer.on('isp.field.added::' + id, () => this.forceUpdate(), id + 'header');
         EventServer.on('isp.field.removed::' + id, () => this.forceUpdate(), id + 'header');
     },
@@ -95,7 +95,7 @@ default React.createClass({
         if (this.state.collapsed || !this.state.showRules) {
             return null;
         }
-        const rules = this.props.ispModel.infoMessages().map(function(line, index) {
+        const rules = this.props.category.infoMessages().map(function(line, index) {
             const classes = classnames({
                 'text-danger': line.error,
                 'text-success': !line.error
@@ -114,21 +114,6 @@ default React.createClass({
         var overlayRules = null;
         var overlayMM = null;
         var search = null;
-
-        const options = this.props.ispModel.getOptions();
-        if(this.props.ispModel.isValid() && this.props.options.info){
-            const tooltip = <Tooltip id="show-rules">
-                Toggle restrictions</Tooltip>;
-            overlayRules = <OverlayTrigger placement='left' overlay={tooltip}>
-                <i className='fa fa-info-circle fa-lg' onClick={this.toggleRules}/>
-            </OverlayTrigger>;
-        } else if(this.props.options.info){
-            const tooltip = <Tooltip id="show-rules">
-                Some restrictions are not met. Click to show them</Tooltip>;
-            overlayRules = <OverlayTrigger placement='left' overlay={tooltip}>
-                <i className='fa fa-exclamation-triangle fa-lg' onClick={this.toggleRules}/>
-            </OverlayTrigger>;
-        }
 
         if (this.state.collapsed) {
             const tooltip = <Tooltip id="show-all">Maximize</Tooltip>;
@@ -172,8 +157,7 @@ default React.createClass({
         return null;
     },
     render() {
-        const options = this.props.ispModel.getOptions();
-        const header = options.name;
+        const header = this.props.category.name;
         return <div className={classnames(this.props.className, 'panel-heading')}>
             <h3 className='panel-title'>{header}{this.renderControl()}</h3>
             {this.renderRules()}{this.renderSearch()}</div>;

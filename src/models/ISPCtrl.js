@@ -1,89 +1,108 @@
 import _ from 'lodash';
-import ISPField from './ISPFieldModel.js';
 import EventServer from '../models/EventServer.js';
 import CourseCtrl from './CourseCtrl.js';
+import request from 'superagent';
 const id = 'ISPCtrl';
 
 /**
  * The ISP controller.
- * Controlls all the ispFieldModels which are generated based on the CSISPFields (or possible another in the future).
- * When changing an ispfield it should be done through this class.
- * Since this class emits the events when a change happends in any ispfield.
+ * When changing an category it should be done through this class.
+ * Since this class emits the events when a change happends in any category.
  * It also listens to the changes regarding adding/removing a course and reset/load events.
  * @type {Object}
  */
 var ISPCtrl = {
     unlisted: {},
-    ispFieldModels: [],
-    fieldOptions: [],
+    categories: [],
     /**
-     * Returns a ISPField
-     * @param  {String|Number} fieldId The ISPField identifier.
-     * @return {Object}         An ISPField
+     * Returns a Category
+     * @param  {String|Number} fieldId The category identifier.
+     * @return {Object}         A category
      */
     get(fieldId) {
-        return ISPCtrl.ispFieldModels.find(function(field) {
-            return field.getID() === fieldId;
+        return ISPCtrl.categories.find(function(field) {
+            return field.id === fieldId;
+        });
+    },
+    fetch() {
+        return new Promise(function(resolve, reject) {
+            Promise.all([request.get('http://localhost:8000/masters')
+                .set('Accept', 'application/json'),
+                request.get('http://localhost:8000/categories')
+                .set('Accept', 'application/json')
+            ])
+                .then(function(responses) {
+                    resolve(_.map(responses, 'body'));
+                }, reject);
         });
     },
     /**
      * Should be called when ISPCtrl is being used for the first time.
-     * @param  {Object} ispFieldOptions The options on which the ispFieldModels are generated.
      */
-    init(ispFieldOptions) {
-        ISPCtrl.fieldOptions = ispFieldOptions;
-        ISPCtrl.ispFieldModels = ispFieldOptions.map(function(ispField, index) {
-            return new ISPField(ispField, index);
+    init() {
+        ISPCtrl.fetch().then(function(responses) {
+            var selectedTrack;
+            const faculties = responses[0];
+            const categories = responses[1];
+            const selected = _.each(faculties, function(faculty) {
+                return _.each(faculty.masters, function(master) {
+                    selectedTrack = _.find(master.tracks, {
+                        selected: true
+                    });
+                });
+            });
+            ISPCtrl.categories = categories;
+            ISPCtrl.unlisted = categories.find(category => category.id === 'unlisted');
+            ISPCtrl.unlisted.courses = _.union(ISPCtrl.unlisted.courses,
+                CourseCtrl.added.map(course => course.id));
+            ISPCtrl.startListening();
+            EventServer.emit('ispfields.loaded');
         });
-        ISPCtrl.unlisted = new ISPField({
-            name: 'Your selected courses'
-        }, 'unlisted');
-        CourseCtrl.added.forEach(function(course) {
-            ISPCtrl.unlisted.add(course);
-        });
-        ISPCtrl.ispFieldModels.push(ISPCtrl.unlisted);
-        ISPCtrl.startListening();
     },
     /**
      * Called when a course is selected by an user.
-     * Adds all the courses which are not currently in the selection to the unlisted ISPField.
+     * Adds all the courses which are not currently in the selection to the unlisted category.
      */
     updateAdded() {
-        CourseCtrl.added.filter(function(course) {
-            return !ISPCtrl.ispFieldModels.some(function(ispCtrl) {
-                return _.find(ispCtrl.getCourses(), {
-                    id: course.id
+        ISPCtrl.unlisted.courses = _(CourseCtrl.added)
+            .filter(function(course) {
+                return !ISPCtrl.categories.some(function(ispCtrl) {
+                    return _.find(ispCtrl.courses, {
+                        id: course.id
+                    });
                 });
-            });
-        }).forEach(ISPCtrl.unlisted.add);
+            })
+            .map(course => course.id)
+            .union(ISPCtrl.unlisted.courses)
+            .value();
         EventServer.emit('isp.field.added::unlisted');
     },
     /**
      * Called when an user removes a course from the selection.
-     * Removes the course in the ISPField which currently holds it.
+     * Removes the course in the category which currently holds it.
      */
     updateRemoved() {
         const allCourses = CourseCtrl.added;
-        ISPCtrl.ispFieldModels.forEach(function(field) {
-            var removeCourses = _.filter(field.getCourses(), function(course) {
+        ISPCtrl.categories.forEach(function(field) {
+            var removeCourses = _.filter(field.courses, function(courseId) {
                 return !_.find(allCourses, {
-                    id: course.id
+                    id: courseId
                 });
             });
             if (removeCourses.length > 0) {
-                removeCourses.forEach(field.remove);
-                EventServer.emit('isp.field.removed::' + field.getID());
+                field.courses = _.pullAll(field.courses, removeCourses);
+                EventServer.emit('isp.field.removed::' + field.id);
             }
         });
     },
     /**
      * Called when reset event is emitted.
-     * Resets all the ispFieldModels.
+     * Resets all the categories.
      */
     reset() {
-        ISPCtrl.ispFieldModels.forEach(function(field) {
+        ISPCtrl.categories.forEach(function(field) {
             field.reset();
-            EventServer.emit('isp.field.added::' + field.getID());
+            EventServer.emit('isp.field.added::' + field.catid);
         });
     },
     stopListening() {
@@ -102,38 +121,24 @@ var ISPCtrl = {
         }, id);
     },
     /**
-     * Moves a course from one ispfield to another
+     * Moves a course from one category to another
      * @param  {Object} course      The course object
-     * @param  {String} fieldIdFrom The ispfield identifier from it is being moved.
-     * @param  {String} fieldIdTo   The ispfield to which is should be moved
+     * @param  {String} categoryIdFrom The category identifier from it is being moved.
+     * @param  {String} categoryIdTo   The category to which is should be moved
      */
-    move(course, fieldIdFrom, fieldIdTo) {
-        var ispFieldFrom = (fieldIdFrom === 'unlisted') ? ISPCtrl.unlisted :
-            _.find(ISPCtrl.ispFieldModels, function(field) {
-                return field.getID() === fieldIdFrom;
+    move(course, categoryIdFrom, categoryIdTo) {
+        var categoryFrom = (categoryIdFrom === 'unlisted') ? ISPCtrl.unlisted :
+            _.find(ISPCtrl.categories, function(field) {
+                return field.id === categoryIdFrom;
             });
-        var ispFieldTo = (fieldIdTo === 'unlisted') ? ISPCtrl.unlisted : _.find(ISPCtrl.ispFieldModels, function(field) {
-            return field.getID() === fieldIdTo;
+        var categoryTo = (categoryIdTo === 'unlisted') ? ISPCtrl.unlisted : _.find(ISPCtrl.categories, function(field) {
+            return field.id === categoryIdTo;
         });
+        categoryTo.courses = _.union(categoryTo.courses, [course.id]);
+        EventServer.emit('isp.field.added::' + categoryIdTo, course.id);
 
-        ispFieldTo.add(course);
-        EventServer.emit('isp.field.added::' + fieldIdTo, course.id);
-
-        if (!ispFieldTo.getOptions().duplicate) {
-            ispFieldFrom.remove(course);
-            EventServer.emit('isp.field.removed::' + fieldIdFrom, course.id);
-        }
-    },
-    /**
-     * Checks if all ispfieldmodels are valid.
-     * @return {Boolean} true iff all ispfieldmodels except unlisted are valid.
-     */
-    allValid() {
-        return ISPCtrl.ispFieldModels.filter(function(model){
-            return model.getID() !== 'unlisted';
-        }).every(function(model){
-            return model.isValid();
-        });
+        categoryFrom.courses = _.without(categoryFrom.courses, course.id);
+        EventServer.emit('isp.field.removed::' + categoryIdFrom, course.id);
     }
 };
 

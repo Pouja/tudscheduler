@@ -15,27 +15,23 @@ import browserSync, {
 from 'browser-sync';
 import sourcemaps from 'gulp-sourcemaps';
 import htmlReplace from 'gulp-html-replace';
-import imagemin from 'gulp-imagemin';
-import pngquant from 'imagemin-pngquant';
 import runSequence from 'run-sequence';
-import ghPages from 'gulp-gh-pages';
 import less from 'gulp-less';
 import postcss from 'gulp-postcss';
 import versionAppend from 'gulp-version-append';
 import replace from 'gulp-replace';
+import restEmulator from 'gulp-rest-emulator';
 
 const paths = {
     bundle: 'app.js',
     entry: 'src/Index.js',
     srcMainCss: 'src/styles/main.less',
     srcCss: 'src/styles/*.less',
-    srcImg: 'src/images/**',
     srcLint: ['src/**/*.js', 'test/**/*.js'],
     npmDir: 'node_modules',
     dist: 'dist',
     distCss: 'dist/styles',
     distJs: 'dist/js',
-    distImg: 'dist/images',
     distDeploy: './dist/**/*'
 };
 
@@ -60,6 +56,23 @@ gulp.task('browserSync', () => {
     });
 });
 
+gulp.task('run', function () {
+    // Options not require
+    var options = {
+        port: 8000,
+        root: ['./'],
+        rewriteNotFound: false,
+        rewriteTemplate: 'index.html',
+        corsEnable: true, // Set true to enable CORS
+        corsOptions: {}, // CORS options, default all origins
+        headers: {
+            'Content-Type': 'application/json'
+        } // Set headers for all response, default blank
+    };
+    return gulp.src('./mocks/**/*.js')
+        .pipe(restEmulator(options));
+});
+
 gulp.task('watchify', () => {
     const bundler = watchify(browserify(opts));
 
@@ -81,11 +94,6 @@ gulp.task('watchify', () => {
     bundler.transform(babelify)
         .on('update', rebundle);
     return rebundle();
-});
-
-gulp.task('copyData', () => {
-    return gulp.src('src/data/*.json')
-        .pipe(gulp.dest('dist/data/'));
 });
 
 gulp.task('browserify', () => {
@@ -128,16 +136,6 @@ gulp.task('htmlReplace', () => {
         .pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('images', () => {
-  gulp.src(paths.srcImg)
-    .pipe(imagemin({
-      progressive: true,
-      svgoPlugins: [{ removeViewBox: false }],
-      use: [pngquant()]
-    }))
-    .pipe(gulp.dest(paths.distImg));
-});
-
 gulp.task('lint', () => {
     return gulp.src(paths.srcLint)
         .pipe(eslint())
@@ -146,30 +144,21 @@ gulp.task('lint', () => {
 
 gulp.task('replace', () => {
     return gulp.src('dist/js/app.js')
-        .pipe(replace('src/data', 'data'))
-        .pipe(replace('src/images', 'images'))
+        .pipe(replace('http://localhost:8000/', '/'))
         .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('watchTask', () => {
+    gulp.watch('./mocks/**/*.js', ['run']);
     gulp.watch(paths.srcCss, ['styles']);
     gulp.watch(paths.srcLint, ['lint']);
 });
 
-gulp.task('ghPages', () => {
-    return gulp.src(paths.distDeploy)
-        .pipe(ghPages());
-});
-
-gulp.task('deploy', cb => {
-    runSequence('build', 'ghPages', cb);
-})
-
 gulp.task('watch', cb => {
-    runSequence('clean', ['browserSync', 'watchTask', 'watchify', 'styles', 'images', 'lint'], cb);
+    runSequence('clean', ['browserSync', 'watchTask', 'watchify', 'styles', 'lint', 'run'], cb);
 });
 
 gulp.task('build', cb => {
     process.env.NODE_ENV = 'production';
-    runSequence('clean', ['browserify', 'styles', 'htmlReplace', 'images', 'copyData'], 'replace', cb);
+    runSequence('clean', ['browserify', 'styles', 'htmlReplace'], 'replace', cb);
 });

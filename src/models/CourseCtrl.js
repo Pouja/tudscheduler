@@ -7,15 +7,17 @@ var CourseCtrl = {
     courses: [],
     added: [],
     init() {
-        Promise.all([request.get('src/data/tree.json').set('Accept', 'application/json'),
-            request.get('src/data/basic.json').set('Accept', 'application/json')
+        Promise.all([request.get('http://localhost:8000/courseTree/3')
+            .set('Accept', 'application/json'),
+            request.get('http://localhost:8000/courses/3')
+            .set('Accept', 'application/json')
         ])
             .then(function(responses) {
                 CourseCtrl.tree = responses[0].body;
                 CourseCtrl.courses = responses[1].body;
                 CourseCtrl.setDepth(CourseCtrl.tree, 0);
                 CourseCtrl.numberTree();
-                EventServer.emit('loaded');
+                EventServer.emit('courses.loaded');
             });
     },
     /**
@@ -25,10 +27,13 @@ var CourseCtrl = {
      */
     numberTree() {
         let nr = 0;
-        let number = (function number(node){
+        let number = (function number(node) {
             nr++;
             node.nr = nr;
-            node.children.forEach(child => {child.parent = node.nr; number(child)});
+            node.children.forEach(child => {
+                child.parent = node.nr;
+                number(child);
+            });
         }(CourseCtrl.tree));
     },
     /**
@@ -55,6 +60,14 @@ var CourseCtrl = {
             });
         }
         return _.every(course.children, CourseCtrl.isAdded);
+    },
+    hasNeedle(courseTree, needle) {
+        const course = CourseCtrl.get(courseTree.id);
+        if (!needle || needle.length === 0) {
+            return true;
+        }
+        return course.name.toLowerCase().indexOf(needle) !== -1 || (!!course.courseName &&
+            course.courseName.toLowerCase().indexOf(needle) !== -1);
     },
     /**
      * Creates a flatten representation of the course tree
