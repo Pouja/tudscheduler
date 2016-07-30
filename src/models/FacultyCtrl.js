@@ -36,6 +36,13 @@ var FacultyCtrl = {
             });
         });
         return track;
+    },
+    selectTrack(trackId) {
+        FacultyCtrl.faculties.forEach(function(faculty){
+            faculty.masters.forEach(function(master){
+                master.tracks.forEach(track => track.selected = track.id === trackId);
+            });
+        });
     }
 };
 FacultyCtrl.init();

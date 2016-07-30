@@ -2,15 +2,15 @@ module.exports = {
     '/masters': {
         GET: {
             data: [{
-                facultyId: 1,
+                facultyid: 1,
                 name: 'EWI',
                 masters: [{
                     masterid: 3,
-                    name: "cs",
+                    name: "Msc. Computer Science",
                     tracks: [{
                         trackid: 1,
                         year: "2015",
-                        name: "ST",
+                        name: "Software Technology",
                         selected: "true",
                         categories: [{
                             id: 1,
@@ -30,8 +30,12 @@ module.exports = {
                         }]
                     }]
                 }]
+            }, {
+                facultyid: 2,
+                name: 'AWE',
+                masters: []
             }],
             timeout: 100
         }
     }
-}
+};
