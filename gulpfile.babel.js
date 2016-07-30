@@ -115,7 +115,8 @@ gulp.task('styles', function() {
     return gulp.src(paths.srcMainCss)
         .pipe(less({
             paths: [paths.npmDir + '/bootstrap/less/',
-            paths.npmDir + '/react-fa/node_modules/font-awesome/less']
+            paths.npmDir + '/react-fa/node_modules/font-awesome/less',
+            paths.npmDir + '/react-select/less']
         }))
         .on('error', notify.onError())
         .pipe(postcss([autoprefixer('last 1 version')]))
