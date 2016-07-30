@@ -1,14 +1,15 @@
 import React, {PropTypes} from 'react';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import DebounceInput from 'react-debounce-input';
-
+import TrackSelection from './TrackSelection';
 export default React.createClass({
     propTypes: {
         setFilter: PropTypes.func.isRequired
     },
     getInitialState() {
         return {
-            searching: false
+            searching: false,
+            showSettings: false
         };
     },
     /**
@@ -32,6 +33,16 @@ export default React.createClass({
             }
         });
     },
+    openSettings() {
+        this.setState({
+            showSettings: true
+        });
+    },
+    closeSettings(){
+        this.setState({
+            showSettings: false
+        });
+    },
     /**
      * Renders the search input
      * @return {React} A react component
@@ -50,16 +61,22 @@ export default React.createClass({
         return null;
     },
     renderControl(){
-        const tooltip = <Tooltip id="show-search">Search</Tooltip>;
-        return <OverlayTrigger placement="top" overlay={tooltip}>
-            <i className='fa fa-search fa-lg pull-right' onClick={this.toggleSearch}/>
+        const searchTooltip = <Tooltip id="show-search">Search</Tooltip>;
+        const search = <OverlayTrigger placement="bottom" overlay={searchTooltip}>
+            <i className='fa fa-search fa-lg' onClick={this.toggleSearch}/>
         </OverlayTrigger>;
+        const settingsTooltip = <Tooltip id="show-settings">Change track</Tooltip>;
+        const setting = <OverlayTrigger placement="bottom" overlay={settingsTooltip}>
+            <i className='fa fa-cog fa-lg' onClick={this.openSettings}/>
+        </OverlayTrigger>;
+        return <div className='pull-right'>{search}{setting}</div>;
     },
     render(){
         return <div className='panel-heading'>
             <h3 className="panel-title">EWI \ Msc Computer Science{this.renderControl()}<br/>
             Track Software Technology</h3>
             {this.renderSearch()}
+            <TrackSelection show={this.state.showSettings} closeModal={this.closeSettings}/>
         </div>;
     }
 });
