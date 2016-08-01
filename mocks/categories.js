@@ -1,5 +1,5 @@
 module.exports = {
-    '/categories': {
+    '/categories/1': {
         GET: {
             data: [{
                 id: 'unlisted',
@@ -27,6 +27,27 @@ module.exports = {
                 courses: []
             }],
             timeout: 250
+        }
+    },
+    '/categories/2': {
+        GET: {
+            data: [{
+                id: 'unlisted',
+                name: 'Selected courses',
+                courses: []
+            }, {
+                id: 6,
+                name: "Main core",
+                courses: []
+            }, {
+                id: 7,
+                name: "Track core",
+                courses: []
+            }, {
+                id: 8,
+                name: 'Free electives',
+                courses: []
+            }]
         }
     }
 };

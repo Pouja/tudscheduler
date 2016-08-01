@@ -11,7 +11,6 @@ module.exports = {
                         trackid: 1,
                         year: "2015",
                         name: "Software Technology",
-                        selected: "true",
                         categories: [{
                             id: 1,
                             name: "compulsory"
@@ -29,11 +28,26 @@ module.exports = {
                             name: 'Seminar'
                         }]
                     }]
+                },{
+                    masterid: 2,
+                    name: "Msc. Computer Engineering",
+                    tracks: [{
+                        trackid: 2,
+                        year: "2015",
+                        selected: true,
+                        name: "Track core",
+                        categories: [{
+                            id: 6,
+                            name: "Main core"
+                        }, {
+                            id: 7,
+                            name: "Track core"
+                        }, {
+                            id: 8,
+                            name: 'Free electives'
+                        }]
+                    }]
                 }]
-            }, {
-                facultyid: 2,
-                name: 'AWE',
-                masters: []
             }],
             timeout: 100
         }
