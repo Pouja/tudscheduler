@@ -26,8 +26,9 @@ var ISPCtrl = {
         });
     },
     fetch() {
+        const trackId = FacultyCtrl.selectedTrack().trackid;
         return new Promise(function(resolve, reject) {
-            request.get('http://localhost:8000/categories')
+            request.get('http://localhost:8000/categories/' + trackId)
                 .accept('application/json')
                 .then(function(response) {
                     resolve(response.body);

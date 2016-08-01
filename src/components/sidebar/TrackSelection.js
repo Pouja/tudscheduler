@@ -8,6 +8,9 @@ import FacultyCtrl from '../../models/FacultyCtrl.js';
 import EventServer from '../../models/EventServer.js';
 import _ from 'lodash';
 
+/**
+ * The component which enables the user to select a faculty/master/track.
+ */
 export
 default React.createClass({
     propTypes: {
@@ -22,7 +25,7 @@ default React.createClass({
         };
     },
     componentDidMount() {
-        EventServer.on('masters.loaded', () => this.init);
+        EventServer.on('masters.loaded', () => this.init());
     },
     componentWillReceiveProps(nextProps) {
         this.setState({
@@ -100,6 +103,10 @@ default React.createClass({
         }
         return true;
     },
+    save(){
+        FacultyCtrl.selectTrack(this.state.selectedTrack);
+        this.props.closeModal();
+    },
     render() {
         return <Modal show={this.state.show} onHide={this.props.closeModal}>
             <Modal.Header closeButton>
@@ -129,7 +136,8 @@ default React.createClass({
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={this.props.closeModal}>Cancel</Button>
-                <Button bsStyle="primary">Save</Button>
+                <Button bsStyle="primary" disabled={this.state.selectedTrack === ''}
+                    onClick={this.save}>Save</Button>
             </Modal.Footer>
         </Modal>;
     }

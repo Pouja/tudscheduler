@@ -3,10 +3,23 @@ import EventServer from './EventServer.js';
 import request from 'superagent';
 import FacultyCtrl from './FacultyCtrl.js';
 
+/**
+ * The course controller.
+ * An important distinction. The tree starts with a root node and each child has a
+ * nr, id, depth and children. This tree object is passed through all components.
+ * So when you see 'courseTree' then I mean the object in CourseCtrl.tree.
+ * Otherwise I would refer it as 'course'.
+ * @type {Object}
+ */
 var CourseCtrl = {
-    tree: [],
+    tree: {},
     courses: [],
     added: [],
+    /**
+     * Initialises the course controller.
+     * Fetches the course tree and all the courses.
+     * Sets the depth and numbers the ree
+     */
     init() {
         const masterId = FacultyCtrl.selectedMaster().masterid;
         Promise.all([request.get('http://localhost:8000/courseTree/' + masterId)
@@ -18,6 +31,7 @@ var CourseCtrl = {
                 CourseCtrl.tree = responses[0].body;
                 CourseCtrl.courses = responses[1].body;
                 CourseCtrl.setDepth(CourseCtrl.tree, 0);
+                CourseCtrl.added = [];
                 CourseCtrl.numberTree();
                 EventServer.emit('courses.loaded');
             });
@@ -25,17 +39,21 @@ var CourseCtrl = {
     /**
      * In the view tree tree the courses are not unique.
      * Since course can fall under a research group as well under the common cores for example.
-     * But for the view we need to distinquish between the same courses for example in toggling visibilities.
+     * But for the view we need to distinquish between the same courses for example in toggling visibilities. That is why we number them here.
      */
     numberTree() {
         let nr = 0;
         let number = (function number(node) {
-            nr++;
-            node.nr = nr;
-            node.children.forEach(child => {
-                child.parent = node.nr;
-                number(child);
-            });
+            if (!_.isEmpty(node)) {
+                nr++;
+                node.nr = nr;
+                if (node.children) {
+                    node.children.forEach(child => {
+                        child.parent = node.nr;
+                        number(child);
+                    });
+                }
+            }
         }(CourseCtrl.tree));
     },
     /**
@@ -44,9 +62,17 @@ var CourseCtrl = {
      * @param {Number} depth The current depth
      */
     setDepth(node, depth) {
-        node.depth = depth;
-        node.children.forEach((child) => CourseCtrl.setDepth(child, depth + 1));
+        if (!_.isEmpty(node)) {
+            node.depth = depth;
+            if (node.children) {
+                node.children.forEach((child) => CourseCtrl.setDepth(child, depth + 1));
+            }
+        }
     },
+    /**
+     * @param  {String|Number} id The identifier of a course
+     * @return {Object|undefined}    a course object iff a course exist with the given id.
+     */
     get(id) {
         return CourseCtrl.courses.find((course) => course.id === id);
     },
@@ -63,11 +89,17 @@ var CourseCtrl = {
         }
         return _.every(course.children, CourseCtrl.isAdded);
     },
+    /**
+     * Checks if a course as the given needle.
+     * @param  {Obect}  courseTree A course tree object.
+     * @param  {String}  needle     The search keyword to search for.
+     * @return {Boolean}            true iff the course contains the needle.
+     */
     hasNeedle(courseTree, needle) {
-        const course = CourseCtrl.get(courseTree.id);
-        if (!needle || needle.length === 0) {
+        if (!needle || needle.length === 0 || !courseTree) {
             return true;
         }
+        const course = CourseCtrl.get(courseTree.id);
         return course.name.toLowerCase().indexOf(needle) !== -1 || (!!course.courseName &&
             course.courseName.toLowerCase().indexOf(needle) !== -1);
     },
@@ -79,8 +111,8 @@ var CourseCtrl = {
      * @return {Array}        Flatten representation of the course tree.
      */
     flatten(filter, node, unique) {
-        const filterFn = filter || function() {
-            return true;
+        const filterFn = filter || function(node) {
+            return !_.isEmpty(node);
         };
         const uniqueId = unique || 'id';
         const currentNode = node || CourseCtrl.tree;

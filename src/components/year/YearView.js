@@ -33,14 +33,12 @@ default React.createClass({
     componentDidMount() {
         EventServer.on('added', () => this.forceUpdate(), 'main');
         EventServer.on('removed', () => this.forceUpdate(), 'main');
-        EventServer.on('reset', () => this.forceUpdate(), 'main');
-        EventServer.on('loaded', () => this.forceUpdate(), 'main');
+        EventServer.on('courses.loaded', () => this.forceUpdate(), 'main');
     },
     componentWillUnmount(){
         EventServer.remove('added', 'main');
         EventServer.remove('removed', 'main');
-        EventServer.remove('reset', 'main');
-        EventServer.remove('loaded', 'main');
+        EventServer.remove('courses.loaded', 'main');
     },
     render() {
         const panelHeader = <div className="row">

@@ -11,20 +11,11 @@ import EventServer from '../../models/EventServer.js';
  * Lets the user set up his isp form which should be printed/send.
  */
 const SelectView = React.createClass({
-    getInitialState() {
-        return {
-            loaded: ISPCtrl.categories.length > 0
-        };
-    },
+
     componentWillMount() {
-        EventServer.on('ispfields.loaded', () => this.setState({
-            loaded: true
-        }));
+        EventServer.on('ispfields.loaded', () => this.forceUpdate());
     },
     render() {
-        if(!this.state.loaded) {
-            return null;
-        }
         const unlistedOptions = {
             search: true,
             hideExpand: true,
@@ -34,7 +25,7 @@ const SelectView = React.createClass({
         const fieldOptions = {
             info: true,
             hideExpand: true,
-            onEmpty: 'Drag \'n 2drop a course here',
+            onEmpty: 'Drag \'n drop a course here',
             onHover: 'Drop'
         };
         return <div id="select-view">
