@@ -1,8 +1,0 @@
-* add filter based on track/research group
-* improve the user form
-* add autofill based on track/research group
-* change the error message: it now only shows in red what is wrong, but it should be a more readible list of things. For example:
- - You have 3 courses selected too many/few
-* add a button to switch between year and select view
-* make the generate button only clickable when all the fields are valid
-* in de scheduler add the option for adding/removing years
