@@ -2,27 +2,27 @@ module.exports = {
     '/categories/1': {
         GET: {
             data: [{
-                id: 'unlisted',
+                catId: 'unlisted',
                 name: 'Selected courses',
                 courses: [35297]
             }, {
-                id: 1,
+                catId: 1,
                 name: 'Compulsory',
                 courses: []
             }, {
                 name: "Specialisation",
-                id: 2,
+                catId: 2,
                 courses: []
             }, {
                 name: 'Homolagation courses',
-                id: 3,
+                catId: 3,
                 courses: []
             }, {
-                id: 4,
+                catId: 4,
                 name: 'Free electives',
                 courses: []
             }, {
-                id: 5,
+                catId: 5,
                 name: 'Seminar',
                 courses: []
             }],
@@ -32,19 +32,19 @@ module.exports = {
     '/categories/2': {
         GET: {
             data: [{
-                id: 'unlisted',
+                catId: 'unlisted',
                 name: 'Selected courses',
                 courses: []
             }, {
-                id: 6,
+                catId: 6,
                 name: "Main core",
-                courses: []
+                courses: [54]
             }, {
-                id: 7,
+                catId: 7,
                 name: "Track core",
                 courses: []
             }, {
-                id: 8,
+                catId: 8,
                 name: 'Free electives',
                 courses: []
             }]

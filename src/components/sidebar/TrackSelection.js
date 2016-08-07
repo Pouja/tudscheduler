@@ -35,8 +35,8 @@ default React.createClass({
     init() {
         this.setState({
             selectedFaculty: FacultyCtrl.selectedFaculty().facultyid,
-            selectedMaster: FacultyCtrl.selectedMaster().masterid,
-            selectedTrack: FacultyCtrl.selectedTrack().trackid
+            selectedMaster: FacultyCtrl.selectedMaster().masterId,
+            selectedTrack: FacultyCtrl.selectedTrack().trackId
         });
     },
     updateFaculty(event, index, value) {
@@ -73,7 +73,7 @@ default React.createClass({
             .find((faculty) => faculty.facultyid === this.state.selectedFaculty)
             .masters.map(function(master) {
                 return {
-                    value: master.masterid,
+                    value: master.masterId,
                     label: master.name
                 };
             });
@@ -84,10 +84,10 @@ default React.createClass({
         }
         return FacultyCtrl.faculties
             .find((faculty) => faculty.facultyid === this.state.selectedFaculty)
-            .masters.find(master => master.masterid === this.state.selectedMaster)
+            .masters.find(master => master.masterId === this.state.selectedMaster)
             .tracks.map(function(track) {
                 return {
-                    value: track.trackid,
+                    value: track.trackId,
                     label: `${track.year} - ${track.name}`
                 };
             });

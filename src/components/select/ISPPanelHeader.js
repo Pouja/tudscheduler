@@ -36,7 +36,7 @@ default React.createClass({
         }, () => this.props.toggleView(collapsed));
     },
     onChange(event, value) {
-        EventServer.emit(`${this.props.category.id}.searching`, value);
+        EventServer.emit(`${this.props.category.catId}.searching`, value);
     },
     renderCollapse() {
         let collapse;

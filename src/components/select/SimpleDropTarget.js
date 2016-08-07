@@ -7,10 +7,10 @@ import classnames from 'classnames';
  * Required by react-dnd, contains the functionality which is used by other react-dnd components to interect.
  * @type {Object}
  */
-const fieldTarget = {
+const categoryTarget = {
     /**
      * Called when a DragSource aka CourseDnD is dropped on the container.
-     * Returns the id of the ispfield for this DropTarget component.
+     * Returns the id of the category for this DropTarget component.
      * @param  {Object} props The properties of SimpleDropTarget
      * @return {Object}       Object which identifies the DropTarget.
      */
@@ -46,4 +46,4 @@ class SimpleDropTarget extends Component {
 }
 
 export
-default DropTarget(CourseTypes.COMPULSORY, fieldTarget, collect)(SimpleDropTarget); //eslint-disable-line new-cap
+default DropTarget(CourseTypes.COMPULSORY, categoryTarget, collect)(SimpleDropTarget); //eslint-disable-line new-cap

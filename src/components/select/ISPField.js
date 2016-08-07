@@ -13,7 +13,7 @@ default React.createClass({
     },
     render() {
         const category = this.props.category;
-        return <SimpleDropTarget className={this.props.className} id={category.id}>
+        return <SimpleDropTarget className={this.props.className} id={category.catId}>
             <ISPPanel {...this.props}/>
         </SimpleDropTarget>;
     }

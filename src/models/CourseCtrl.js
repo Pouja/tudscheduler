@@ -21,10 +21,10 @@ const CourseCtrl = {
      * Sets the depth and numbers the ree
      */
     init() {
-        const masterId = FacultyCtrl.selectedMaster().masterid;
+        const masterId = FacultyCtrl.selectedMaster().masterId;
         Promise.all([request.get(`http://localhost:8000/courseTree/${masterId}`)
             .accept('application/json'),
-            request.get(`http://localhost:8000/courses/${masterId}`)
+            request.get(`http://localhost:8000/courseData/${masterId}`)
             .accept('application/json')
         ])
             .then(function(responses) {

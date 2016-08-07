@@ -41,7 +41,7 @@ const FacultyCtrl = {
         FacultyCtrl.faculties.forEach(function(faculty) {
             faculty.masters.forEach(function(master) {
                 master.tracks.forEach(function(track) {
-                    track.selected = track.trackid === trackId;
+                    track.selected = track.trackId === trackId;
                 });
             });
         });

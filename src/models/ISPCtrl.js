@@ -17,16 +17,16 @@ const ISPCtrl = {
     categories: [],
     /**
      * Returns a Category
-     * @param  {String|Number} fieldId The category identifier.
+     * @param  {String|Number} catId The category identifier.
      * @return {Object}         A category
      */
-    get(fieldId) {
-        return ISPCtrl.categories.find(function(field) {
-            return field.id === fieldId;
+    get(catId) {
+        return ISPCtrl.categories.find(function(category) {
+            return category.catId === catId;
         });
     },
     fetch() {
-        const trackId = FacultyCtrl.selectedTrack().trackid;
+        const trackId = FacultyCtrl.selectedTrack().trackId;
         return new Promise(function(resolve, reject) {
             request.get(`http://localhost:8000/categories/${trackId}`)
                 .accept('application/json')
@@ -40,17 +40,27 @@ const ISPCtrl = {
      */
     init() {
         ISPCtrl.fetch().then(function(categories) {
+            // reset the listening
+            ISPCtrl.stopListening();
             ISPCtrl.categories = categories;
-            ISPCtrl.unlisted = categories.find(category => category.id === 'unlisted');
+
+            // Set the unlisted 'special' category
+            ISPCtrl.unlisted = categories.find(category => category.catId === 'unlisted');
+
+            // Merge the added courses with the unlisted courses
             ISPCtrl.unlisted.courses = _.union(ISPCtrl.unlisted.courses,
                 CourseCtrl.added.map(course => course.id));
+
+            // Add the courses in all the categories to coursectrl.added
             CourseCtrl.addMultiple(_(ISPCtrl.categories)
                 .map((cat) => cat.courses)
                 .flatten()
                 .map(CourseCtrl.get)
                 .value());
+
+            // (re)start listening
             ISPCtrl.startListening();
-            EventServer.emit('ispfields.loaded');
+            EventServer.emit('categories.loaded');
         });
     },
     /**
@@ -66,7 +76,7 @@ const ISPCtrl = {
             })
             .map(course => course.id)
             .value();
-        EventServer.emit('isp.field.added::unlisted');
+        EventServer.emit('category.added::unlisted');
     },
     /**
      * Called when an user removes a course from the selection.
@@ -74,15 +84,15 @@ const ISPCtrl = {
      */
     updateRemoved() {
         const allCourses = CourseCtrl.added;
-        ISPCtrl.categories.forEach(function(field) {
-            const removeCourses = _.filter(field.courses, function(courseId) {
+        ISPCtrl.categories.forEach(function(category) {
+            const removeCourses = _.filter(category.courses, function(courseId) {
                 return !_.find(allCourses, {
                     id: courseId
                 });
             });
             if (removeCourses.length > 0) {
-                field.courses = _.pullAll(field.courses, removeCourses);
-                EventServer.emit(`isp.field.removed::${field.id}`);
+                category.courses = _.difference(category.courses, removeCourses);
+                EventServer.emit(`category.removed::${category.catId}`);
             }
         });
     },
@@ -91,9 +101,9 @@ const ISPCtrl = {
      * Resets all the categories.
      */
     reset() {
-        ISPCtrl.categories.forEach(function(field) {
-            field.reset();
-            EventServer.emit(`isp.field.added::${field.catid}`);
+        ISPCtrl.categories.forEach(function(category) {
+            category.reset();
+            EventServer.emit(`category.added::${category.catId}`);
         });
     },
     stopListening() {
@@ -119,17 +129,17 @@ const ISPCtrl = {
      */
     move(course, categoryIdFrom, categoryIdTo) {
         const categoryFrom = (categoryIdFrom === 'unlisted') ? ISPCtrl.unlisted :
-            _.find(ISPCtrl.categories, function(field) {
-                return field.id === categoryIdFrom;
+            _.find(ISPCtrl.categories, function(category) {
+                return category.catId === categoryIdFrom;
             });
-        const categoryTo = (categoryIdTo === 'unlisted') ? ISPCtrl.unlisted : _.find(ISPCtrl.categories, function(field) {
-            return field.id === categoryIdTo;
+        const categoryTo = (categoryIdTo === 'unlisted') ? ISPCtrl.unlisted : _.find(ISPCtrl.categories, function(category) {
+            return category.catId === categoryIdTo;
         });
         categoryTo.courses = _.union(categoryTo.courses, [course.id]);
-        EventServer.emit(`isp.field.added::${categoryIdTo}`, course.id);
+        EventServer.emit(`category.added::${categoryIdTo}`, course.id);
 
         categoryFrom.courses = _.without(categoryFrom.courses, course.id);
-        EventServer.emit(`isp.field.removed::${categoryIdFrom}`, course.id);
+        EventServer.emit(`category.removed::${categoryIdFrom}`, course.id);
     }
 };
 EventServer.on('courses.loaded', ISPCtrl.init);

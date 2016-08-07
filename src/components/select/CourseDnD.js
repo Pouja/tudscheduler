@@ -16,7 +16,7 @@ const courseSource = {
      */
     beginDrag(props) {
         return {
-            currentFieldId: props.field,
+            currentFieldId: props.category,
             course: props.course
         };
     },
@@ -54,7 +54,7 @@ class CourseDnD extends Component {
         connectDragPreview: PropTypes.func.isRequired,
         isDragging: PropTypes.bool.isRequired,
         course: PropTypes.object.isRequired,
-        field: PropTypes.oneOfType([
+        category: PropTypes.oneOfType([
             PropTypes.string.isRequired,
             PropTypes.number.isRequired
         ]),
@@ -65,14 +65,14 @@ class CourseDnD extends Component {
      * Moves the course back to 'unlisted'
      */
     undo() {
-        ISPCtrl.move(this.props.course, this.props.field, 'unlisted');
+        ISPCtrl.move(this.props.course, this.props.category, 'unlisted');
     }
     /**
      * Renders the undo icon.
      * @return {React} A react component
      */
     renderUndo() {
-        if (this.props.field !== 'unlisted') {
+        if (this.props.category !== 'unlisted') {
             return <i className='fa fa-undo fa-lg' onClick={this.undo.bind(this)}/>;
         }
         return null;
@@ -95,7 +95,7 @@ class CourseDnD extends Component {
                 disableFocusRipple
                 primaryText={`${course.name} ${course.courseName}`}
                 rightIconButton={<AddRemoveMove move={true}
-                    category={this.props.field}
+                    category={this.props.category}
                     style={style.AddRemoveMove} course={course}/>}
                 leftIcon={<EditorDragHandle/>}/>;
     }

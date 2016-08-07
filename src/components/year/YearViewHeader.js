@@ -3,6 +3,7 @@ import Badge from '../Badge.js';
 import React from 'react';
 import CourseCtrl from '../../models/CourseCtrl.js';
 import EventServer from '../../models/EventServer.js';
+import _ from 'lodash';
 const id = 'YearViewHeader';
 
 export default React.createClass({
@@ -24,7 +25,8 @@ export default React.createClass({
     },
     updateEcts() {
         this.setState({
-            ects: this.state.ects.map((v, index) => Math.floor(CourseCtrl.periodEcts(index))),
+            ects: this.state.ects.map((v, index) =>
+                _.round(CourseCtrl.periodEcts(index + 1), 1)),
             totalEcts: CourseCtrl.addedEcts()
         });
     },

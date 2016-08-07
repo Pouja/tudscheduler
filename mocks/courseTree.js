@@ -5,7 +5,7 @@ module.exports = {
     },
     '/courseTree/2':{
         GET: {
-            data: {}
+            data: {"id":"root", children:[{"id":54, children:[]}]}
         }
     }
 };

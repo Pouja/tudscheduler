@@ -42,7 +42,8 @@ export default React.createClass({
     renderMoveItem(category, idx) {
         return <MenuItem key={idx}
             primaryText={category.name}
-            onTouchTap={() => ISPCtrl.move(this.props.course, this.props.category, category.id)}
+            onTouchTap={() => ISPCtrl.move(this.props.course, this.props.category,
+                category.catId)}
             />;
     },
     renderMoveMenu() {
@@ -52,7 +53,7 @@ export default React.createClass({
                 primaryText="Move to"
                 rightIcon={<ArrowDropRight />}
                 menuItems={ISPCtrl.categories
-                    .filter(category => category.id !== this.props.category)
+                    .filter(category => category.catId !== this.props.category)
                     .map(this.renderMoveItem)}
         />];
     },
