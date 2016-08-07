@@ -1,13 +1,13 @@
 import _ from 'lodash';
 
-var listeners = {};
+let listeners = {};
 /**
  * A simple EventListeners.
  * There are other modules that have the exact functionality and are tested.
  * But since it is trivial and I need to profile the performance (which was hard or impossible in other modules) I created my one.
  * @type {Object}
  */
-var EventListener = {
+const EventListener = {
     flush() {
         listeners = {};
     },

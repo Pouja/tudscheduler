@@ -1,7 +1,8 @@
 {
     "parser": "babel-eslint",
     "plugins": [
-        "react"
+        "react",
+        "babel"
     ],
     "ecmaFeatures": {
         "modules": true,
@@ -13,13 +14,20 @@
         "node": true,
         "mocha": true
     },
-    // "extends": ["eslint:recommended", "plugin:react/recommended"], //TODO
 
     "rules": {
+        "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
         "no-undef": 2,
-        semi: ["error", "always", {
+        "no-unused-vars": 2,
+        "no-var": 2,
+        "new-cap": 2,
+        "prefer-template": 2,
+        "semi": ["error", "always", {
             "omitLastInOneLineBlock": true
         }],
+        "react/prop-types": 2,
+        "quotes": [2, "single"],
         /**
          * The rules are partially from airbnb
          */

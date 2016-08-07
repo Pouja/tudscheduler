@@ -7,7 +7,7 @@ import ISPPanel from './ISPPanel.js';
  */
 export
 default React.createClass({
-    propType:{
+    propTypes:{
         category: PropTypes.object.isRequired,
         className: PropTypes.string
     },

@@ -35,7 +35,7 @@ export default React.createClass({
         });
     },
     render(){
-        var notification = this.state.notification;
+        const notification = this.state.notification;
         if (notification !== null){
             return <div className="alerts">
                 <Alert

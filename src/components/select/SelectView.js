@@ -1,5 +1,4 @@
-import React, {Component} from 'react';
-import {Button} from 'react-bootstrap';
+import React from 'react';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import ISPField from './ISPField.js';
@@ -11,11 +10,18 @@ import EventServer from '../../models/EventServer.js';
  * Lets the user set up his isp form which should be printed/send.
  */
 const SelectView = React.createClass({
-
     componentWillMount() {
         EventServer.on('ispfields.loaded', () => this.forceUpdate());
     },
     render() {
+        if(!ISPCtrl.unlisted || ISPCtrl.categories.length === 0){
+            return null;
+        }
+        const style = {
+            fields: {
+                marginBottom: 10
+            }
+        };
         const unlistedOptions = {
             search: true,
             hideExpand: true,
@@ -28,20 +34,22 @@ const SelectView = React.createClass({
             onEmpty: 'Drag \'n drop a course here',
             onHover: 'Drop'
         };
-        return <div id="select-view">
-            <ISPField className="col-xs-12 col-md-6" category={ISPCtrl.unlisted}
+        return <div className="select-view">
+            <ISPField className="unlisted" category={ISPCtrl.unlisted}
                 options={unlistedOptions}>
             </ISPField>
-            <div className="col-xs-12 col-md-6">
+            <div className="fields">
                 {ISPCtrl.categories.
                     filter(function(category){
                         return category.id !== 'unlisted';
                     }).map(function(category, index){
-                    return <ISPField key={index} category={category} options={fieldOptions}></ISPField>;
+                    return <ISPField key={index} category={category}
+                        style={style.fields}
+                        options={fieldOptions}/>;
                 })}
             </div>
         </div>;
     }
 });
 
-module.exports = DragDropContext(HTML5Backend)(SelectView);
+module.exports = DragDropContext(HTML5Backend)(SelectView);//eslint-disable-line new-cap

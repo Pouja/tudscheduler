@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import {Panel} from 'react-bootstrap';
 import CourseTypes from '../../constants/CourseTypes.js';
 import {DropTarget} from 'react-dnd';
 import classnames from 'classnames';
@@ -31,6 +30,12 @@ function collect(connect, monitor) {
  * Renders a simple drop target for react-dnd.
  */
 class SimpleDropTarget extends Component {
+    static propTypes = {
+        isOver: PropTypes.bool.isRequired,
+        connectDropTarget: PropTypes.func.isRequired,
+        className: PropTypes.string,
+        children: React.PropTypes.element
+    };
     render() {
         const {connectDropTarget, isOver} = this.props;
         const classes = classnames(this.props.className, {'item-hovering': isOver});
@@ -40,9 +45,5 @@ class SimpleDropTarget extends Component {
     }
 }
 
-SimpleDropTarget.propTypes = {
-    isOver: PropTypes.bool.isRequired
-};
-
 export
-default DropTarget(CourseTypes.COMPULSORY, fieldTarget, collect)(SimpleDropTarget);
+default DropTarget(CourseTypes.COMPULSORY, fieldTarget, collect)(SimpleDropTarget); //eslint-disable-line new-cap

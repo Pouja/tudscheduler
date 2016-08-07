@@ -1,24 +1,11 @@
 import CourseCtrl from '../../models/CourseCtrl.js';
-import React, {
-    Component, PropTypes
-}
-from 'react';
+import React, {Component, PropTypes} from 'react';
 import CourseTypes from '../../constants/CourseTypes.js';
-import {
-    DragSource
-}
-from 'react-dnd';
-import {
-    ListGroupItem
-}
-from 'react-bootstrap';
+import {DragSource} from 'react-dnd';
 import ISPCtrl from '../../models/ISPCtrl.js';
-import classnames from 'classnames';
-import {
-    OverlayTrigger, Tooltip
-}
-from 'react-bootstrap';
-import _ from 'lodash';
+import {ListItem} from 'material-ui/List';
+import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
+import AddRemoveMove from '../AddRemoveMove.js';
 
 const courseSource = {
     /**
@@ -41,8 +28,8 @@ const courseSource = {
      * @param  {Object} monitor The monitor object retuned by react-dnd. See react-dnd for more info.
      */
     endDrag(props, monitor) {
-        var item = monitor.getItem();
-        var dropResult = monitor.getDropResult();
+        const item = monitor.getItem();
+        const dropResult = monitor.getDropResult();
         if (!monitor.didDrop() || item.currentFieldId === dropResult.id) {
             return;
         }
@@ -53,6 +40,7 @@ const courseSource = {
 function collect(connect, monitor) {
     return {
         connectDragSource: connect.dragSource(),
+        connectDragPreview: connect.dragPreview(),
         isDragging: monitor.isDragging()
     };
 }
@@ -61,6 +49,17 @@ function collect(connect, monitor) {
  * The drag and drop list item in the select view.
  */
 class CourseDnD extends Component {
+    static propTypes = {
+        connectDragSource: PropTypes.func.isRequired,
+        connectDragPreview: PropTypes.func.isRequired,
+        isDragging: PropTypes.bool.isRequired,
+        course: PropTypes.object.isRequired,
+        field: PropTypes.oneOfType([
+            PropTypes.string.isRequired,
+            PropTypes.number.isRequired
+        ]),
+        style: PropTypes.object
+    };
     /**
      * Called when clicking on the undo element.
      * Moves the course back to 'unlisted'
@@ -79,47 +78,31 @@ class CourseDnD extends Component {
         return null;
     }
     renderError() {
-        const category = ISPCtrl.get(this.props.field);
-        const course = CourseCtrl.get(this.props.course.id);
-        // if (category.getErrors().indexOf('group') > -1 && !category.isInGroups(course)) {
-        //     const msg = category.groupErrMsg(course, category);
-        //     const compMsg = (msg.length > 1) ? <ul className="compact">
-        //         {msg.map(function(msg, index){return <li key={index}>{msg}</li>})}
-        //     </ul> : msg[0];
-        //     const tooltip = <Tooltip id={`dnd-${course.id}`}>{compMsg}</Tooltip>;
-        //     return <OverlayTrigger placement='left' overlay={tooltip}>
-        //         <i className='fa fa-exclamation-triangle fa-lg'/>
-        //     </OverlayTrigger>;
-        // }
         return null;
     }
-    renderControls(){
-        return <div className='pull-right'>{this.renderError()}{this.renderUndo()}</div> ;
+    renderList() {
+        const course = CourseCtrl.get(this.props.course.id);
+        const style = {
+            root: Object.assign({}, this.props.style, {
+                marginLeft: 0,
+                cursor: 'grab'
+            })
+        };
+        return <ListItem
+                style={style.root}
+                innerDivStyle={style.innerDiv}
+                disableTouchRipple
+                disableFocusRipple
+                primaryText={`${course.name} ${course.courseName}`}
+                rightIconButton={<AddRemoveMove move={true}
+                    category={this.props.field}
+                    style={style.AddRemoveMove} course={course}/>}
+                leftIcon={<EditorDragHandle/>}/>;
     }
     render() {
-        const course = CourseCtrl.get(this.props.course.id);
-        const {
-            connectDragSource, isDragging
-        } = this.props;
-        const classes = classnames('list-item', {
-            'is-dragging': isDragging
-        });
-        return connectDragSource(
-            <div className={classes}>
-            <i className="fa fa-grip"/> {course.name} {course.courseName} {this.renderControls()}
-        </div>
-        );
+        return this.props.connectDragSource(<div>{this.renderList()}</div>);
     }
 }
 
-/**
- * The expected prop types of CourseDnD.
- * @type {Object}
- */
-CourseDnD.propTypes = {
-    connectDragSource: PropTypes.func.isRequired,
-    isDragging: PropTypes.bool.isRequired
-};
-
 export
-default DragSource(CourseTypes.COMPULSORY, courseSource, collect)(CourseDnD);
+default DragSource(CourseTypes.COMPULSORY, courseSource, collect)(CourseDnD); //eslint-disable-line new-cap

@@ -22,28 +22,6 @@ import versionAppend from 'gulp-version-append';
 import replace from 'gulp-replace';
 import restEmulator from 'gulp-rest-emulator';
 
-const paths = {
-    bundle: 'app.js',
-    entry: 'src/Index.js',
-    srcMainCss: 'src/styles/main.less',
-    srcCss: 'src/styles/*.less',
-    srcLint: ['src/**/*.js', 'test/**/*.js'],
-    npmDir: 'node_modules',
-    dist: 'dist',
-    distCss: 'dist/styles',
-    distJs: 'dist/js',
-    distDeploy: './dist/**/*'
-};
-
-const customOpts = {
-    entries: [paths.entry],
-    debug: true,
-    cache: {},
-    packageCache: {}
-};
-
-const opts = Object.assign({}, watchify.args, customOpts);
-
 gulp.task('clean', cb => {
     rimraf('dist', cb);
 });
@@ -56,12 +34,12 @@ gulp.task('browserSync', () => {
     });
 });
 
-gulp.task('run', function () {
+gulp.task('mock-server', function() {
     var options = {
         port: 8000,
         root: ['./'],
         rewriteNotFound: false,
-        rewriteTemplate: 'index.html',
+        rewriteTemplate: 'dist/index.html',
         corsEnable: true,
         corsOptions: {},
         headers: {
@@ -73,18 +51,26 @@ gulp.task('run', function () {
 });
 
 gulp.task('watchify', () => {
+    const customOpts = {
+        entries: ['src/Index.js'],
+        debug: process.env.NODE_ENV !== 'production',
+        cache: {},
+        packageCache: {}
+    };
+
+    const opts = Object.assign({}, watchify.args, customOpts);
     const bundler = watchify(browserify(opts));
 
     function rebundle() {
         return bundler.bundle()
             .on('error', notify.onError())
-            .pipe(source(paths.bundle))
+            .pipe(source('app.js'))
             .pipe(buffer())
             .pipe(sourcemaps.init({
-                loadMaps: true
+                loadMaps: process.env.NODE_ENV !== 'production'
             }))
             .pipe(sourcemaps.write('.'))
-            .pipe(gulp.dest(paths.distJs))
+            .pipe(gulp.dest('dist/js'))
             .pipe(reload({
                 stream: true
             }));
@@ -96,31 +82,27 @@ gulp.task('watchify', () => {
 });
 
 gulp.task('browserify', () => {
-    return browserify(paths.entry, {
-        debug: true
-    })
+    return browserify('src/Index.js', {
+            debug: process.env.NODE_ENV !== 'production'
+        })
         .transform(babelify)
         .bundle()
-        .pipe(source(paths.bundle))
+        .pipe(source('app.js'))
         .pipe(buffer())
         .pipe(sourcemaps.init({
-            loadMaps: true
+            loadMaps: process.env.NODE_ENV !== 'production'
         }))
         .pipe(uglify())
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest(paths.distJs));
+        .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('styles', function() {
-    return gulp.src(paths.srcMainCss)
-        .pipe(less({
-            paths: [paths.npmDir + '/bootstrap/less/',
-            paths.npmDir + '/react-fa/node_modules/font-awesome/less',
-            paths.npmDir + '/react-select/less']
-        }))
+    return gulp.src('src/styles/main.less')
+        .pipe(less())
         .on('error', notify.onError())
         .pipe(postcss([autoprefixer('last 1 version')]))
-        .pipe(gulp.dest(paths.distCss))
+        .pipe(gulp.dest('dist/styles'))
         .pipe(reload({
             stream: true
         }));
@@ -133,29 +115,31 @@ gulp.task('htmlReplace', () => {
             js: 'js/app.js?v=@version@'
         }))
         .pipe(versionAppend(['js', 'css']))
-        .pipe(gulp.dest(paths.dist));
+        .pipe(gulp.dest('dist'));
 });
 
 gulp.task('lint', () => {
-    return gulp.src(paths.srcLint)
+    return gulp.src(['src/**/*.js'])
         .pipe(eslint())
         .pipe(eslint.format());
 });
 
 gulp.task('replace', () => {
     return gulp.src('dist/js/app.js')
-        .pipe(replace('http://localhost:8000/', '/'))
+        // .pipe(replace('http://localhost:8000/', '/'))
         .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('watchTask', () => {
-    gulp.watch('./mocks/**/*.js', ['run']);
-    gulp.watch(paths.srcCss, ['styles']);
-    gulp.watch(paths.srcLint, ['lint']);
+    gulp.watch('./mocks/**/*.js', ['mock-server']);
+    gulp.watch('./src/styles/*.less', ['styles']);
+    gulp.watch(['./src/**/*.js'], ['lint']);
 });
 
 gulp.task('watch', cb => {
-    runSequence('clean', ['browserSync', 'watchTask', 'watchify', 'styles', 'lint', 'run'], cb);
+    runSequence('clean', ['browserSync', 'watchTask', 'watchify', 'styles', 'lint',
+        'mock-server'
+    ], cb);
 });
 
 gulp.task('build', cb => {

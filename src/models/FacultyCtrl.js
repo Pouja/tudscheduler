@@ -1,8 +1,7 @@
 import request from 'superagent';
 import EventServer from '../models/EventServer.js';
-const id = 'FacultyCtrl';
 
-var FacultyCtrl = {
+const FacultyCtrl = {
     faculties: [],
     init() {
         request.get('http://localhost:8000/masters')

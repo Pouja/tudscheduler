@@ -1,27 +1,34 @@
 import CourseCtrl from '../../models/CourseCtrl.js';
 import React, {PropTypes} from 'react';
-import {
-    ListGroupItem, Badge
-}
-from 'react-bootstrap';
 import EventServer from '../../models/EventServer.js';
-import AddRemove from './../AddRemove.js';
-
+import AddRemoveMove from './../AddRemoveMove.js';
+import {ListItem} from 'material-ui/List';
+import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
+import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
+import Badge from '../Badge.js';
+import _ from 'lodash';
 /**
  * A list group item for in the sidebar.
  * Shows the course id, name, ects and optional control functions
  */
 export default React.createClass({
     propTypes:{
+        style: PropTypes.object,
         course: PropTypes.object.isRequired,
         visible: PropTypes.bool.isRequired,
-        filter: PropTypes.string.isRequired
+        filtering: PropTypes.bool.isRequired
     },
     getInitialState() {
         return {
+            ects: 0,
             childVisible: false,
+            filtering: this.props.filtering,
+            filter: '',
             visible: this.props.visible
         };
+    },
+    shouldComponentUpdate(nextProps, nextState){
+        return !_.isEqual(this.state, nextState);
     },
     componentWillUnmount(){
         this.stopListening();
@@ -31,85 +38,82 @@ export default React.createClass({
      * Starts listening to events if it is visible.
      */
     componentDidMount() {
-        const compId = 'course::' + this.props.course.nr;
-        if(this.props.visible || this.isSearching()){
+        if(this.props.visible || this.props.filtering){
             this.startListening();
         }
 
-        EventServer.on('visible::' + this.props.course.parent, (toggle) => {
-            var nextState = {
+        EventServer.on(`visible::${this.props.course.parent}`, (toggle) => {
+            let nextState = {
                 visible: toggle
             };
             if (!toggle) {
                 this.stopListening();
-                EventServer.emit('visible::' + this.props.course.nr, toggle);
+                EventServer.emit(`visible::${this.props.course.nr}`, toggle);
                 nextState.childVisible = false;
             } else {
                 this.startListening();
             }
             this.setState(nextState);
-        }, compId);
+        }, this.getID());
     },
-    isSearching(){
-        return this.props.filter.length > 0;
-    },
-    isLeaf(){
-        return !this.props.course.children || this.props.course.children.length === 0;
+    getID() {
+        return `course::${this.props.course.nr}`;
     },
     /**
      * Toggle the visibility of the children
      */
     toggle() {
-        var nextVisibility = !this.state.childVisible;
+        const nextVisibility = !this.state.childVisible;
         this.setState({
             childVisible: nextVisibility
         });
-        EventServer.emit('visible::' + this.props.course.nr, nextVisibility);
+        EventServer.emit(`visible::${this.props.course.nr}`, nextVisibility);
     },
     /**
      * Start listening to events.
      */
     startListening() {
-        var id = 'course::' + this.props.course.nr;
-        EventServer.on('added', () => this.forceUpdate(), id);
-        EventServer.on('removed', () => this.forceUpdate(), id);
-        EventServer.on('reset', () => this.forceUpdate(), id);
-        EventServer.on('loaded', () => this.forceUpdate(), id);
+        EventServer.on('added', () => this.updateEcts(), this.getID());
+        EventServer.on('removed', () => this.updateEcts(), this.getID());
     },
     /**
      * Stops listening to events. Should be called when it is not visible or
      * when it is removed from the dom.
      */
     stopListening() {
-        var id = 'course::' + this.props.course.nr;
-        EventServer.remove('added', id);
-        EventServer.remove('removed', id);
-        EventServer.remove('reset', id);
-        EventServer.remove('loaded', id);
+        EventServer.remove('added', this.getID());
+        EventServer.remove('removed', this.getID());
+    },
+    updateEcts() {
+        this.setState({
+            ects: CourseCtrl.addedEcts(this.props.course)
+        });
     },
     /**
      * Renders the chevron
      * @param  {String|Number} key The key to identify the element.
      * @return {React}     A react component
      */
-    renderChevron(key) {
-        if (this.isSearching() || this.props.course.children.length === 0) {
+    renderChevron() {
+        if (this.state.filtering || !CourseCtrl.isAGroup(this.props.course)) {
             return null;
         }
-        const chevronClass = 'fa fa-chevron-' + ((this.state.childVisible) ? 'down' : 'right');
-        return <i key={key} className={chevronClass}/>;
+        const style = {
+            top: 3
+        };
+        return (this.state.childVisible) ? <ExpandLess style={style}/> :
+            <ExpandMore style={style}/>;
     },
     /**
      * Renders the periods in which the course is being held.
-     * @param  {String|Number} key The key to identify the element.
      * @return {React}     A react component
      */
-    renderQBadge(key){
-        var periods = CourseCtrl.get(this.props.course.id)['Education Period'];
+    renderQBadge(){
+        const periods = CourseCtrl.get(this.props.course.id)['Education Period'];
         if(periods === undefined){
             return null;
         }
-        return (<Badge key={key}>Q{periods}</Badge>);
+        return (<Badge>Q{periods}</Badge>);
     },
     /**
      * Renders the ects of the course.
@@ -117,30 +121,53 @@ export default React.createClass({
      * @param  {String|Number} key The key to identify the element.
      * @return {React}     A react component
      */
-    renderECBadge(key) {
+    renderECBadge() {
         const course = this.props.course;
         const totalEcts = CourseCtrl.totalEcts(course);
-        const subEcts = CourseCtrl.addedEcts(course);
-        if (course.children.length === 0) {
-            return (<Badge key={key}>EC {totalEcts}</Badge>);
+        const subEcts = this.state.ects;
+        const style = {
+            marginRight: 4
+        };
+        if (!CourseCtrl.isAGroup(course)) {
+            return (<Badge style={style}>EC {totalEcts}</Badge>);
         }
-        return (<Badge key={key}>EC {subEcts}/{totalEcts}</Badge>);
+        return (<Badge style={style}>EC {subEcts}/{totalEcts}</Badge>);
     },
     render() {
-        if (!this.state.visible && !this.isSearching()) {
+        if (!this.state.visible && !this.state.filtering) {
             return null;
         }
         const course = CourseCtrl.get(this.props.course.id);
         const style = {
-            marginLeft: (this.isSearching()) ? 0 : (this.props.course.depth - 1) * 10
+            root: Object.assign({}, this.props.style, {
+                marginLeft: 0
+            }),
+            innerDiv: {
+                paddingTop: 6,
+                paddingBottom: 6
+            },
+            AddRemoveMove: {
+                top: 0
+            },
+            secondaryText: {
+                height: 22
+            }
         };
-
-        return <ListGroupItem className='row' key={course.nr} style={style}>
-            <span key={4} onClick={this.toggle} className='col-xs-10'>
-                {this.renderChevron(1)} {course.name} {course.courseName}
-                {this.isLeaf() ? <br/> : null}
-                {this.renderECBadge(2)} {this.renderQBadge(3)}
-            </span>
-            <AddRemove key={5} course={this.props.course} className='pull-right'/></ListGroupItem>;
+        if (!this.state.filtering && this.props.course.depth > 1) {
+            style.root.marginLeft = (this.props.course.depth - 1) * 10 +
+                (!CourseCtrl.isAGroup(course) * 45);
+        }
+        return <ListItem
+            onTouchTap={this.toggle}
+            primaryText={<span>{course.name} {course.courseName}</span>}
+            secondaryText={<div style={style.secondaryText}>
+                {this.renderECBadge()}{this.renderQBadge()}
+            </div>}
+            leftIcon={this.renderChevron()}
+            rightIconButton={<AddRemoveMove course={this.props.course} style={style.AddRemoveMove}/>}
+            innerDivStyle={style.innerDiv}
+            key={course.nr}
+            style={style.root}/>;
     }
 });
+

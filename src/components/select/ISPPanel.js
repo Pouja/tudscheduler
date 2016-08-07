@@ -1,19 +1,19 @@
 import React, {PropTypes} from 'react';
-import CourseDnD from './CourseDnD.js';
 import classnames from 'classnames';
 import ISPPanelBody from './ISPPanelBody.js';
 import ISPPanelHeader from './ISPPanelHeader.js';
+import Paper from 'material-ui/Paper';
 
 export
 default React.createClass({
     propTypes:{
         category: PropTypes.object.isRequired,
-        options: PropTypes.object.isRequired
+        options: PropTypes.object.isRequired,
+        style: PropTypes.object
     },
     getInitialState() {
         return {
             collapsed: false,
-            searchValue: '',
             isOver: false
         };
     },
@@ -31,30 +31,19 @@ default React.createClass({
             collapsed: nextState
         });
     },
-    /**
-     * Sets the search Value
-     * @param {String} searchValue The search value
-     */
-    setSearch(searchValue){
-        this.setState({
-            searchValue: searchValue
-        });
-    },
     render() {
-        const category = this.props.category;
         const bodyClasses = classnames({'hide':this.state.collapsed});
         const header = <ISPPanelHeader
             category={this.props.category}
             options={this.props.options}
-            setSearch={this.setSearch}
             toggleView={this.toggleView}/>;
-        return <div className='panel panel-default'>
+        return <Paper style={this.props.style}>
             {header}
-            <ISPPanelBody className={bodyClasses}
+            <ISPPanelBody hide={this.state.collapsed}
+                className={bodyClasses}
                 category={this.props.category}
                 isOver={this.state.isOver}
-                options={this.props.options}
-                filter={this.state.searchValue}/>
-        </div>;
+                options={this.props.options}/>
+        </Paper>;
     }
 });

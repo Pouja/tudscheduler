@@ -10,6 +10,7 @@ module.exports = {
                     tracks: [{
                         trackid: 1,
                         year: "2015",
+                        selected: true,
                         name: "Software Technology",
                         categories: [{
                             id: 1,
@@ -34,7 +35,6 @@ module.exports = {
                     tracks: [{
                         trackid: 2,
                         year: "2015",
-                        selected: true,
                         name: "Track core",
                         categories: [{
                             id: 6,

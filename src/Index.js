@@ -1,32 +1,20 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {Router, Route, hashHistory, IndexRedirect} from 'react-router';
-import SideBar from './components/sidebar/SideBar.js';
-import YearView from './components/year/YearView.js';
-import Notifications from './components/Notifications.js';
-import SelectView from './components/select/SelectView.js';
+import {deepOrange500} from 'material-ui/styles/colors';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Routes from './Routes.js';
 
-window.React = React;
-// window.Perf = React.addons.Perf;
+// Needed for onTouchTap
+// http://stackoverflow.com/a/34015469/988941
+injectTapEventPlugin();
 
-const App = React.createClass({
-    render() {
-        return (<div className="row">
-            <Notifications/>
-            <SideBar className="col-xs-12 col-md-5 col-lg-4"/>
-            <div className="col-xs-12 col-md-7 col-lg-8">
-                {this.props.children}
-            </div>
-        </div>);
+const muiTheme = getMuiTheme({
+    palette: {
+        accent1Color: deepOrange500
     }
 });
 
-const routes = <Router history={hashHistory}>
-    <Route path="/" component={App}>
-        <IndexRedirect to="/year"/>
-        <Route path="year" component={YearView}/>
-        <Route path="select" component={SelectView}/>
-    </Route>
-</Router>;
-
-render(routes, document.getElementById('react'));
+const App = <MuiThemeProvider muiTheme={muiTheme}><Routes/></MuiThemeProvider>;
+render(App, document.getElementById('react'));

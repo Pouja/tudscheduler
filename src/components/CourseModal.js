@@ -8,7 +8,10 @@ import CourseCtrl from '../models/CourseCtrl.js';
  */
 export default React.createClass({
     propTypes:{
-        closeModal: React.PropTypes.func.isRequired
+        closeModal: React.PropTypes.func.isRequired,
+        show: React.PropTypes.bool.isRequired,
+        course: React.PropTypes.object.isRequired,
+        'course.children': React.PropTypes.array
     },
     getInitialState(){
         return {

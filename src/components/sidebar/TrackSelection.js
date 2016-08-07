@@ -1,9 +1,8 @@
 import React from 'react';
-import {
-    Modal, Button
-}
-from 'react-bootstrap';
-import Select from 'react-select';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
 import EventServer from '../../models/EventServer.js';
 import _ from 'lodash';
@@ -14,7 +13,8 @@ import _ from 'lodash';
 export
 default React.createClass({
     propTypes: {
-        closeModal: React.PropTypes.func.isRequired
+        close: React.PropTypes.func.isRequired,
+        show: React.PropTypes.bool.isRequired
     },
     getInitialState() {
         return {
@@ -39,22 +39,22 @@ default React.createClass({
             selectedTrack: FacultyCtrl.selectedTrack().trackid
         });
     },
-    updateFaculty(newValue) {
+    updateFaculty(event, index, value) {
         this.setState({
-            selectedFaculty: newValue,
+            selectedFaculty: value,
             selectedMaster: '',
             selectedTrack: ''
         });
     },
-    updateMaster(newValue) {
+    updateMaster(event, index, value) {
         this.setState({
-            selectedMaster: newValue,
+            selectedMaster: value,
             selectedTrack: ''
         });
     },
-    updateTrack(newValue) {
+    updateTrack(event, index, value) {
         this.setState({
-            selectedTrack: newValue
+            selectedTrack: value
         });
     },
     getFaculties() {
@@ -105,40 +105,43 @@ default React.createClass({
     },
     save(){
         FacultyCtrl.selectTrack(this.state.selectedTrack);
-        this.props.closeModal();
+        this.props.close();
+    },
+    renderMenuItem(selection, key) {
+        return <MenuItem key={key} value={selection.value} primaryText={selection.label}/>;
     },
     render() {
-        return <Modal show={this.state.show} onHide={this.props.closeModal}>
-            <Modal.Header closeButton>
-                <Modal.Title>Change track</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Select ref="stateSelect" autofocus options={this.order(this.getFaculties())}
-                    simpleValue clearable={true} name="selected-state"
-                    value={this.state.selectedFaculty}
-                    onChange={this.updateFaculty}
-                    placeholder='Select faculty'
-                    searchable={true} />
-                <Select ref="stateSelect" options={this.order(this.getMasters())}
-                    simpleValue clearable={true} name="selected-state"
-                    value={this.state.selectedMaster}
-                    onChange={this.updateMaster}
+        const actions = [
+            <FlatButton label="Cancel" primary={true} onTouchTap={this.props.close}/>,
+            <FlatButton label="Save" primary={true} onTouchTap={this.save}
+                disabled={this.state.selectedTrack === ''}/>
+        ];
+        return <Dialog
+            autoDetectWindowHeight={false}
+            autoScrollBodyContent={false}
+            title="Select track"
+            actions={actions}
+            open={this.state.show}
+            onRequestClose={this.props.close}>
+                <SelectField value={this.state.selectedFaculty}
+                    floatingLabelText="Select faculty"
+                    fullWidth={true}
+                    onChange={this.updateFaculty}>
+                    {this.order(this.getFaculties()).map(this.renderMenuItem)}
+                </SelectField>
+                <SelectField value={this.state.selectedMaster}
+                    floatingLabelText="Select education type"
+                    fullWidth={true}
                     disabled={this.shouldDisable('master')}
-                    placeholder='Select education type'
-                    searchable={true} />
-                <Select ref="stateSelect" options={this.order(this.getTracks())}
-                    simpleValue clearable={true} name="selected-state"
-                    value={this.state.selectedTrack}
-                    onChange={this.updateTrack}
+                    onChange={this.updateMaster}>
+                    {this.order(this.getMasters()).map(this.renderMenuItem)}
+                </SelectField><SelectField value={this.state.selectedTrack}
+                    floatingLabelText="Select track"
+                    fullWidth={true}
                     disabled={this.shouldDisable('track')}
-                    placeholder='Select track and year'
-                    searchable={true} />
-            </Modal.Body>
-            <Modal.Footer>
-                <Button onClick={this.props.closeModal}>Cancel</Button>
-                <Button bsStyle="primary" disabled={this.state.selectedTrack === ''}
-                    onClick={this.save}>Save</Button>
-            </Modal.Footer>
-        </Modal>;
+                    onChange={this.updateTrack}>
+                    {this.order(this.getTracks()).map(this.renderMenuItem)}
+                </SelectField>
+        </Dialog>;
     }
 });

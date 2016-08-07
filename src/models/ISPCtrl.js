@@ -12,7 +12,7 @@ const id = 'ISPCtrl';
  * It also listens to the changes regarding adding/removing a course and reset/load events.
  * @type {Object}
  */
-var ISPCtrl = {
+const ISPCtrl = {
     unlisted: {},
     categories: [],
     /**
@@ -28,7 +28,7 @@ var ISPCtrl = {
     fetch() {
         const trackId = FacultyCtrl.selectedTrack().trackid;
         return new Promise(function(resolve, reject) {
-            request.get('http://localhost:8000/categories/' + trackId)
+            request.get(`http://localhost:8000/categories/${trackId}`)
                 .accept('application/json')
                 .then(function(response) {
                     resolve(response.body);
@@ -44,6 +44,11 @@ var ISPCtrl = {
             ISPCtrl.unlisted = categories.find(category => category.id === 'unlisted');
             ISPCtrl.unlisted.courses = _.union(ISPCtrl.unlisted.courses,
                 CourseCtrl.added.map(course => course.id));
+            CourseCtrl.addMultiple(_(ISPCtrl.categories)
+                .map((cat) => cat.courses)
+                .flatten()
+                .map(CourseCtrl.get)
+                .value());
             ISPCtrl.startListening();
             EventServer.emit('ispfields.loaded');
         });
@@ -56,13 +61,10 @@ var ISPCtrl = {
         ISPCtrl.unlisted.courses = _(CourseCtrl.added)
             .filter(function(course) {
                 return !ISPCtrl.categories.some(function(ispCtrl) {
-                    return _.find(ispCtrl.courses, {
-                        id: course.id
-                    });
+                    return ispCtrl.courses.indexOf(course.id) !== -1;
                 });
             })
             .map(course => course.id)
-            .union(ISPCtrl.unlisted.courses)
             .value();
         EventServer.emit('isp.field.added::unlisted');
     },
@@ -73,14 +75,14 @@ var ISPCtrl = {
     updateRemoved() {
         const allCourses = CourseCtrl.added;
         ISPCtrl.categories.forEach(function(field) {
-            var removeCourses = _.filter(field.courses, function(courseId) {
+            const removeCourses = _.filter(field.courses, function(courseId) {
                 return !_.find(allCourses, {
                     id: courseId
                 });
             });
             if (removeCourses.length > 0) {
                 field.courses = _.pullAll(field.courses, removeCourses);
-                EventServer.emit('isp.field.removed::' + field.id);
+                EventServer.emit(`isp.field.removed::${field.id}`);
             }
         });
     },
@@ -91,7 +93,7 @@ var ISPCtrl = {
     reset() {
         ISPCtrl.categories.forEach(function(field) {
             field.reset();
-            EventServer.emit('isp.field.added::' + field.catid);
+            EventServer.emit(`isp.field.added::${field.catid}`);
         });
     },
     stopListening() {
@@ -116,18 +118,18 @@ var ISPCtrl = {
      * @param  {String} categoryIdTo   The category to which is should be moved
      */
     move(course, categoryIdFrom, categoryIdTo) {
-        var categoryFrom = (categoryIdFrom === 'unlisted') ? ISPCtrl.unlisted :
+        const categoryFrom = (categoryIdFrom === 'unlisted') ? ISPCtrl.unlisted :
             _.find(ISPCtrl.categories, function(field) {
                 return field.id === categoryIdFrom;
             });
-        var categoryTo = (categoryIdTo === 'unlisted') ? ISPCtrl.unlisted : _.find(ISPCtrl.categories, function(field) {
+        const categoryTo = (categoryIdTo === 'unlisted') ? ISPCtrl.unlisted : _.find(ISPCtrl.categories, function(field) {
             return field.id === categoryIdTo;
         });
         categoryTo.courses = _.union(categoryTo.courses, [course.id]);
-        EventServer.emit('isp.field.added::' + categoryIdTo, course.id);
+        EventServer.emit(`isp.field.added::${categoryIdTo}`, course.id);
 
         categoryFrom.courses = _.without(categoryFrom.courses, course.id);
-        EventServer.emit('isp.field.removed::' + categoryIdFrom, course.id);
+        EventServer.emit(`isp.field.removed::${categoryIdFrom}`, course.id);
     }
 };
 EventServer.on('courses.loaded', ISPCtrl.init);

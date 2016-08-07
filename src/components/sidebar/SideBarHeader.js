@@ -1,7 +1,14 @@
 import React, {PropTypes} from 'react';
-import {OverlayTrigger, Tooltip} from 'react-bootstrap';
-import DebounceInput from 'react-debounce-input';
 import TrackSelection from './TrackSelection';
+import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ActionSettings from 'material-ui/svg-icons/action/settings';
+import TextField from 'material-ui/TextField';
+import EventServer from '../../models/EventServer.js';
+import FacultyCtrl from '../../models/FacultyCtrl.js';
+
+import _ from 'lodash';
+
 export default React.createClass({
     propTypes: {
         setFilter: PropTypes.func.isRequired
@@ -9,29 +16,43 @@ export default React.createClass({
     getInitialState() {
         return {
             searching: false,
-            showSettings: false
+            showSettings: false,
+            faculty: '',
+            master: '',
+            track: ''
         };
+    },
+    componentDidMount(){
+        this.setTitle();
+        this.startListening();
+    },
+    startListening(){
+        EventServer.on('masters.loaded', this.setTitle);
+    },
+    setTitle(){
+        if(FacultyCtrl.selectedTrack() === undefined) {
+            this.setState({
+                faculty: '',
+                master: '',
+                track: ''
+            });
+        } else {
+            this.setState({
+                faculty: FacultyCtrl.selectedFaculty().name,
+                master: FacultyCtrl.selectedMaster().name,
+                track: FacultyCtrl.selectedTrack().name
+            });
+        }
     },
     /**
      * Called when the DebounceInput changes.
      * Sets the new search value.
      * @param  {Object} event The event object of the change event.
+     * @param {String} value The input value
      */
-    onChange(event) {
-        this.props.setFilter(event.target.value);
-    },
-    /**
-     * Toggles the visibility of the rules.
-     */
-    toggleSearch() {
-        const searching = !this.state.searching;
-        this.setState({
-            searching: !this.state.searching
-        }, () => {
-            if (!searching) {
-                this.props.setFilter('');
-            }
-        });
+    onChange(event, value) {
+        this.props.setFilter(value.length > 0);
+        EventServer.emit('course.searching', value);
     },
     openSettings() {
         this.setState({
@@ -43,40 +64,51 @@ export default React.createClass({
             showSettings: false
         });
     },
-    /**
-     * Renders the search input
-     * @return {React} A react component
-     */
-    renderSearch() {
-        if (this.state.searching) {
-            return <div><hr/>
-            <DebounceInput
-                debounceTimeout={200}
-                type='text'
-                className='form-control'
-                placeholder='search on code or name'
-                onChange={this.onChange}/>
-            </div>;
-        }
-        return null;
-    },
     renderControl(){
-        const searchTooltip = <Tooltip id="show-search">Search</Tooltip>;
-        const search = <OverlayTrigger placement="bottom" overlay={searchTooltip}>
-            <i className='fa fa-search fa-lg' onClick={this.toggleSearch}/>
-        </OverlayTrigger>;
-        const settingsTooltip = <Tooltip id="show-settings">Change track</Tooltip>;
-        const setting = <OverlayTrigger placement="bottom" overlay={settingsTooltip}>
-            <i className='fa fa-cog fa-lg' onClick={this.openSettings}/>
-        </OverlayTrigger>;
-        return <div className='pull-right'>{search}{setting}</div>;
+        const style = {
+            margin: '7px 0px 7px 2px'
+        };
+        const setting = <FloatingActionButton style={style}
+            zDepth={1} mini={true} onTouchTap={this.openSettings}>
+            <ActionSettings/></FloatingActionButton>;
+        return <div>{setting}</div>;
     },
     render(){
-        return <div className='panel-heading'>
-            <h3 className="panel-title">EWI \ Msc Computer Science{this.renderControl()}<br/>
-            Track Software Technology</h3>
-            {this.renderSearch()}
-            <TrackSelection show={this.state.showSettings} closeModal={this.closeSettings}/>
-        </div>;
+        const style = {
+            root: {
+                display: 'flex',
+                flexDirection: 'column',
+                height: 'auto'
+            },
+            titleGroup: {
+                lineHeight: '26px',
+                display: 'block'
+            },
+            title: {
+                fontSize: '20px',
+                color: 'rgba(0,0,0, 0.4)'
+            },
+            subTitle: {
+                fontSize: '16px',
+                color: 'rgba(0,0,0, 0.4)'
+            }
+        };
+        return <Toolbar style={style.root}>
+            <ToolbarGroup>
+                <ToolbarGroup style={style.titleGroup}>
+                    <span style={style.subTitle}>{this.state.faculty} \ {this.state.master}</span><br/>
+                    <span style={style.title}>{this.state.track}</span>
+                    </ToolbarGroup>
+                <ToolbarGroup>
+                    {this.renderControl()}
+                    <TrackSelection close={this.closeSettings}
+                        show={this.state.showSettings}/>
+                </ToolbarGroup>
+            </ToolbarGroup>
+            <ToolbarGroup>
+                <TextField hintText="Search through the courses" fullWidth={true}
+                    onChange={_.debounce(this.onChange, 200)}/>
+            </ToolbarGroup>
+        </Toolbar>;
     }
 });

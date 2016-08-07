@@ -1,9 +1,11 @@
 import React, {PropTypes} from 'react';
-import DebounceInput from 'react-debounce-input';
-import classnames from 'classnames';
-import {OverlayTrigger, Tooltip} from 'react-bootstrap';
-import EventServer from '../../models/EventServer.js';
+import TextField from 'material-ui/TextField';
 import _ from 'lodash';
+import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
+import EventServer from '../../models/EventServer.js';
+import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
+import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
+import IconButton from 'material-ui/IconButton';
 
 /**
  * Renders the header of an ISPPanel
@@ -14,25 +16,15 @@ default React.createClass({
         category: PropTypes.object.isRequired,
         toggleView: PropTypes.func.isRequired,
         className: PropTypes.string,
-        setSearch: PropTypes.func.isRequired
+        options: PropTypes.object.isRequired,
+        'options.search': PropTypes.bool
     },
     getInitialState() {
         return {
             collapsed: false,
-            showRules: false,
             search: false,
             searchValue: ''
         };
-    },
-    componentDidMount() {
-        this.startListening();
-    },
-    /**
-     * Starts listening to events for the given isp field.
-     */
-    startListening() {
-        const id = this.props.category.id;
-        EventServer.on('isp.field.error::' + id, () => this.forceUpdate(), id + 'header');
     },
     /**
      * Toggles the panel body visibility
@@ -43,97 +35,51 @@ default React.createClass({
             collapsed: collapsed
         }, () => this.props.toggleView(collapsed));
     },
-    /**
-     * Toggles the visibility of the rules.
-     */
-    toggleSearch() {
-        const search = !this.state.search;
-        this.setState({
-            search: !this.state.search
-        }, () => {
-            if (!search) {
-                this.props.setSearch('');
-            }
-        });
+    onChange(event, value) {
+        EventServer.emit(`${this.props.category.id}.searching`, value);
     },
-    /**
-     * Called when the DebounceInput changes.
-     * Sets the new search value.
-     * @param  {Object} event The event object of the change event.
-     */
-    onChange(event) {
-        this.props.setSearch(event.target.value);
+    renderCollapse() {
+        let collapse;
+        if(this.state.collapsed) {
+            collapse = <IconButton onTouchTap={this.toggleView}
+                tooltip="Show courses"
+                tooltipPosition="top-left">
+                <ExpandMore/>
+            </IconButton>;
+        } else {
+            collapse = <IconButton onTouchTap={this.toggleView}
+                tooltip="Hide courses"
+                tooltipPosition="top-left">
+                <ExpandLess/>
+            </IconButton>;
+        }
+        return <ToolbarGroup>{collapse}</ToolbarGroup>;
     },
-    /**
-     * Renders the rules of an isp field.
-     * @return {React} A react component
-     */
-    renderRules() {
-        if (this.state.collapsed || !this.state.showRules) {
+    renderSearch() {
+        if(!this.props.options.search) {
             return null;
         }
-        const rules = this.props.category.infoMessages().map(function(line, index) {
-            const classes = classnames({
-                'text-danger': line.error,
-                'text-success': !line.error
-            });
-            return <span key={index} className="col-xs-12 option">{line.info}
-                <span className={classes}> {line.selected}</span>
-            </span>;
-        });
-        return [<hr key={1}/>, <div className='row' key={2}>{rules}</div>];
-    },
-    /**
-     * Renders the control buttons for an isp panel
-     * @return {React} A react component
-     */
-    renderControl() {
-        var overlayRules = null;
-        var overlayMM = null;
-        var search = null;
-
-        if (this.state.collapsed) {
-            const tooltip = <Tooltip id="show-all">Maximize</Tooltip>;
-            overlayMM = <OverlayTrigger placement="top" overlay={tooltip}>
-                <i className='fa fa-plus-square-o fa-lg' onClick={this.toggleView}/>
-            </OverlayTrigger>;
-        } else {
-            const tooltip = <Tooltip id="hide-all">Minimize</Tooltip>;
-            overlayMM = <OverlayTrigger placement="top" overlay={tooltip}>
-                <i className='fa fa-minus-square-o fa-lg' onClick={this.toggleView}/>
-            </OverlayTrigger>;
-        }
-
-        if (this.props.options.search) {
-            const tooltip = <Tooltip id="show-search">Search</Tooltip>;
-            search = <OverlayTrigger placement="top" overlay={tooltip}>
-                <i className='fa fa-search fa-lg' onClick={this.toggleSearch}/>
-            </OverlayTrigger>;
-        }
-
-        return <span className='pull-right'>{search}{overlayRules}{overlayMM}</span>;
-    },
-    /**
-     * Renders the search input
-     * @return {React} A react component
-     */
-    renderSearch() {
-        if (this.state.search) {
-            return <div><hr/>
-            <DebounceInput
-                    debounceTimeout={200}
-                    type='text'
-                    className='form-control'
-                    placeholder='search on code or name'
-                    onChange={this.onChange}/>
-            </div>;
-        }
-        return null;
+        return <ToolbarGroup>
+            <TextField hintText="Search through the courses" fullWidth={true}
+                onChange={_.debounce(this.onChange, 200)}/>
+        </ToolbarGroup>;
     },
     render() {
-        const header = this.props.category.name;
-        return <div className={classnames(this.props.className, 'panel-heading')}>
-            <h3 className='panel-title'>{header}{this.renderControl()}</h3>
-            {this.renderRules()}{this.renderSearch()}</div>;
+        const style = {
+            root: {
+                display: 'flex',
+                flexDirection: 'column',
+                height: 'auto'
+            }
+        };
+        return <Toolbar style={style.root}>
+            <ToolbarGroup>
+                <ToolbarGroup>
+                    <ToolbarTitle text={this.props.category.name}/>
+                </ToolbarGroup>
+                    {this.renderCollapse()}
+            </ToolbarGroup>
+            {this.renderSearch()}
+        </Toolbar>;
     }
 });

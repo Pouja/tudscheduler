@@ -11,7 +11,7 @@ import FacultyCtrl from './FacultyCtrl.js';
  * Otherwise I would refer it as 'course'.
  * @type {Object}
  */
-var CourseCtrl = {
+const CourseCtrl = {
     tree: {},
     courses: [],
     added: [],
@@ -22,9 +22,9 @@ var CourseCtrl = {
      */
     init() {
         const masterId = FacultyCtrl.selectedMaster().masterid;
-        Promise.all([request.get('http://localhost:8000/courseTree/' + masterId)
+        Promise.all([request.get(`http://localhost:8000/courseTree/${masterId}`)
             .accept('application/json'),
-            request.get('http://localhost:8000/courses/' + masterId)
+            request.get(`http://localhost:8000/courses/${masterId}`)
             .accept('application/json')
         ])
             .then(function(responses) {
@@ -43,7 +43,7 @@ var CourseCtrl = {
      */
     numberTree() {
         let nr = 0;
-        let number = (function number(node) {
+        (function number(node) {
             if (!_.isEmpty(node)) {
                 nr++;
                 node.nr = nr;
@@ -82,7 +82,7 @@ var CourseCtrl = {
      * itself are added.
      */
     isAdded: function(course) {
-        if (course.children.length === 0) {
+        if (!CourseCtrl.isAGroup(course)) {
             return _.find(CourseCtrl.added, {
                 id: course.id
             });
@@ -99,9 +99,11 @@ var CourseCtrl = {
         if (!needle || needle.length === 0 || !courseTree) {
             return true;
         }
+        const lowerNeedle = needle.toLowerCase();
         const course = CourseCtrl.get(courseTree.id);
-        return course.name.toLowerCase().indexOf(needle) !== -1 || (!!course.courseName &&
-            course.courseName.toLowerCase().indexOf(needle) !== -1);
+        return course.name.toLowerCase().indexOf(lowerNeedle) !== -1 ||
+            (!!course.courseName &&
+                course.courseName.toLowerCase().indexOf(lowerNeedle) !== -1);
     },
     /**
      * Creates a flatten representation of the course tree
@@ -116,7 +118,7 @@ var CourseCtrl = {
         };
         const uniqueId = unique || 'id';
         const currentNode = node || CourseCtrl.tree;
-        var children = _(currentNode.children)
+        const children = _(currentNode.children)
             .map(function(child) {
                 return CourseCtrl.flatten(filterFn, child, uniqueId);
             })
@@ -138,11 +140,11 @@ var CourseCtrl = {
     periodEcts(period) {
         return _.sumBy(CourseCtrl.added, function(courseTree) {
             const course = CourseCtrl.get(courseTree.id);
-            var courseEcts = (course.ects === undefined) ? 0 : parseInt(course.ects, 10);
-            var periods = course['Education Period'];
-            var start = course['Start Education'] ? parseInt(course['Start Education'], 10) : 0;
-            var nPeriods = (periods ? periods.split(',').length : 1);
-            var end = start + nPeriods - 1;
+            const courseEcts = (course.ects === undefined) ? 0 : parseInt(course.ects, 10);
+            const periods = course['Education Period'];
+            const start = course['Start Education'] ? parseInt(course['Start Education'], 10) : 0;
+            const nPeriods = (periods ? periods.split(',').length : 1);
+            const end = start + nPeriods - 1;
             if (start <= period && end >= period) {
                 return courseEcts / nPeriods;
             }
@@ -200,8 +202,12 @@ var CourseCtrl = {
         EventServer.emit('added', course);
         CourseCtrl._add(course);
     },
+    addMultiple(courses) {
+        EventServer.emit('added');
+        courses.forEach(CourseCtrl._add);
+    },
     _add(course) {
-        if (course.children.length !== 0) {
+        if (CourseCtrl.isAGroup(course)) {
             course.children.forEach(CourseCtrl._add);
         } else {
             if (_.find(CourseCtrl.added, {
@@ -220,13 +226,17 @@ var CourseCtrl = {
         CourseCtrl._remove(course);
     },
     _remove(course) {
-        if (course.children.length !== 0) {
+        if (CourseCtrl.isAGroup(course)) {
             course.children.forEach(CourseCtrl._remove);
         } else {
             _.remove(CourseCtrl.added, {
                 id: course.id
             });
         }
+    },
+    isAGroup(courseTree) {
+        const course = CourseCtrl.get(courseTree.id);
+        return course.ects === undefined || course.ects === null;
     },
     /**
      * Resets the added courses.
