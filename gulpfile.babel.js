@@ -45,7 +45,7 @@ gulp.task('mock-server', function() {
             'Content-Type': 'application/json'
         }
     };
-    return gulp.src('./mocks/**/*.js')
+    return gulp.src('./mocks/**/*.json')
         .pipe(restEmulator(options));
 });
 
