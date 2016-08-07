@@ -39,7 +39,6 @@ gulp.task('mock-server', function() {
         port: 8000,
         root: ['./'],
         rewriteNotFound: false,
-        rewriteTemplate: 'dist/index.html',
         corsEnable: true,
         corsOptions: {},
         headers: {
@@ -126,7 +125,7 @@ gulp.task('lint', () => {
 
 gulp.task('replace', () => {
     return gulp.src('dist/js/app.js')
-        // .pipe(replace('http://localhost:8000/', '/'))
+        .pipe(replace('http://localhost:8000/', '/'))
         .pipe(gulp.dest('dist/js'));
 });
 
