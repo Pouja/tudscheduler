@@ -1,65 +1,89 @@
-import React from 'react';
-import {Modal} from 'react-bootstrap';
+import React, {PropTypes} from 'react';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import request from 'superagent';
 import CourseCtrl from '../models/CourseCtrl.js';
+import DialogCtrl from '../models/DialogCtrl.js';
 
 /**
  * Renders the detailed information of a course.
  */
-export default React.createClass({
-    propTypes:{
-        closeModal: React.PropTypes.func.isRequired,
-        show: React.PropTypes.bool.isRequired,
-        course: React.PropTypes.object.isRequired,
-        'course.children': React.PropTypes.array
-    },
-    getInitialState(){
+export
+default React.createClass({
+    getInitialState() {
         return {
-            show: this.props.show,
-            course: {}
+            show: false,
+            course: null
         };
     },
-    componentWillMount(){
-        if(this.props.course.children.length > 0) {
+    componentWillMount() {
+        DialogCtrl.onOpen((courseId) => this.setCourse(courseId), 'CourseModal');
+    },
+    setCourse(courseId) {
+        if (CourseCtrl.isAGroup(courseId)) {
             this.setState({
-                course: CourseCtrl.get(this.props.course.id)
+                show: true,
+                course: CourseCtrl.get(courseId)
             });
         } else {
-            request.get(`src/data/course-${this.props.course.id}.json`)
-            .set('Accept', 'application/json')
-            .end((err, res) => {
-                this.setState({
-                    course: res.body
+            request.get(`http://localhost:8000/courseDetail/${courseId}`)
+                .accept('application/json')
+                .end((err, res) => {
+                    this.setState({
+                        course: res.body,
+                        show: true
+                    });
                 });
-            });
         }
-
     },
-    componentWillReceiveProps(nextProps){
+    close() {
         this.setState({
-            show: nextProps.show
+            show: false
         });
     },
-    render(){
+    render() {
+        if(!this.state.show || !this.state.course){
+            return null;
+        }
         const course = this.state.course;
 
         // Filter which attributes we dont want to show
         const filterKeys = ['courseName', 'depth', 'nr', 'parent', 'children', 'id'];
 
-        return <Modal show={this.state.show} onHide={this.props.closeModal}>
-            <Modal.Header closeButton>
-                <Modal.Title>{course.name} {course.courseName}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <dl>
-                {Object.keys(course).map(function(key){
-                    if (filterKeys.indexOf(key) !== -1){
-                        return null;
-                    }
-                    return [<dt>{key}</dt>, <dd>{course[key]}</dd>];
-                })}
-                </dl>
-            </Modal.Body>
-        </Modal>;
+        const actions = [
+            <FlatButton label="Close" primary={true} onTouchTap={this.close}/>
+        ];
+        const style = {
+            root: {
+                margin: '10px 0'
+            },
+            p: {
+                margin: '10px 0'
+            },
+            header: {
+                fontWeight: 'bold',
+                width: '100%',
+                marginRight: 10
+            }
+        };
+        return <Dialog
+            autoDetectWindowHeight={true}
+            autoScrollBodyContent={true}
+            title={course.courseName || course.name}
+            actions={actions}
+            open={this.state.show}
+            onRequestClose={this.close}>
+                <div style={style.root}>
+                {Object.keys(course)
+                    .filter(key => filterKeys.indexOf(key) === -1)
+                    .map(function(key){
+                        return <p style={style.p}>
+                            <span style={style.header}>{key}</span><br/>
+                            <span>{course[key]}</span>
+                        </p>;
+                    })
+                }
+                </div>
+        </Dialog>;
     }
 });

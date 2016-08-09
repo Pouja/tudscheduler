@@ -12,6 +12,7 @@ import _ from 'lodash';
 /**
  * A list group item for in the sidebar.
  * Shows the course id, name, ects and optional control functions
+ * It renders a chevron when filtering set to false and the course is a group.
  */
 export default React.createClass({
     propTypes:{
@@ -71,6 +72,9 @@ export default React.createClass({
             this.setState(nextState);
         }, this.getID());
     },
+    /**
+     * @return {String} The identifier of this component
+     */
     getID() {
         const id = _.isNil(this.props.course.nr) ? this.props.course.id :
             this.props.course.nr;
@@ -101,6 +105,9 @@ export default React.createClass({
         EventServer.remove('added', this.getID());
         EventServer.remove('removed', this.getID());
     },
+    /**
+     * Called when the ects or isAdded should be updated
+     */
     update() {
         this.setState({
             ects: CourseCtrl.addedEcts(this.props.course),

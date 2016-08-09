@@ -13,6 +13,9 @@ export default React.createClass({
             totalEcts: 0
         };
     },
+    shouldComponentUpdate(nextProps, nextState){
+        return !_.isEqual(this.state, nextState);
+    },
     componentDidMount() {
         EventServer.on('added', () => this.updateEcts(), id);
         EventServer.on('removed', () => this.updateEcts(), id);

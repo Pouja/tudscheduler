@@ -12,8 +12,11 @@ import FacultyCtrl from './FacultyCtrl.js';
  * @type {Object}
  */
 const CourseCtrl = {
+    // The tree of courses, each node consists of nr, id, depth and children
     tree: {},
+    // The list of all courses, contains id, name, courseName, ects, Start Eduction
     courses: [],
+    // The list of course ids added
     added: [],
     /**
      * Initialises the course controller.
@@ -76,6 +79,13 @@ const CourseCtrl = {
     get(id) {
         return CourseCtrl.courses.find((course) => course.id === id);
     },
+    /**
+     * Returns the course in CourseCtrl.tree
+     * Usefull when you want to traverse the tree from a specific node.
+     * @param  {String|Number} id   The identifier of the node to retrieve
+     * @param  {Object|undefined} node The current parent node search from
+     * @return {Object}      A course tree node, or undefined if not found
+     */
     getTree(id, node) {
         const currentNode = node || CourseCtrl.tree;
         if(currentNode.id === id) {
@@ -212,6 +222,11 @@ const CourseCtrl = {
         CourseCtrl._add(CourseCtrl.getTree(courseId));
         EventServer.emit('added', courseId);
     },
+    /**
+     * Adds multiple courses at once.
+     * It assumes that these courses or from CourseCtrl.courses
+     * @param {Array} courses The courses to add.
+     */
     addMultiple(courses) {
         courses.forEach(CourseCtrl._add);
         EventServer.emit('added');
@@ -240,6 +255,10 @@ const CourseCtrl = {
             _.pull(CourseCtrl.added, courseTree.id);
         }
     },
+    /**
+     * @param  {String|Number}  courseId The id of the course to check
+     * @return {Boolean}          true iff the course is a non-leaf/group
+     */
     isAGroup(courseId) {
         const course = CourseCtrl.get(courseId);
         return course.ects === undefined || course.ects === null;

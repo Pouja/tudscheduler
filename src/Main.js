@@ -3,7 +3,10 @@ import SideBar from './components/sidebar/SideBar.js';
 import Notifications from './components/Notifications.js';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import { withRouter } from 'react-router';
-
+import CourseModal from './components/CourseModal.js';
+/**
+ * Renders the tabs, sidebar and the main component (yearview/selectview)
+ */
 const Main = React.createClass({
     shouldComponentUpdate(nextProps){
         return this.props.children !== nextProps.children;
@@ -30,6 +33,7 @@ const Main = React.createClass({
                 <Tab label="Select view" value='/select'/>
             </Tabs>
             <Notifications/>
+            <CourseModal/>
             <div className="app">
                 <SideBar className="sidebar"/>
                 <div className="main">

@@ -5,7 +5,7 @@ import CourseCtrl from '../../models/CourseCtrl.js';
 import Paper from 'material-ui/Paper';
 import {grey100} from 'material-ui/styles/colors.js';
 /**
- * Used by YearView to render a course.
+ * Used by YearView to render a course in the grid layout.
  */
 export default React.createClass({
     propTypes: {

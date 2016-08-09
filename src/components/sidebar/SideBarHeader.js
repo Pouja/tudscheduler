@@ -6,7 +6,6 @@ import ActionSettings from 'material-ui/svg-icons/action/settings';
 import TextField from 'material-ui/TextField';
 import EventServer from '../../models/EventServer.js';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
-
 import _ from 'lodash';
 
 export default React.createClass({
@@ -21,6 +20,9 @@ export default React.createClass({
             master: '',
             track: ''
         };
+    },
+    shouldComponentUpdate(nextProps, nextState) {
+        return !_.isEqual(this.state, nextState);
     },
     componentDidMount(){
         this.setTitle();
@@ -45,7 +47,7 @@ export default React.createClass({
         }
     },
     /**
-     * Called when the DebounceInput changes.
+     * Called when the TextField changes.
      * Sets the new search value.
      * @param  {Object} event The event object of the change event.
      * @param {String} value The input value

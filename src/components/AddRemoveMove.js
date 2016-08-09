@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import CourseCtrl from '../models/CourseCtrl.js';
 import IconButton from 'material-ui/IconButton';
-// import CourseModal from './CourseModal.js';
 import {grey400} from 'material-ui/styles/colors';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
@@ -9,9 +8,18 @@ import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import ISPCtrl from '../models/ISPCtrl.js';
+import DialogCtrl from '../models/DialogCtrl.js';
+import _ from 'lodash';
 
 /**
- * Renders the add/remove and info button for a course.
+ * Renders the add/remove, info and move button for a course.
+ * @example
+ * <AddRemove courseId={courseId} style={styleToOverwrite}/>
+ * This renders a add/remove/info
+ *
+ * <AddRemove courseId={courseId} style={styleToOverwrite} move={true} category={categoryId}/>
+ * Renders add/remove/info/move
+ *
  */
 
 export default React.createClass({
@@ -27,21 +35,21 @@ export default React.createClass({
             PropTypes.number
         ])
     },
-    getInitialState(){
-        return {
-            showModal: false
-        };
+    shouldComponentUpdate(nextProps, nextState){
+        return !_.isEqual(this.state, nextState);
     },
+    /**
+     * Opens the course detail modal
+     */
     openModal(){
-        this.setState({
-            showModal: true
-        });
+        DialogCtrl.open('CourseModal', this.props.courseId);
     },
-    closeModal(){
-        this.setState({
-            showModal: false
-        });
-    },
+    /**
+     * Renders one of the menuitem to move the given course to a the given category
+     * @param  {Object} category One of ISPCtrl.categories
+     * @param  {Number} idx      The key nr to be set
+     * @return {React.element}   A material-ui/MenuItem component
+     */
     renderMoveItem(category, idx) {
         return <MenuItem key={idx}
             primaryText={category.name}
@@ -49,6 +57,10 @@ export default React.createClass({
                 category.catId)}
             />;
     },
+    /**
+     * Renders the menu to move an item
+     * @return {Array} A material-ui/MenuItem and a divider
+     */
     renderMoveMenu() {
         return [<Divider key={5}/>,
             <MenuItem
@@ -75,8 +87,6 @@ export default React.createClass({
                 <MoreVertIcon color={grey400} />
             </IconButton>
         );
-
-        // const modal = (this.state.showModal) ? <CourseModal show={this.state.showModal} closeModal={()=>this.closeModal()} course={course}/> : null;
 
         const menuItemRemove = <MenuItem style={style.menuItem}
             onTouchTap={() => CourseCtrl.remove(courseId)}>

@@ -1,5 +1,13 @@
 import React, {PropTypes} from 'react';
 import {grey500} from 'material-ui/styles/colors';
+
+/**
+ * Renders a badge
+ * It is designed for short text
+ * @example
+ * <Badge style={styleToOverWrite}>Some text</Badge>
+ */
+
 export default React.createClass({
     propTypes: {
         style: PropTypes.object,

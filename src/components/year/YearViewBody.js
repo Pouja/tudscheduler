@@ -3,6 +3,7 @@ import CourseCtrl from '../../models/CourseCtrl.js';
 import EventServer from '../../models/EventServer.js';
 import ReactGridLayout, {WidthProvider} from 'react-grid-layout';
 import CourseGridItem from './CourseGridItem.js';
+import _ from 'lodash';
 const DecoratedReactGridLayout = WidthProvider(ReactGridLayout); //eslint-disable-line new-cap
 
 /**
@@ -31,6 +32,9 @@ export default React.createClass({
         return {
             courses: CourseCtrl.added
         };
+    },
+    shouldComponentUpdate(nextProps, nextState){
+        return _.difference(this.state.courses, nextState.courses).length > 0;
     },
     componentDidMount() {
         EventServer.on('added', () => this.updateCourses(), id);

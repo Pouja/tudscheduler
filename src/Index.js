@@ -17,5 +17,9 @@ const muiTheme = getMuiTheme({
     }
 });
 
+/**
+ * Main entry point of React and the whole application
+ * @type {React.element}
+ */
 const App = <MuiThemeProvider muiTheme={muiTheme}><Routes/></MuiThemeProvider>;
 render(App, document.getElementById('react'));
