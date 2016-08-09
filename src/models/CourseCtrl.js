@@ -76,18 +76,30 @@ const CourseCtrl = {
     get(id) {
         return CourseCtrl.courses.find((course) => course.id === id);
     },
+    getTree(id, node) {
+        const currentNode = node || CourseCtrl.tree;
+        if(currentNode.id === id) {
+            return currentNode;
+        }
+        let found;
+        currentNode.children.some(function(child){
+            found = CourseCtrl.getTree(id, child);
+            return found;
+        });
+        return found;
+    },
     /**
-     * @param  {Object}  course See AllCourses.js
+     * @param  {String|Number}  courseId The course id
      * @return {Boolean} true iff all the children of the course and the course
      * itself are added.
      */
-    isAdded: function(course) {
-        if (!CourseCtrl.isAGroup(course)) {
-            return _.find(CourseCtrl.added, {
-                id: course.id
-            });
+    isAdded: function(courseId) {
+        if (!CourseCtrl.isAGroup(courseId)) {
+            return CourseCtrl.added.indexOf(courseId) !== -1;
         }
-        return _.every(course.children, CourseCtrl.isAdded);
+        return _(CourseCtrl.getTree(courseId).children)
+            .map('id')
+            .every(CourseCtrl.isAdded);
     },
     /**
      * Checks if a course as the given needle.
@@ -138,8 +150,8 @@ const CourseCtrl = {
      * @return {Number}        The total ects
      */
     periodEcts(period) {
-        return _.sumBy(CourseCtrl.added, function(courseTree) {
-            const course = CourseCtrl.get(courseTree.id);
+        return _.sumBy(CourseCtrl.added, function(courseId) {
+            const course = CourseCtrl.get(courseId);
             const courseEcts = (course.ects === undefined) ? 0 : parseInt(course.ects, 10);
             const periods = course['Education Period'];
             const start = course['Start Education'] ? parseInt(course['Start Education'], 10) : 0;
@@ -159,9 +171,7 @@ const CourseCtrl = {
     addedEcts(course) {
         const currentCourse = course || CourseCtrl.tree;
         const flatten = CourseCtrl.flatten(function(course) {
-            return _.find(CourseCtrl.added, {
-                id: course.id
-            });
+            return CourseCtrl.added.indexOf(course.id) !== -1;
         }, currentCourse, 'id');
         return _.sumBy(flatten, function(courseTree) {
             const course = CourseCtrl.get(courseTree.id);
@@ -195,47 +205,43 @@ const CourseCtrl = {
     },
     /**
      * Adds the course and all the children to the added list
-     * @param {Object} course, See AllCourses.js
+     * @param {String|Number} courseId The course id
      * @returns {void}
      */
-    add(course) {
-        EventServer.emit('added', course);
-        CourseCtrl._add(course);
+    add(courseId) {
+        CourseCtrl._add(CourseCtrl.getTree(courseId));
+        EventServer.emit('added', courseId);
     },
     addMultiple(courses) {
-        EventServer.emit('added');
         courses.forEach(CourseCtrl._add);
+        EventServer.emit('added');
     },
-    _add(course) {
-        if (CourseCtrl.isAGroup(course)) {
-            course.children.forEach(CourseCtrl._add);
+    _add(courseTree) {
+        if (CourseCtrl.isAGroup(courseTree.id)) {
+            courseTree.children.forEach(CourseCtrl._add);
         } else {
-            if (_.find(CourseCtrl.added, {
-                id: course.id
-            }) === undefined) {
-                CourseCtrl.added.push(course);
+            if (CourseCtrl.added.indexOf(courseTree.id) === -1) {
+                CourseCtrl.added.push(courseTree.id);
             }
         }
     },
     /**
      * Removes the course and all the chilren from added list
-     * @param  {Object} course, See AllCourses.js
+     * @param  {String|Number} courseId The course id
      */
-    remove(course) {
-        EventServer.emit('removed', course);
-        CourseCtrl._remove(course);
+    remove(courseId) {
+        CourseCtrl._remove(CourseCtrl.getTree(courseId));
+        EventServer.emit('removed', courseId);
     },
-    _remove(course) {
-        if (CourseCtrl.isAGroup(course)) {
-            course.children.forEach(CourseCtrl._remove);
+    _remove(courseTree) {
+        if (CourseCtrl.isAGroup(courseTree.id)) {
+            courseTree.children.forEach(CourseCtrl._remove);
         } else {
-            _.remove(CourseCtrl.added, {
-                id: course.id
-            });
+            _.pull(CourseCtrl.added, courseTree.id);
         }
     },
-    isAGroup(courseTree) {
-        const course = CourseCtrl.get(courseTree.id);
+    isAGroup(courseId) {
+        const course = CourseCtrl.get(courseId);
         return course.ects === undefined || course.ects === null;
     },
     /**

@@ -5,6 +5,8 @@ import AddRemoveMove from './../AddRemoveMove.js';
 import {ListItem} from 'material-ui/List';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
+import Check from 'material-ui/svg-icons/navigation/check';
+import {green500} from 'material-ui/styles/colors';
 import Badge from '../Badge.js';
 import _ from 'lodash';
 /**
@@ -20,8 +22,9 @@ export default React.createClass({
     },
     getInitialState() {
         return {
-            ects: 0,
+            ects: CourseCtrl.addedEcts(this.props.course),
             childVisible: false,
+            isAdded: CourseCtrl.isAdded(this.props.course.id),
             filtering: this.props.filtering,
             filter: '',
             visible: this.props.visible
@@ -32,6 +35,17 @@ export default React.createClass({
     },
     componentWillUnmount(){
         this.stopListening();
+    },
+    componentWillReceiveProps(nextProps){
+        if(nextProps.filtering || nextProps.visible) {
+            this.startListening();
+        } else {
+            this.stopListening();
+        }
+        this.setState({
+            filtering: nextProps.filtering,
+            visible: nextProps.visible
+        });
     },
     /**
      * Called by React when it is mounted in the DOM
@@ -52,12 +66,15 @@ export default React.createClass({
                 nextState.childVisible = false;
             } else {
                 this.startListening();
+                this.update();
             }
             this.setState(nextState);
         }, this.getID());
     },
     getID() {
-        return `course::${this.props.course.nr}`;
+        const id = _.isNil(this.props.course.nr) ? this.props.course.id :
+            this.props.course.nr;
+        return `CourseTree::${id}`;
     },
     /**
      * Toggle the visibility of the children
@@ -73,8 +90,8 @@ export default React.createClass({
      * Start listening to events.
      */
     startListening() {
-        EventServer.on('added', () => this.updateEcts(), this.getID());
-        EventServer.on('removed', () => this.updateEcts(), this.getID());
+        EventServer.on('added', () => this.update(), this.getID());
+        EventServer.on('removed', () => this.update(), this.getID());
     },
     /**
      * Stops listening to events. Should be called when it is not visible or
@@ -84,9 +101,10 @@ export default React.createClass({
         EventServer.remove('added', this.getID());
         EventServer.remove('removed', this.getID());
     },
-    updateEcts() {
+    update() {
         this.setState({
-            ects: CourseCtrl.addedEcts(this.props.course)
+            ects: CourseCtrl.addedEcts(this.props.course),
+            isAdded: CourseCtrl.isAdded(this.props.course.id)
         });
     },
     /**
@@ -95,7 +113,7 @@ export default React.createClass({
      * @return {React}     A react component
      */
     renderChevron() {
-        if (this.state.filtering || !CourseCtrl.isAGroup(this.props.course)) {
+        if (this.state.filtering || !CourseCtrl.isAGroup(this.props.course.id)) {
             return null;
         }
         const style = {
@@ -128,7 +146,7 @@ export default React.createClass({
         const style = {
             marginRight: 4
         };
-        if (!CourseCtrl.isAGroup(course)) {
+        if (!CourseCtrl.isAGroup(course.id)) {
             return (<Badge style={style}>EC {totalEcts}</Badge>);
         }
         return (<Badge style={style}>EC {subEcts}/{totalEcts}</Badge>);
@@ -151,22 +169,30 @@ export default React.createClass({
             },
             secondaryText: {
                 height: 22
+            },
+            check:{
+                display: this.state.isAdded ? 'inline-block' : 'none',
+                position: 'absolute',
+                right: 40,
+                top: 11,
+                color: green500
             }
         };
         if (!this.state.filtering && this.props.course.depth > 1) {
             style.root.marginLeft = (this.props.course.depth - 1) * 10 +
-                (!CourseCtrl.isAGroup(course) * 45);
+                (!CourseCtrl.isAGroup(course.id) * 45);
         }
         return <ListItem
             onTouchTap={this.toggle}
-            primaryText={<span>{course.name} {course.courseName}</span>}
+            primaryText={<span>{course.name} {course.courseName}
+                {<Check style={style.check}/>}</span>}
             secondaryText={<div style={style.secondaryText}>
                 {this.renderECBadge()}{this.renderQBadge()}
             </div>}
             leftIcon={this.renderChevron()}
-            rightIconButton={<AddRemoveMove course={this.props.course} style={style.AddRemoveMove}/>}
+            rightIconButton={<AddRemoveMove courseId={this.props.course.id} style={style.AddRemoveMove}/>}
             innerDivStyle={style.innerDiv}
-            key={course.nr}
+            key={course.nr || course.id}
             style={style.root}/>;
     }
 });

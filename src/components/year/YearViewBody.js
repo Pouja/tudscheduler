@@ -7,11 +7,11 @@ const DecoratedReactGridLayout = WidthProvider(ReactGridLayout); //eslint-disabl
 
 /**
  * Creates the grid properties for the course
- * @param  {Object} courseTree The course object, as seen in AllCourses.js
+ * @param  {Object} courseId The course id
  * @return {Object} Grid properties
  */
-const courseGrid = function(courseTree) {
-    const course = CourseCtrl.get(courseTree.id);
+const courseGrid = function(courseId) {
+    const course = CourseCtrl.get(courseId);
     const start = course['Start Education'];
     const periods = course['Education Period'];
     const x = start ? parseInt(start, 10) - 1 : 0;
@@ -29,7 +29,7 @@ const id = 'YearViewBody';
 export default React.createClass({
     getInitialState(){
         return {
-            courses: []
+            courses: CourseCtrl.added
         };
     },
     componentDidMount() {
@@ -48,9 +48,9 @@ export default React.createClass({
         });
     },
     render(){
-        const gridItems = CourseCtrl.added.map(function(course, index) {
-            return <CourseGridItem _grid={courseGrid(course, index)}
-                key={course.id} course={course}/>;
+        const gridItems = this.state.courses.map(function(courseId, index) {
+            return <CourseGridItem data-grid={courseGrid(courseId, index)}
+                key={courseId} courseId={courseId}/>;
         });
 
         if(gridItems.length === 0) {

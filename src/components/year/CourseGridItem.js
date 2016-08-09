@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import Badge from '../Badge.js';
 import AddRemoveMove from '../AddRemoveMove.js';
 import CourseCtrl from '../../models/CourseCtrl.js';
@@ -9,7 +9,10 @@ import {grey100} from 'material-ui/styles/colors.js';
  */
 export default React.createClass({
     propTypes: {
-        course: React.PropTypes.object.isRequired,
+        courseId: PropTypes.oneOfType([
+            PropTypes.string.isRequired,
+            PropTypes.number.isRequired
+        ]).isRequired,
         style: React.PropTypes.object
     },
     render(){
@@ -27,12 +30,12 @@ export default React.createClass({
                 top: 'initial'
             }
         };
-        const course = CourseCtrl.get(this.props.course.id);
+        const course = CourseCtrl.get(this.props.courseId);
         return <Paper zDepth={1} style={style.root}>
             <div style={style.inner}>
                 {course.name} {course.courseName}
                 <Badge>EC {course.ects}</Badge>
-                <AddRemoveMove course={this.props.course} style={style.AddRemoveMove}/>
+                <AddRemoveMove courseId={this.props.courseId} style={style.AddRemoveMove}/>
             </div>
         </Paper>;
     }

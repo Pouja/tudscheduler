@@ -17,7 +17,10 @@ import ISPCtrl from '../models/ISPCtrl.js';
 export default React.createClass({
     propTypes:{
         style: PropTypes.object,
-        course: PropTypes.object.isRequired,
+        courseId: PropTypes.oneOfType([
+            PropTypes.string.isRequired,
+            PropTypes.number.isRequired
+        ]).isRequired,
         move: PropTypes.bool,
         category: PropTypes.oneOfType([
             PropTypes.string,
@@ -42,7 +45,7 @@ export default React.createClass({
     renderMoveItem(category, idx) {
         return <MenuItem key={idx}
             primaryText={category.name}
-            onTouchTap={() => ISPCtrl.move(this.props.course, this.props.category,
+            onTouchTap={() => ISPCtrl.move(this.props.courseId, this.props.category,
                 category.catId)}
             />;
     },
@@ -58,7 +61,7 @@ export default React.createClass({
         />];
     },
     render(){
-        const course = this.props.course;
+        const courseId = this.props.courseId;
         const style = {
             root: Object.assign({}, this.props.style),
             menuItem: {
@@ -76,11 +79,11 @@ export default React.createClass({
         // const modal = (this.state.showModal) ? <CourseModal show={this.state.showModal} closeModal={()=>this.closeModal()} course={course}/> : null;
 
         const menuItemRemove = <MenuItem style={style.menuItem}
-            onTouchTap={() => CourseCtrl.remove(course)}>
-            {CourseCtrl.isAGroup(course) ? 'Remove all' : 'Remove'}</MenuItem>;
+            onTouchTap={() => CourseCtrl.remove(courseId)}>
+            {CourseCtrl.isAGroup(courseId) ? 'Remove all' : 'Remove'}</MenuItem>;
         const menuItemAdd = <MenuItem style={style.menuItem}
-            onTouchTap={() => CourseCtrl.add(course)}>
-            {CourseCtrl.isAGroup(course) ? 'Add all' : 'Add'}</MenuItem>;
+            onTouchTap={() => CourseCtrl.add(courseId)}>
+            {CourseCtrl.isAGroup(courseId) ? 'Add all' : 'Add'}</MenuItem>;
 
         return <IconMenu
             onTouchTap={(event) => event.stopPropagation()}
@@ -88,7 +91,7 @@ export default React.createClass({
             style={style.root}
             iconButtonElement={iconButtonElement}>
             <MenuItem style={style.menuItem} onTouchTap={this.openModal}>Info</MenuItem>
-            {CourseCtrl.isAdded(course) ? menuItemRemove : menuItemAdd}
+            {CourseCtrl.isAdded(courseId) ? menuItemRemove : menuItemAdd}
             {this.props.move ? this.renderMoveMenu() : null}
         </IconMenu>;
     }

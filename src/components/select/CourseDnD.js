@@ -33,7 +33,7 @@ const courseSource = {
         if (!monitor.didDrop() || item.currentFieldId === dropResult.id) {
             return;
         }
-        ISPCtrl.move(item.course, item.currentFieldId, dropResult.id);
+        ISPCtrl.move(item.course.id, item.currentFieldId, dropResult.id);
     }
 };
 
@@ -96,7 +96,7 @@ class CourseDnD extends Component {
                 primaryText={`${course.name} ${course.courseName}`}
                 rightIconButton={<AddRemoveMove move={true}
                     category={this.props.category}
-                    style={style.AddRemoveMove} course={course}/>}
+                    style={style.AddRemoveMove} courseId={course.id}/>}
                 leftIcon={<EditorDragHandle/>}/>;
     }
     render() {

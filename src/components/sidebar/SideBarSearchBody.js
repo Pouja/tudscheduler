@@ -35,7 +35,7 @@ export default React.createClass({
         const rows = _(CourseCtrl.courses)
             .filter(function(course){
                 return course.id !== 'root'
-                    && !CourseCtrl.isAGroup(course)
+                    && !CourseCtrl.isAGroup(course.id)
                     && CourseCtrl.hasNeedle(course, filter);
             })
             .orderBy(['name', 'courseName'], ['asc','asc'])

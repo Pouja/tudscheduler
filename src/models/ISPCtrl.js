@@ -53,7 +53,7 @@ const ISPCtrl = {
 
             // Add the courses in all the categories to coursectrl.added
             CourseCtrl.addMultiple(_(ISPCtrl.categories)
-                .map((cat) => cat.courses)
+                .map('courses')
                 .flatten()
                 .map(CourseCtrl.get)
                 .value());
@@ -69,12 +69,12 @@ const ISPCtrl = {
      */
     updateAdded() {
         ISPCtrl.unlisted.courses = _(CourseCtrl.added)
-            .filter(function(course) {
-                return !ISPCtrl.categories.some(function(ispCtrl) {
-                    return ispCtrl.courses.indexOf(course.id) !== -1;
+            .filter(function(courseId) {
+                return !ISPCtrl.categories.some(function(category) {
+                    return category.courses.indexOf(courseId) !== -1;
                 });
             })
-            .map(course => course.id)
+            .union(ISPCtrl.unlisted.courses)
             .value();
         EventServer.emit('category.added::unlisted');
     },
@@ -86,9 +86,7 @@ const ISPCtrl = {
         const allCourses = CourseCtrl.added;
         ISPCtrl.categories.forEach(function(category) {
             const removeCourses = _.filter(category.courses, function(courseId) {
-                return !_.find(allCourses, {
-                    id: courseId
-                });
+                return allCourses.indexOf(courseId) === -1;
             });
             if (removeCourses.length > 0) {
                 category.courses = _.difference(category.courses, removeCourses);
@@ -123,11 +121,11 @@ const ISPCtrl = {
     },
     /**
      * Moves a course from one category to another
-     * @param  {Object} course      The course object
+     * @param  {String|Number} courseId  The course id
      * @param  {String} categoryIdFrom The category identifier from it is being moved.
      * @param  {String} categoryIdTo   The category to which is should be moved
      */
-    move(course, categoryIdFrom, categoryIdTo) {
+    move(courseId, categoryIdFrom, categoryIdTo) {
         const categoryFrom = (categoryIdFrom === 'unlisted') ? ISPCtrl.unlisted :
             _.find(ISPCtrl.categories, function(category) {
                 return category.catId === categoryIdFrom;
@@ -135,11 +133,11 @@ const ISPCtrl = {
         const categoryTo = (categoryIdTo === 'unlisted') ? ISPCtrl.unlisted : _.find(ISPCtrl.categories, function(category) {
             return category.catId === categoryIdTo;
         });
-        categoryTo.courses = _.union(categoryTo.courses, [course.id]);
-        EventServer.emit(`category.added::${categoryIdTo}`, course.id);
+        categoryTo.courses = _.union(categoryTo.courses, [courseId]);
+        EventServer.emit(`category.added::${categoryIdTo}`, courseId);
 
-        categoryFrom.courses = _.without(categoryFrom.courses, course.id);
-        EventServer.emit(`category.removed::${categoryIdFrom}`, course.id);
+        categoryFrom.courses = _.without(categoryFrom.courses, courseId);
+        EventServer.emit(`category.removed::${categoryIdFrom}`, courseId);
     }
 };
 EventServer.on('courses.loaded', ISPCtrl.init);
