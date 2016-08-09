@@ -1,5 +1,4 @@
 import React from 'react';
-import {Alert} from 'react-bootstrap';
 import EventServer from '../models/EventServer.js';
 
 /**
@@ -38,12 +37,7 @@ export default React.createClass({
         const notification = this.state.notification;
         if (notification !== null){
             return <div className="alerts">
-                <Alert
-                    bsSize="medium"
-                    bsStyle={notification.style}
-                    onDismiss={this.onDismiss}>
-                    <p>{notification.msg}</p>
-                </Alert>
+
             </div>;
         }
         return null;

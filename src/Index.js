@@ -1,3 +1,4 @@
+import './Index.css';
 import React from 'react';
 import {render} from 'react-dom';
 import {deepOrange500} from 'material-ui/styles/colors';
