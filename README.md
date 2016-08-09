@@ -1,13 +1,12 @@
 # TUD Scheduler
-Helps you to orginize/select/overview your TU Delft Master courses and soon it will allow you to generate your ISP form. No more manual form submission.
-
-# Courses
-The courses are scraped from the tudelft study guide.
-There is a TU Delft api, but that sucks in overal data structure (it is a real mess).
+Helps you to orginize/select/overview your TU Delft Master courses and to generate/submit your master application form.  
+This is the frontend part of it.
 
 # Contributing
-`gulp watch` to start browserify, watchify, babelify etc so you can live edit.  
-Also, there are no tests, the only thing the code should pass is the lint.
+Clone the repo, install the dependencies `npm install` and use `npm start` to start the webpack dev server. Includes the hot module reload feature.  
+`npm run build` To build the frontend to the build directory
+`npm run zip` To zip the build with the version number.
+`npm lint` To run eslint, when commiting it should pass this.
 
-# Todo's
-See the todo file
+# LICENSE
+See the LICENSE file.
