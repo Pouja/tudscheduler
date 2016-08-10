@@ -39,6 +39,7 @@ const EventListener = {
      * @returns {void}
      */
     emit(name, ...values) {
+        // console.log(`emitting ${name}`);
         if (listeners.hasOwnProperty(name)) {
             listeners[name]
                 .concat(EventListener.getWildCardFn(name))

@@ -27,6 +27,21 @@
                 "courses": []
             }],
             "timeout": 250
+        },
+        "POST": {
+            "data": [{
+                "catId": 3,
+                "error": ["More ects needed", "You have too many courses"]
+            }, {
+                "courseId": 35297,
+                "errors": ["Not allowed here", "Some other meaningless error"]
+            }, {
+                "courseId": 37836,
+                "errors": ["Why am I doing this course"]
+            }, {
+                "catId": 5,
+                "error": ["I have no idea what", "I am ding dong dung"]
+            }]
         }
     },
     "/categories/2": {

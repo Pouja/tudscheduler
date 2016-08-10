@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import SideBar from './components/sidebar/SideBar.js';
-import Notifications from './components/Notifications.js';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import { withRouter } from 'react-router';
 import CourseModal from './components/CourseModal.js';
@@ -32,7 +31,6 @@ const Main = React.createClass({
                 <Tab label="Year view" value='/year'/>
                 <Tab label="Select view" value='/select'/>
             </Tabs>
-            <Notifications/>
             <CourseModal/>
             <div className="app">
                 <SideBar className="sidebar"/>

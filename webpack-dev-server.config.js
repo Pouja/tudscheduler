@@ -35,7 +35,7 @@ const config = {
         // Moves files
         new TransferWebpackPlugin([{
             from: 'www'
-        }, ], path.resolve(__dirname, '.')),
+        }], path.resolve(__dirname, '.'))
     ],
     module: {
         loaders: [{
@@ -43,12 +43,11 @@ const config = {
             loader: ExtractTextPlugin.extract('style-loader', 'css-loader'),
             include: [srcPath]
         }, {
-            // React-hot loader and
-            test: /\.js$/, // All .js files
-            loaders: ['react-hot', 'babel-loader'], // react-hot is like browser sync and babel loads jsx and es6-7
+            test: /\.js$/,
+            loaders: ['react-hot', 'babel-loader', 'eslint-loader'],
             include: [srcPath]
         }]
-    },
+    }
 };
 
 module.exports = config;

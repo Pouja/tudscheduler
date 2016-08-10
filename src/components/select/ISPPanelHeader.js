@@ -6,6 +6,7 @@ import EventServer from '../../models/EventServer.js';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import IconButton from 'material-ui/IconButton';
+import {red500} from 'material-ui/styles/colors';
 
 /**
  * Renders the header of an ISPPanel
@@ -23,8 +24,15 @@ default React.createClass({
         return {
             collapsed: false,
             search: false,
-            searchValue: ''
+            searchValue: '',
+            errors: []
         };
+    },
+    componentWillMount() {
+        EventServer.on(`error::category::${this.props.category.catId}`,
+            (errors) =>this.setState({
+                errors: errors
+            }));
     },
     /**
      * Toggles the panel body visibility
@@ -64,6 +72,27 @@ default React.createClass({
                 onChange={_.debounce(this.onChange, 200)}/>
         </ToolbarGroup>;
     },
+    renderErrors() {
+        if(this.state.errors.length === 0 || this.state.collapsed) {
+            return null;
+        }
+        const style = {
+            root: {
+                flexDirection: 'column'
+            },
+            line: {
+                lineHeight: '1.5em',
+                color: red500
+            }
+        };
+        return <ToolbarGroup style={style.root}>
+            {this.state.errors.map((err, idx) => <span key={idx}
+                style={style.line}>{err}</span>)}
+        </ToolbarGroup>;
+    },
+    renderTitle(){
+        return this.props.category.name;
+    },
     render() {
         const style = {
             root: {
@@ -75,10 +104,11 @@ default React.createClass({
         return <Toolbar style={style.root}>
             <ToolbarGroup>
                 <ToolbarGroup>
-                    <ToolbarTitle text={this.props.category.name}/>
+                    <ToolbarTitle text={this.renderTitle()}/>
                 </ToolbarGroup>
-                    {this.renderCollapse()}
+                {this.renderCollapse()}
             </ToolbarGroup>
+            {this.renderErrors()}
             {this.renderSearch()}
         </Toolbar>;
     }
