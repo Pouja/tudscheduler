@@ -28,8 +28,8 @@ const Main = React.createClass({
             <Tabs
                 value={this.props.location.pathname}
                 onChange={this.handleChange}>
-                <Tab label="Year view" value='/year'/>
-                <Tab label="Select view" value='/select'/>
+                <Tab label="Scheduler" value='/year'/>
+                <Tab label="IEP selection" value='/select'/>
             </Tabs>
             <CourseModal/>
             <div className="app">
