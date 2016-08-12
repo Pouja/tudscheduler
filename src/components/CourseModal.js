@@ -4,6 +4,7 @@ import FlatButton from 'material-ui/FlatButton';
 import request from 'superagent';
 import CourseCtrl from '../models/CourseCtrl.js';
 import DialogCtrl from '../models/DialogCtrl.js';
+import _ from 'lodash';
 
 /**
  * Renders the detailed information of a course.
@@ -78,7 +79,7 @@ default React.createClass({
                     .filter(key => filterKeys.indexOf(key) === -1)
                     .map(function(key){
                         return <p style={style.p}>
-                            <span style={style.header}>{key}</span><br/>
+                            <span style={style.header}>{_.upperFirst(key)}</span><br/>
                             <span>{course[key]}</span>
                         </p>;
                     })
