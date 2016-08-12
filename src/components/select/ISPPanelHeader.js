@@ -78,7 +78,8 @@ default React.createClass({
         }
         const style = {
             root: {
-                flexDirection: 'column'
+                flexDirection: 'column',
+                marginBottom: 5
             },
             line: {
                 lineHeight: '1.5em',

@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react';
-import classnames from 'classnames';
 import ISPPanelBody from './ISPPanelBody.js';
 import ISPPanelHeader from './ISPPanelHeader.js';
 import Paper from 'material-ui/Paper';
+import {grey400} from 'material-ui/styles/colors';
 
 export
 default React.createClass({
@@ -32,15 +32,17 @@ default React.createClass({
         });
     },
     render() {
-        const bodyClasses = classnames({'hide':this.state.collapsed});
+        const isOver = {
+            border: `2px dashed ${grey400}`
+        };
+        const style = Object.assign({}, this.props.style, this.state.isOver ? isOver : {});
         const header = <ISPPanelHeader
             category={this.props.category}
             options={this.props.options}
             toggleView={this.toggleView}/>;
-        return <Paper style={this.props.style}>
+        return <Paper style={style} transitionEnabled={false}>
             {header}
             <ISPPanelBody hide={this.state.collapsed}
-                className={bodyClasses}
                 category={this.props.category}
                 isOver={this.state.isOver}
                 options={this.props.options}/>

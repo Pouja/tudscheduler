@@ -65,6 +65,7 @@ default React.createClass({
     },
     updateCourses(){
         this.setState({
+            // This now stores a reference to courses, potentional bug!!
             courses: this.props.category.courses
         });
     },

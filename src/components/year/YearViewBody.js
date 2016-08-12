@@ -1,9 +1,11 @@
 import React from 'react';
 import CourseCtrl from '../../models/CourseCtrl.js';
 import EventServer from '../../models/EventServer.js';
-import ReactGridLayout, {WidthProvider} from 'react-grid-layout';
+import ReactGridLayout, {
+    WidthProvider
+}
+from 'react-grid-layout';
 import CourseGridItem from './CourseGridItem.js';
-import _ from 'lodash';
 const DecoratedReactGridLayout = WidthProvider(ReactGridLayout); //eslint-disable-line new-cap
 
 /**

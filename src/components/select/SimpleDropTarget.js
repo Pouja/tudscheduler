@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import CourseTypes from '../../constants/CourseTypes.js';
 import {DropTarget} from 'react-dnd';
-import classnames from 'classnames';
 
 /**
  * Required by react-dnd, contains the functionality which is used by other react-dnd components to interect.
@@ -38,8 +37,7 @@ class SimpleDropTarget extends Component {
     };
     render() {
         const {connectDropTarget, isOver} = this.props;
-        const classes = classnames(this.props.className, {'item-hovering': isOver});
-        return connectDropTarget(<div className={classes}>
+        return connectDropTarget(<div className={this.props.className}>
             {React.cloneElement(this.props.children, {isOver: isOver})}
         </div>);
     }
