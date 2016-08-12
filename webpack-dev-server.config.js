@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const buildPath = path.resolve(__dirname, 'build');
 const srcPath = path.resolve(__dirname, 'src');
+const npmPath = path.resolve(__dirname, 'node_modules');
 const TransferWebpackPlugin = require('transfer-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
@@ -44,9 +45,21 @@ const config = {
             include: [srcPath]
         }, {
             test: /\.js$/,
-            loaders: ['react-hot', 'babel-loader', 'eslint-loader'],
-            include: [srcPath]
+            loaders: ['react-hot', 'babel-loader'],
+            include: [path.resolve(srcPath, 'components')]
+        }, {
+            test: /\.js$/,
+            loaders: ['babel-loader'],
+            exclude: [path.resolve(srcPath, 'components'), npmPath]
+        }],
+        preLoaders: [{
+            test: /\.js$/,
+            loader: 'eslint-loader',
+            exclude: /node_modules/
         }]
+    },
+    eslint: {
+        failOnError: true
     }
 };
 
