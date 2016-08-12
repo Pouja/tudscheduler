@@ -28,50 +28,64 @@ const courseGrid = function(courseId) {
     };
 };
 
+/**
+ * Checks if two arrays are different in values and in length
+ * @param  {Array}  left  The left array
+ * @param  {Array}  right The right array
+ * @return {Boolean}       true iff the length are different or if atleast one element differs
+ */
+function isDifferent(left, right) {
+    if(left.length !== right.length) {
+        return true;
+    }
+    return left.some((el) => right.indexOf(el) === -1);
+}
+
 const id = 'YearViewBody';
-export default React.createClass({
-    getInitialState(){
+export
+default React.createClass({
+    getInitialState() {
         return {
             courses: CourseCtrl.added
         };
     },
-    shouldComponentUpdate(nextProps, nextState){
-        return _.difference(this.state.courses, nextState.courses).length > 0;
+    shouldComponentUpdate(nextProps, nextState) {
+        return isDifferent(this.state.courses, nextState.courses);
     },
     componentDidMount() {
         EventServer.on('added', () => this.updateCourses(), id);
         EventServer.on('removed', () => this.updateCourses(), id);
         EventServer.on('courses.loaded', () => this.updateCourses(), id);
     },
-    componentWillUnmount(){
+    componentWillUnmount() {
         EventServer.remove('added', id);
         EventServer.remove('removed', id);
         EventServer.remove('courses.loaded', id);
     },
     updateCourses() {
         this.setState({
-            courses: CourseCtrl.added
+            // Make a copy of the list, otherwise it will assign a pointer
+            courses: CourseCtrl.added.map((id)=>id)
         });
     },
-    render(){
+    render() {
+        if (this.state.courses.length === 0) {
+            return <span className='empty'>
+                No courses added yet
+            </span>;
+        }
+
         const gridItems = this.state.courses.map(function(courseId, index) {
             return <CourseGridItem data-grid={courseGrid(courseId, index)}
                 key={courseId} courseId={courseId}/>;
         });
 
-        if(gridItems.length === 0) {
-            return <span className='empty'>
-                    No courses added yet
-                </span>;
-        }
-        return <div>
-            <DecoratedReactGridLayout
-                isResizable={false}
-                isDraggable={false}
-                rowHeight={120}
-                cols={4}>
-                {gridItems}
-            </DecoratedReactGridLayout>
-        </div>;
+        return <DecoratedReactGridLayout
+            isResizable={false}
+            isDraggable={false}
+            rowHeight={120}
+            cols={4}>
+            {gridItems}
+        </DecoratedReactGridLayout>;
     }
 });
