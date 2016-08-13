@@ -10,6 +10,7 @@ import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import ISPCtrl from '../models/ISPCtrl.js';
 import DialogCtrl from '../models/DialogCtrl.js';
 import _ from 'lodash';
+import EventServer from '../models/EventServer.js';
 
 /**
  * Renders the add/remove, info and move button for a course.
@@ -35,8 +36,27 @@ export default React.createClass({
             PropTypes.number
         ])
     },
+    getInitialState() {
+        return {
+            added: CourseCtrl.isAdded(this.props.courseId),
+            id: _.uniqueId(`AddRemove::${this.props.courseId}`)
+        };
+    },
     shouldComponentUpdate(nextProps, nextState){
         return !_.isEqual(this.state, nextState);
+    },
+    componentWillMount(){
+        EventServer.on('added', this.updateAdded, this.state.id);
+        EventServer.on('removed', this.updateAdded, this.state.id);
+    },
+    componentWillUnmount(){
+        EventServer.remove('removed', this.state.id);
+        EventServer.remove('added', this.state.id);
+    },
+    updateAdded(){
+        this.setState({
+            added: CourseCtrl.isAdded(this.props.courseId)
+        });
     },
     /**
      * Opens the course detail modal
