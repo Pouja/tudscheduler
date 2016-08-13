@@ -60,7 +60,7 @@ const ISPCtrl = {
 
             // (re)start listening
             ISPCtrl.startListening();
-            EventServer.emit('categories.loaded');
+            EventServer.emit('categories::loaded');
         });
     },
     /**
@@ -76,7 +76,7 @@ const ISPCtrl = {
             })
             .union(ISPCtrl.unlisted.courses)
             .value();
-        EventServer.emit('category.added::unlisted');
+        EventServer.emit('category::added::unlisted');
     },
     /**
      * Called when an user removes a course from the selection.
@@ -90,7 +90,7 @@ const ISPCtrl = {
             });
             if (removeCourses.length > 0) {
                 category.courses = _.difference(category.courses, removeCourses);
-                EventServer.emit(`category.removed::${category.catId}`);
+                EventServer.emit(`category::removed::${category.catId}`);
             }
         });
     },
@@ -101,23 +101,16 @@ const ISPCtrl = {
     reset() {
         ISPCtrl.categories.forEach(function(category) {
             category.reset();
-            EventServer.emit(`category.added::${category.catId}`);
+            EventServer.emit(`category::added::${category.catId}`);
         });
     },
     stopListening() {
-        EventServer.remove('added', id);
-        EventServer.remove('removed', id);
-        EventServer.remove('reset', id);
-        EventServer.remove('loaded', id);
+        EventServer.remove('course::added::*', id);
+        EventServer.remove('course::removed::*', id);
     },
     startListening() {
-        EventServer.on('added', ISPCtrl.updateAdded, id);
-        EventServer.on('removed', ISPCtrl.updateRemoved, id);
-        EventServer.on('reset', ISPCtrl.reset, id);
-        EventServer.on('loaded', () => {
-            ISPCtrl.reset();
-            ISPCtrl.updateAdded();
-        }, id);
+        EventServer.on('course::added::*', ISPCtrl.updateAdded, id);
+        EventServer.on('course::removed::*', ISPCtrl.updateRemoved, id);
     },
     /**
      * Moves a course from one category to another
@@ -134,12 +127,12 @@ const ISPCtrl = {
             return category.catId === categoryIdTo;
         });
         categoryTo.courses = _.union(categoryTo.courses, [courseId]);
-        EventServer.emit(`category.added::${categoryIdTo}`, courseId);
+        EventServer.emit(`category::added::${categoryIdTo}`, courseId);
 
         categoryFrom.courses = _.without(categoryFrom.courses, courseId);
-        EventServer.emit(`category.removed::${categoryIdFrom}`, courseId);
+        EventServer.emit(`category::removed::${categoryIdFrom}`, courseId);
     }
 };
-EventServer.on('courses.loaded', ISPCtrl.init, 'ISPCtrl');
+EventServer.on('courses::loaded', ISPCtrl.init, 'ISPCtrl');
 export
 default ISPCtrl;

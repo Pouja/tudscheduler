@@ -46,12 +46,12 @@ export default React.createClass({
         return !_.isEqual(this.state, nextState);
     },
     componentWillMount(){
-        EventServer.on('added', this.updateAdded, this.state.id);
-        EventServer.on('removed', this.updateAdded, this.state.id);
+        EventServer.on('course::added::*', this.updateAdded, this.state.id);
+        EventServer.on('course::removed::*', this.updateAdded, this.state.id);
     },
     componentWillUnmount(){
-        EventServer.remove('removed', this.state.id);
-        EventServer.remove('added', this.state.id);
+        EventServer.remove('course::removed::*', this.state.id);
+        EventServer.remove('course::added::*', this.state.id);
     },
     updateAdded(){
         this.setState({
@@ -121,7 +121,7 @@ export default React.createClass({
             style={style.root}
             iconButtonElement={iconButtonElement}>
             <MenuItem style={style.menuItem} onTouchTap={this.openModal}>Info</MenuItem>
-            {CourseCtrl.isAdded(courseId) ? menuItemRemove : menuItemAdd}
+            {this.state.added ? menuItemRemove : menuItemAdd}
             {this.props.move ? this.renderMoveMenu() : null}
         </IconMenu>;
     }

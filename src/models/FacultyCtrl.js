@@ -8,7 +8,7 @@ const FacultyCtrl = {
             .accept('application/json')
             .then(function(response) {
                 FacultyCtrl.faculties = response.body;
-                EventServer.emit('masters.loaded');
+                EventServer.emit('masters::loaded');
             });
     },
     selectedFaculty() {
@@ -45,7 +45,7 @@ const FacultyCtrl = {
                 });
             });
         });
-        EventServer.emit('masters.loaded');
+        EventServer.emit('masters::loaded');
     }
 };
 FacultyCtrl.init();

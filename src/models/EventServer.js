@@ -44,20 +44,18 @@ const EventListener = {
      */
     emit(name, ...values) {
         // console.log(`emitting ${name}`);
-        if (listeners.hasOwnProperty(name)) {
-            listeners[name]
-                .concat(EventListener.getWildCardFn(name))
-                .filter(Boolean)
-                .forEach(function(listener) {
-                    if (listener === null || listener === undefined) {
-                        console.error(`EventServer supposed to invoke a listener ${name} for id ${listener.id}. But the listener got removed.`);
-                    } else {
-                        // console.log(`invoking ${listener.id} for event ${name}`);
-                        listener.fn(...values);
-                        // console.log(`done ${listener.id} for event ${name}`);
-                    }
-                });
-        }
+        EventListener.getWildCardFn(name)
+            .concat(listeners[name])
+            .filter(Boolean)
+            .forEach(function(listener) {
+                if (listener === null || listener === undefined) {
+                    console.error(`EventServer supposed to invoke a listener ${name} for id ${listener.id}. But the listener got removed.`);
+                } else {
+                    // console.log(`invoking ${listener.id} for event ${name}`);
+                    listener.fn(...values);
+                    // console.log(`done ${listener.id} for event ${name}`);
+                }
+            });
     },
     /**
      * Removes the listener

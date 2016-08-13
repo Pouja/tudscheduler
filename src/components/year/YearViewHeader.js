@@ -18,14 +18,14 @@ export default React.createClass({
         return !_.isEqual(this.state, nextState);
     },
     componentDidMount() {
-        EventServer.on('added', () => this.updateEcts(), id);
-        EventServer.on('removed', () => this.updateEcts(), id);
-        EventServer.on('courses.loaded', () => this.updateEcts(), id);
+        EventServer.on('course::added::*', () => this.updateEcts(), id);
+        EventServer.on('course::removed::*', () => this.updateEcts(), id);
+        EventServer.on('courses::loaded', () => this.updateEcts(), id);
     },
     componentWillUnmount(){
-        EventServer.remove('added', id);
-        EventServer.remove('removed', id);
-        EventServer.remove('courses.loaded', id);
+        EventServer.remove('course::added', id);
+        EventServer.remove('course::removed', id);
+        EventServer.remove('courses::loaded', id);
     },
     updateEcts() {
         this.setState({

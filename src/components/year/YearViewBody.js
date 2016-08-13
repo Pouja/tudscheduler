@@ -53,14 +53,14 @@ default React.createClass({
         return isDifferent(this.state.courses, nextState.courses);
     },
     componentDidMount() {
-        EventServer.on('added', () => this.updateCourses(), id);
-        EventServer.on('removed', () => this.updateCourses(), id);
-        EventServer.on('courses.loaded', () => this.updateCourses(), id);
+        EventServer.on('course::added::*', () => this.updateCourses(), id);
+        EventServer.on('course::removed::*', () => this.updateCourses(), id);
+        EventServer.on('courses::loaded', () => this.updateCourses(), id);
     },
     componentWillUnmount() {
-        EventServer.remove('added', id);
-        EventServer.remove('removed', id);
-        EventServer.remove('courses.loaded', id);
+        EventServer.remove('course::added::*', id);
+        EventServer.remove('course::removed::*', id);
+        EventServer.remove('courses::loaded', id);
     },
     updateCourses() {
         this.setState({

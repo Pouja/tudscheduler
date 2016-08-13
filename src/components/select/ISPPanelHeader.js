@@ -25,18 +25,18 @@ default React.createClass({
             collapsed: false,
             search: false,
             searchValue: '',
-            errors: []
+            errors: [],
+            id: `ISPPanelHeader::${this.props.category.catId}::${_.uniqueId()}`
         };
     },
     componentWillMount() {
-        EventServer.on(`error::category::${this.props.category.catId}`,
+        EventServer.on(`category::error::${this.props.category.catId}`,
             (errors) =>this.setState({
                 errors: errors
-            }), `category::${this.props.category.catId}`);
+            }), this.state.id);
     },
     componentWillUnmount() {
-        EventServer.remove(`error::category::${this.props.category.catId}`,
-            `category::${this.props.category.catId}`);
+        EventServer.remove(`category::error::${this.props.category.catId}`, this.state.id);
     },
     /**
      * Toggles the panel body visibility
@@ -48,7 +48,7 @@ default React.createClass({
         }, () => this.props.toggleView(collapsed));
     },
     onChange(event, value) {
-        EventServer.emit(`${this.props.category.catId}.searching`, value);
+        EventServer.emit(`category::searching::${this.props.category.catId}`, value);
     },
     renderCollapse() {
         let collapse;

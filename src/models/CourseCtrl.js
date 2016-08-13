@@ -36,7 +36,7 @@ const CourseCtrl = {
                 CourseCtrl.setDepth(CourseCtrl.tree, 0);
                 CourseCtrl.added = [];
                 CourseCtrl.numberTree();
-                EventServer.emit('courses.loaded');
+                EventServer.emit('courses::loaded');
             });
     },
     /**
@@ -220,7 +220,7 @@ const CourseCtrl = {
      */
     add(courseId) {
         CourseCtrl._add(CourseCtrl.getTree(courseId));
-        EventServer.emit('added', courseId);
+        EventServer.emit(`course::added::${courseId}`, courseId);
     },
     /**
      * Adds multiple courses at once.
@@ -229,7 +229,7 @@ const CourseCtrl = {
      */
     addMultiple(courses) {
         courses.forEach(CourseCtrl._add);
-        EventServer.emit('added');
+        EventServer.emit('course::added::*');
     },
     _add(courseTree) {
         if (CourseCtrl.isAGroup(courseTree.id)) {
@@ -246,7 +246,7 @@ const CourseCtrl = {
      */
     remove(courseId) {
         CourseCtrl._remove(CourseCtrl.getTree(courseId));
-        EventServer.emit('removed', courseId);
+        EventServer.emit(`course::removed::${courseId}`);
     },
     _remove(courseTree) {
         if (CourseCtrl.isAGroup(courseTree.id)) {
@@ -271,7 +271,7 @@ const CourseCtrl = {
         EventServer.emit('reset');
     }
 };
-EventServer.on('masters.loaded', CourseCtrl.init, 'CourseCtrl');
+EventServer.on('masters::loaded', CourseCtrl.init, 'CourseCtrl');
 
 export
 default CourseCtrl;

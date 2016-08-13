@@ -34,10 +34,10 @@ export default React.createClass({
         this.startListening();
     },
     componentWillUnmount() {
-        EventServer.remove('masters.loaded', 'SideBarHeader');
+        EventServer.remove('masters::loaded', 'SideBarHeader');
     },
     startListening(){
-        EventServer.on('masters.loaded', this.setTitle, 'SideBarHeader');
+        EventServer.on('masters::loaded', this.setTitle, 'SideBarHeader');
     },
     setTitle(){
         if(FacultyCtrl.selectedTrack() === undefined) {
@@ -62,7 +62,7 @@ export default React.createClass({
      */
     onChange(event, value) {
         this.props.setFilter(value.length > 0);
-        EventServer.emit('course.searching', value);
+        EventServer.emit('course::searching', value);
     },
     openSettings() {
         this.setState({

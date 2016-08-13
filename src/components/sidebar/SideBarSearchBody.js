@@ -22,16 +22,16 @@ export default React.createClass({
         });
     },
     componentDidMount() {
-        EventServer.on('courses.loaded', ()=> this.setState({
+        EventServer.on('courses::loaded', ()=> this.setState({
             courses: CourseCtrl.courses
-        }), 'sidebar2');
-        EventServer.on('course.searching', (nextFilter)=> this.setState({
+        }), 'SideBarSearchBody');
+        EventServer.on('course::searching', (nextFilter)=> this.setState({
             filter: (nextFilter.length >= 2) ? nextFilter : ''
-        }), 'sidebar2');
+        }), 'SideBarSearchBody');
     },
     componentWillUnmount(){
-        EventServer.remove('course.loaded', 'sidebar2');
-        EventServer.remove('course.searching', 'sidebar2');
+        EventServer.remove('course::loaded', 'SideBarSearchBody');
+        EventServer.remove('course::searching', 'SideBarSearchBody');
     },
     render(){
         const filter = this.state.filter;

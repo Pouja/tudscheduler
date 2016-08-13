@@ -77,8 +77,8 @@ default React.createClass({
                 <div style={style.root}>
                 {Object.keys(course)
                     .filter(key => filterKeys.indexOf(key) === -1)
-                    .map(function(key){
-                        return <p style={style.p}>
+                    .map(function(key, idx){
+                        return <p style={style.p} key={idx}>
                             <span style={style.header}>{_.upperFirst(key)}</span><br/>
                             <span>{course[key]}</span>
                         </p>;

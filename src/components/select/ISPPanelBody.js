@@ -27,7 +27,8 @@ default React.createClass({
             isOver: false,
             filter: null,
             courses: this.props.category.courses,
-            catId: this.props.category.catId
+            catId: this.props.category.catId,
+            id: `ISPPanelBody::${this.props.category.catId}::${_.uniqueId()}`
         };
     },
     componentWillReceiveProps(nextProps){
@@ -51,17 +52,17 @@ default React.createClass({
     },
     startListening() {
         const id = this.state.catId;
-        EventServer.on(`category.added::${id}`, this.updateCourses, `${id}body`);
-        EventServer.on(`category.removed::${id}`, this.updateCourses, `${id}body`);
-        EventServer.on(`${id}.searching`, (filter) => this.setState({
+        EventServer.on(`category::added::${id}`, this.updateCourses, this.state.id);
+        EventServer.on(`category::removed::${id}`, this.updateCourses, this.state.id);
+        EventServer.on(`category::searching::${id}`, (filter) => this.setState({
             filter: filter
-        }), `${id}body`);
+        }), this.state.id);
     },
     stopListening() {
         const id = this.state.catId;
-        EventServer.remove(`category.added::${id}`, `${id}body`);
-        EventServer.remove(`category.removed::${id}`, `${id}body`);
-        EventServer.remove(`${id}.searching`, `${id}body`);
+        EventServer.remove(`category::added::${id}`, this.state.id);
+        EventServer.remove(`category::removed::${id}`, this.state.id);
+        EventServer.remove(`category::searching::${id}`, this.state.id);
     },
     updateCourses(){
         this.setState({

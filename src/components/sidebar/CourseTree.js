@@ -36,6 +36,7 @@ export default React.createClass({
         return !_.isEqual(this.state, nextState);
     },
     componentWillUnmount(){
+        EventServer.remove(`CourseTree::visible::${this.props.course.parent}`, this.state.id);
         this.stopListening();
     },
     componentWillReceiveProps(nextProps){
@@ -58,13 +59,13 @@ export default React.createClass({
             this.startListening();
         }
 
-        EventServer.on(`visible::${this.props.course.parent}`, (toggle) => {
+        EventServer.on(`CourseTree::visible::${this.props.course.parent}`, (toggle) => {
             let nextState = {
                 visible: toggle
             };
             if (!toggle) {
                 this.stopListening();
-                EventServer.emit(`visible::${this.props.course.nr}`, toggle);
+                EventServer.emit(`CourseTree::visible::${this.props.course.nr}`, toggle);
                 nextState.childVisible = false;
             } else {
                 this.startListening();
@@ -81,23 +82,22 @@ export default React.createClass({
         this.setState({
             childVisible: nextVisibility
         });
-        EventServer.emit(`visible::${this.props.course.nr}`, nextVisibility);
+        EventServer.emit(`CourseTree::visible::${this.props.course.nr}`, nextVisibility);
     },
     /**
      * Start listening to events.
      */
     startListening() {
-        EventServer.on('added', () => this.update(), this.state.id);
-        EventServer.on('removed', () => this.update(), this.state.id);
+        EventServer.on('course::added::*', () => this.update(), this.state.id);
+        EventServer.on('course::removed::*', () => this.update(), this.state.id);
     },
     /**
      * Stops listening to events. Should be called when it is not visible or
      * when it is removed from the dom.
      */
     stopListening() {
-        EventServer.remove(`visible::${this.props.course.parent}`, this.state.id);
-        EventServer.remove('added', this.state.id);
-        EventServer.remove('removed', this.state.id);
+        EventServer.remove('course::added::*', this.state.id);
+        EventServer.remove('course::removed::*', this.state.id);
     },
     /**
      * Called when the ects or isAdded should be updated
