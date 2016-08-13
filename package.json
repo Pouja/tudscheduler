@@ -1,6 +1,6 @@
 {
   "name": "tud-scheduler",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "Helps you to orginize/select/overview your TU Delft Master courses",
   "main": "gulpfile.js",
   "dependencies": {
