@@ -32,7 +32,11 @@ default React.createClass({
         EventServer.on(`error::category::${this.props.category.catId}`,
             (errors) =>this.setState({
                 errors: errors
-            }));
+            }), `category::${this.props.category.catId}`);
+    },
+    componentWillUnmount() {
+        EventServer.remove(`error::category::${this.props.category.catId}`,
+            `category::${this.props.category.catId}`);
     },
     /**
      * Toggles the panel body visibility

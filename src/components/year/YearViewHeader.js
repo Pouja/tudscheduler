@@ -9,8 +9,9 @@ const id = 'YearViewHeader';
 export default React.createClass({
     getInitialState(){
         return {
-            ects: [0,0,0,0],
-            totalEcts: 0
+            ects: [1,2,3,4].map((index) =>
+                _.round(CourseCtrl.periodEcts(index), 1)),
+            totalEcts: CourseCtrl.addedEcts()
         };
     },
     shouldComponentUpdate(nextProps, nextState){
@@ -28,8 +29,8 @@ export default React.createClass({
     },
     updateEcts() {
         this.setState({
-            ects: this.state.ects.map((v, index) =>
-                _.round(CourseCtrl.periodEcts(index + 1), 1)),
+            ects: [1,2,3,4].map((index) =>
+                _.round(CourseCtrl.periodEcts(index), 1)),
             totalEcts: CourseCtrl.addedEcts()
         });
     },

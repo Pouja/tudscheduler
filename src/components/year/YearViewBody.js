@@ -46,7 +46,7 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            courses: CourseCtrl.added
+            courses: CourseCtrl.added.map((id)=>id)
         };
     },
     shouldComponentUpdate(nextProps, nextState) {

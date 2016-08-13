@@ -11,6 +11,7 @@ You will need the mock server as well `npm run mock-server`.
 `npm lint` To run eslint, when commit'ing it should pass this.  
 
 # Todo
+* Add tests (most important)
 * Create a snackbar for communicating server requests (like 'saved', 'error when saving' etc.)
 * Remove localhost:8000 when building
 * Rename IspPanel to CategoryPanel
@@ -25,7 +26,6 @@ You will need the mock server as well `npm run mock-server`.
 * IspPanel and Sidebar can be merged togheter
 * SidebarSearchBody and IspPanelBody can be merged
 * SidebarHeader and IspPanelHeader can be merged
-* Rename event 'added' to 'added::${courseId}' same for remove
 * Move the visibilty of the tree into the CourseCtrl.tree
 * Make the naming of events consistent: entity::action::id, so for example course::added:3150 and category::changed::3
 
