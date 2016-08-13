@@ -11,7 +11,8 @@ default React.createClass({
     getInitialState() {
         return {
             tree: CourseCtrl.flatten(null, null, 'nr'),
-            hide: false
+            hide: false,
+            id: `SideBarTreeBody::${_.uniqueId()}`
         };
     },
     componentWillReceiveProps(nextProps){
@@ -22,7 +23,10 @@ default React.createClass({
     componentDidMount() {
         EventServer.on('courses.loaded', () => this.setState({
             tree: CourseCtrl.flatten(null, null, 'nr')
-        }));
+        }), this.state.id);
+    },
+    componentWillUnmount() {
+        EventServer.remove('courses.loaded', this.state.id);
     },
     render() {
         if (_.isEmpty(this.state.tree) && FacultyCtrl.selectedTrack()) {

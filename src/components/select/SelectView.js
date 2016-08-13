@@ -11,7 +11,10 @@ import EventServer from '../../models/EventServer.js';
  */
 const SelectView = React.createClass({
     componentWillMount() {
-        EventServer.on('categories.loaded', () => this.forceUpdate());
+        EventServer.on('categories.loaded', () => this.forceUpdate(), 'SelectView');
+    },
+    componentWillUnmount() {
+        EventServer.remove('categories.loaded', 'SelectView');
     },
     render() {
         if(!ISPCtrl.unlisted || ISPCtrl.categories.length === 0){

@@ -8,6 +8,7 @@ import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
 import AddRemoveMove from '../AddRemoveMove.js';
 import WarningPopup from '../WarningPopup.js';
 import EventServer from '../../models/EventServer.js';
+import _ from 'lodash';
 
 const courseSource = {
     /**
@@ -54,7 +55,8 @@ class CourseDnD extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            warnings: []
+            warnings: [],
+            id: `CourseDndD::${this.props.course.id}::${_.uniqueId()}`
         };
     }
     static propTypes = {
@@ -71,13 +73,12 @@ class CourseDnD extends Component {
     componentWillMount(){
         // Oke. Usually you will remove the event when unmounting, makes sense right?
         // Except... react dnd first mounts the dragged element and then unmounts the prev element
-        EventServer.remove(`error::course::${this.props.course.id}`, this.getID());
         EventServer.on(`error::course::${this.props.course.id}`, (warnings) => this.setState({
             warnings: warnings.map(id => id)
-        }), this.getID());
+        }), this.state.id);
     }
-    getID() {
-        return `CourseDndD::${this.props.course.id}`;
+    componentWillUnmount(){
+        EventServer.remove(`error::course::${this.props.course.id}`, this.state.id);
     }
     renderList() {
         const course = CourseCtrl.get(this.props.course.id);

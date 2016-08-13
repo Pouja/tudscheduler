@@ -140,6 +140,6 @@ const ISPCtrl = {
         EventServer.emit(`category.removed::${categoryIdFrom}`, courseId);
     }
 };
-EventServer.on('courses.loaded', ISPCtrl.init);
+EventServer.on('courses.loaded', ISPCtrl.init, 'ISPCtrl');
 export
 default ISPCtrl;

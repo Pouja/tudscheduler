@@ -19,6 +19,9 @@ const EventListener = {
      * @returns {void}
      */
     on(name, fn, id) {
+        if(_.isEmpty(id)) {
+            throw new Error('All event listeners must supply an unique id');
+        }
         // console.log(`Adding listener ${name} with id ${id}`);
         if (!listeners.hasOwnProperty(name)) {
             listeners[name] = [];
@@ -46,15 +49,13 @@ const EventListener = {
                 .concat(EventListener.getWildCardFn(name))
                 .filter(Boolean)
                 .forEach(function(listener) {
-                    setTimeout(function() {
-                        if (listener === null || listener === undefined) {
-                            console.error(`EventServer supposed to invoke a listener ${name} for id ${listener.id}. But the listener got removed.`);
-                        } else {
-                            // console.log(`invoking ${listener.id} for event ${name}`);
-                            listener.fn(...values);
-                            // console.log(`done ${listener.id} for event ${name}`);
-                        }
-                    });
+                    if (listener === null || listener === undefined) {
+                        console.error(`EventServer supposed to invoke a listener ${name} for id ${listener.id}. But the listener got removed.`);
+                    } else {
+                        // console.log(`invoking ${listener.id} for event ${name}`);
+                        listener.fn(...values);
+                        // console.log(`done ${listener.id} for event ${name}`);
+                    }
                 });
         }
     },
@@ -65,6 +66,9 @@ const EventListener = {
      * @return {void}
      */
     remove(name, id) {
+        if(_.isEmpty(id)) {
+            throw new Error('Second argument \'id\' is not set in EventListener::remove');
+        }
         if (listeners.hasOwnProperty(name)) {
             _.remove(listeners[name], {
                 id: id

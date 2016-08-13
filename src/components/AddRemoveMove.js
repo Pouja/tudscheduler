@@ -39,7 +39,7 @@ export default React.createClass({
     getInitialState() {
         return {
             added: CourseCtrl.isAdded(this.props.courseId),
-            id: _.uniqueId(`AddRemove::${this.props.courseId}`)
+            id: _.uniqueId(`AddRemoveMove::${this.props.courseId}::${_.uniqueId()}`)
         };
     },
     shouldComponentUpdate(nextProps, nextState){

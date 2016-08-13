@@ -271,7 +271,7 @@ const CourseCtrl = {
         EventServer.emit('reset');
     }
 };
-EventServer.on('masters.loaded', CourseCtrl.init);
+EventServer.on('masters.loaded', CourseCtrl.init, 'CourseCtrl');
 
 export
 default CourseCtrl;

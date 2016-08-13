@@ -25,7 +25,10 @@ default React.createClass({
         };
     },
     componentDidMount() {
-        EventServer.on('masters.loaded', () => this.init());
+        EventServer.on('masters.loaded', () => this.init(), 'TrackSelection');
+    },
+    componentWillUnmount() {
+        EventServer.remove('masters.loaded', 'TrackSelection');
     },
     componentWillReceiveProps(nextProps) {
         this.setState({

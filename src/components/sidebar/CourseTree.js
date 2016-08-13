@@ -28,7 +28,8 @@ export default React.createClass({
             isAdded: CourseCtrl.isAdded(this.props.course.id),
             filtering: this.props.filtering,
             filter: '',
-            visible: this.props.visible
+            visible: this.props.visible,
+            id: `CourseTree::${this.props.course.id}::${_.uniqueId()}`
         };
     },
     shouldComponentUpdate(nextProps, nextState){
@@ -70,15 +71,7 @@ export default React.createClass({
                 this.update();
             }
             this.setState(nextState);
-        }, this.getID());
-    },
-    /**
-     * @return {String} The identifier of this component
-     */
-    getID() {
-        const id = _.isNil(this.props.course.nr) ? this.props.course.id :
-            this.props.course.nr;
-        return `CourseTree::${id}`;
+        }, this.state.id);
     },
     /**
      * Toggle the visibility of the children
@@ -94,16 +87,17 @@ export default React.createClass({
      * Start listening to events.
      */
     startListening() {
-        EventServer.on('added', () => this.update(), this.getID());
-        EventServer.on('removed', () => this.update(), this.getID());
+        EventServer.on('added', () => this.update(), this.state.id);
+        EventServer.on('removed', () => this.update(), this.state.id);
     },
     /**
      * Stops listening to events. Should be called when it is not visible or
      * when it is removed from the dom.
      */
     stopListening() {
-        EventServer.remove('added', this.getID());
-        EventServer.remove('removed', this.getID());
+        EventServer.remove(`visible::${this.props.course.parent}`, this.state.id);
+        EventServer.remove('added', this.state.id);
+        EventServer.remove('removed', this.state.id);
     },
     /**
      * Called when the ects or isAdded should be updated

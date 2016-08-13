@@ -33,8 +33,11 @@ export default React.createClass({
         this.setTitle();
         this.startListening();
     },
+    componentWillUnmount() {
+        EventServer.remove('masters.loaded', 'SideBarHeader');
+    },
     startListening(){
-        EventServer.on('masters.loaded', this.setTitle);
+        EventServer.on('masters.loaded', this.setTitle, 'SideBarHeader');
     },
     setTitle(){
         if(FacultyCtrl.selectedTrack() === undefined) {
