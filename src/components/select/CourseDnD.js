@@ -6,6 +6,8 @@ import ISPCtrl from '../../models/ISPCtrl.js';
 import {ListItem} from 'material-ui/List';
 import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
 import AddRemoveMove from '../AddRemoveMove.js';
+import WarningPopup from '../WarningPopup.js';
+import EventServer from '../../models/EventServer.js';
 
 const courseSource = {
     /**
@@ -49,6 +51,12 @@ function collect(connect, monitor) {
  * The drag and drop list item in the select view.
  */
 class CourseDnD extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            warnings: []
+        };
+    }
     static propTypes = {
         connectDragSource: PropTypes.func.isRequired,
         connectDragPreview: PropTypes.func.isRequired,
@@ -60,25 +68,16 @@ class CourseDnD extends Component {
         ]),
         style: PropTypes.object
     };
-    /**
-     * Called when clicking on the undo element.
-     * Moves the course back to 'unlisted'
-     */
-    undo() {
-        ISPCtrl.move(this.props.course, this.props.category, 'unlisted');
+    componentWillMount(){
+        // Oke. Usually you will remove the event when unmounting, makes sense right?
+        // Except... react dnd first mounts the dragged element and then unmounts the prev element
+        EventServer.remove(`error::course::${this.props.course.id}`, this.getID());
+        EventServer.on(`error::course::${this.props.course.id}`, (warnings) => this.setState({
+            warnings: warnings.map(id => id)
+        }), this.getID());
     }
-    /**
-     * Renders the undo icon.
-     * @return {React} A react component
-     */
-    renderUndo() {
-        if (this.props.category !== 'unlisted') {
-            return <i className='fa fa-undo fa-lg' onClick={this.undo.bind(this)}/>;
-        }
-        return null;
-    }
-    renderError() {
-        return null;
+    getID() {
+        return `CourseDndD::${this.props.course.id}`;
     }
     renderList() {
         const course = CourseCtrl.get(this.props.course.id);
@@ -86,21 +85,31 @@ class CourseDnD extends Component {
             root: Object.assign({}, this.props.style, {
                 marginLeft: 0,
                 cursor: 'grab'
-            })
+            }),
+            reportProblem: {
+                root: {
+                    position: 'absolute',
+                    right: 40,
+                    top: 0
+                }
+            }
         };
         return <ListItem
                 style={style.root}
                 innerDivStyle={style.innerDiv}
                 disableTouchRipple
                 disableFocusRipple
-                primaryText={`${course.name} ${course.courseName}`}
+                primaryText={<div>{course.name} {course.courseName}
+                    <WarningPopup warnings={this.state.warnings}
+                        style={style.reportProblem}/></div>}
                 rightIconButton={<AddRemoveMove move={true}
                     category={this.props.category}
                     style={style.AddRemoveMove} courseId={course.id}/>}
                 leftIcon={<EditorDragHandle/>}/>;
     }
     render() {
-        return this.props.connectDragSource(<div>{this.renderList()}</div>);
+        return this.props.connectDragSource(<div key={`coursednd.${this.props.course.id}`}>
+            {this.renderList()}</div>);
     }
 }
 

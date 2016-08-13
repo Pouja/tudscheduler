@@ -19,6 +19,7 @@ const EventListener = {
      * @returns {void}
      */
     on(name, fn, id) {
+        // console.log(`Adding listener ${name} with id ${id}`);
         if (!listeners.hasOwnProperty(name)) {
             listeners[name] = [];
         }

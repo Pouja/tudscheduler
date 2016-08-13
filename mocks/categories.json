@@ -31,7 +31,7 @@
         "POST": {
             "data": [{
                 "catId": 3,
-                "error": ["More ects needed", "You have too many courses"]
+                "errors": ["More ects needed", "You have too many courses"]
             }, {
                 "courseId": 35297,
                 "errors": ["Not allowed here", "Some other meaningless error"]
@@ -39,8 +39,11 @@
                 "courseId": 37836,
                 "errors": ["Why am I doing this course"]
             }, {
+                "courseId": 35723,
+                "errors": ["Testing some long ass error statement for a long course something"]
+            }, {
                 "catId": 5,
-                "error": ["I have no idea what", "I am ding dong dung"]
+                "errors": ["I have no idea what", "I am ding dong dung"]
             }]
         }
     },
