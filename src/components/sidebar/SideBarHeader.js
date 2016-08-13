@@ -6,14 +6,19 @@ import ActionSettings from 'material-ui/svg-icons/action/settings';
 import TextField from 'material-ui/TextField';
 import EventServer from '../../models/EventServer.js';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
+import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
+import IconButton from 'material-ui/IconButton';
+import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import _ from 'lodash';
 
 export default React.createClass({
     propTypes: {
-        setFilter: PropTypes.func.isRequired
+        setFilter: PropTypes.func.isRequired,
+        toggleView: PropTypes.func.isRequired
     },
     getInitialState() {
         return {
+            collapsed: false,
             searching: false,
             showSettings: false,
             faculty: '',
@@ -66,6 +71,14 @@ export default React.createClass({
             showSettings: false
         });
     },
+    toggleView() {
+        const collapsed = !this.state.collapsed;
+        this.setState({
+            collapsed: collapsed
+        }, () => {
+            this.props.toggleView(collapsed);
+        });
+    },
     renderControl(){
         const style = {
             margin: '7px 0px 7px 2px'
@@ -74,6 +87,32 @@ export default React.createClass({
             zDepth={1} mini={true} onTouchTap={this.openSettings}>
             <ActionSettings/></FloatingActionButton>;
         return <div>{setting}</div>;
+    },
+    renderCollapse() {
+        let collapse;
+        if(this.state.collapsed) {
+            collapse = <IconButton onTouchTap={this.toggleView}
+                tooltip="Show courses"
+                tooltipPosition="top-left">
+                <ExpandMore/>
+            </IconButton>;
+        } else {
+            collapse = <IconButton onTouchTap={this.toggleView}
+                tooltip="Hide courses"
+                tooltipPosition="top-left">
+                <ExpandLess/>
+            </IconButton>;
+        }
+        return <ToolbarGroup>{collapse}</ToolbarGroup>;
+    },
+    renderSearch(){
+        const style = {
+            display: this.state.collapsed ? 'none' : 'flex'
+        };
+        return <ToolbarGroup style={style}>
+            <TextField hintText="Search through the courses" fullWidth={true}
+                onChange={_.debounce(this.onChange, 200)}/>
+        </ToolbarGroup>;
     },
     render(){
         const style = {
@@ -84,7 +123,8 @@ export default React.createClass({
             },
             titleGroup: {
                 lineHeight: '26px',
-                display: 'block'
+                display: 'block',
+                flexBasis: '70%'
             },
             title: {
                 fontSize: '20px',
@@ -93,24 +133,25 @@ export default React.createClass({
             subTitle: {
                 fontSize: '16px',
                 color: 'rgba(0,0,0, 0.4)'
+            },
+            control: {
+                marginRight: 10
             }
         };
         return <Toolbar style={style.root}>
             <ToolbarGroup>
-                <ToolbarGroup style={style.titleGroup}>
-                    <span style={style.subTitle}>{this.state.faculty} \ {this.state.master}</span><br/>
-                    <span style={style.title}>{this.state.track}</span>
-                    </ToolbarGroup>
-                <ToolbarGroup>
+                <ToolbarGroup style={style.control}>
                     {this.renderControl()}
                     <TrackSelection close={this.closeSettings}
                         show={this.state.showSettings}/>
                 </ToolbarGroup>
+                <ToolbarGroup style={style.titleGroup}>
+                    <span style={style.subTitle}>{this.state.faculty} \ {this.state.master}</span><br/>
+                    <span style={style.title}>{this.state.track}</span>
+                </ToolbarGroup>
+                {this.renderCollapse()}
             </ToolbarGroup>
-            <ToolbarGroup>
-                <TextField hintText="Search through the courses" fullWidth={true}
-                    onChange={_.debounce(this.onChange, 200)}/>
-            </ToolbarGroup>
+            {this.renderSearch()}
         </Toolbar>;
     }
 });

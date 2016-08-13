@@ -67,7 +67,10 @@ default React.createClass({
         if(!this.props.options.search) {
             return null;
         }
-        return <ToolbarGroup>
+        const style = {
+            display: this.state.collapsed ? 'none' : 'flex'
+        };
+        return <ToolbarGroup style={style}>
             <TextField hintText="Search through the courses" fullWidth={true}
                 onChange={_.debounce(this.onChange, 200)}/>
         </ToolbarGroup>;
@@ -79,7 +82,8 @@ default React.createClass({
         const style = {
             root: {
                 flexDirection: 'column',
-                marginBottom: 5
+                marginBottom: 5,
+                display: this.state.collapsed ? 'none' : 'flex'
             },
             line: {
                 lineHeight: '1.5em',

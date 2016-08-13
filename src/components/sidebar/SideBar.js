@@ -10,8 +10,18 @@ default React.createClass({
     },
     getInitialState() {
         return {
-            filtering: false
+            filtering: false,
+            collapsed: false
         };
+    },
+    /**
+     * Toggles if the panel body should be shown or not
+     * @param  {Bool} nextState Value to be set
+     */
+    toggleView(nextState) {
+        this.setState({
+            collapsed: nextState
+        });
     },
     setFilter(nextFilter) {
         this.setState({
@@ -19,13 +29,15 @@ default React.createClass({
         });
     },
     shouldComponentUpdate(nextProps, nextState) {
-        return this.state.filtering !== nextState.filtering;
+        return this.state.filtering !== nextState.filtering ||
+            this.state.collapsed !== nextState.collapsed;
     },
     render() {
-        const body = this.state.filtering ? <SideBarSearchBody/> : <SideBarTreeBody/>;
+        const body = this.state.filtering ? <SideBarSearchBody hide={this.state.collapsed}/> :
+            <SideBarTreeBody hide={this.state.collapsed}/>;
         return <div className={this.props.className}>
                 <Paper>
-                    <SideBarHeader setFilter={this.setFilter}/>
+                    <SideBarHeader setFilter={this.setFilter} toggleView={this.toggleView}/>
                     {body}
                 </Paper>
             </div>;

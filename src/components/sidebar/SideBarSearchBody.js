@@ -9,11 +9,17 @@ export default React.createClass({
     getInitialState() {
         return {
             courses: [],
-            filter: ''
+            filter: '',
+            hide: false
         };
     },
     shouldComponentUpdate(nextProps, nextState) {
         return !_.isEqual(this.state, nextState);
+    },
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            hide: nextProps.hide
+        });
     },
     componentDidMount() {
         EventServer.on('courses.loaded', ()=> this.setState({
@@ -47,7 +53,15 @@ export default React.createClass({
         if(rows.length === 0) {
             return <div className='empty'>No course found</div>;
         }
-        return <List>
+        const style = {
+            root: {
+                overflow: 'hidden',
+                transition: 'opacity 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
+                opacity: this.state.hide ? 0 : 100,
+                height: this.state.hide ? 0 : 'auto'
+            }
+        };
+        return <List style={style.root}>
             {rows}
         </List>;
     }

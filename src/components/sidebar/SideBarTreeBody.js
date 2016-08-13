@@ -6,23 +6,30 @@ import EventServer from '../../models/EventServer.js';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
 import CourseTree from './CourseTree.js';
 
-export default React.createClass({
+export
+default React.createClass({
     getInitialState() {
         return {
-            tree: CourseCtrl.flatten(null, null, 'nr')
+            tree: CourseCtrl.flatten(null, null, 'nr'),
+            hide: false
         };
     },
+    componentWillReceiveProps(nextProps){
+        this.setState({
+            hide: nextProps.hide
+        });
+    },
     componentDidMount() {
-        EventServer.on('courses.loaded', ()=> this.setState({
+        EventServer.on('courses.loaded', () => this.setState({
             tree: CourseCtrl.flatten(null, null, 'nr')
         }));
     },
-    render(){
-        if(_.isEmpty(this.state.tree) && FacultyCtrl.selectedTrack()){
+    render() {
+        if (_.isEmpty(this.state.tree) && FacultyCtrl.selectedTrack()) {
             return <div className='empty'>
                 The selected track <strong>{FacultyCtrl.selectedTrack().name}</strong> has no courses.
             </div>;
-        } else if(_.isEmpty(this.state.tree) && !FacultyCtrl.selectedTrack()){
+        } else if (_.isEmpty(this.state.tree) && !FacultyCtrl.selectedTrack()) {
             return <div className='empty'>
                 No track selected. Click on the gear icon to select a track.
             </div>;
@@ -35,10 +42,16 @@ export default React.createClass({
                     visible={visible}
                     course={child}/>;
             });
-
-        return <List>
-                {rows}
-            </List>;
+        const style = {
+            root: {
+                overflow: 'hidden',
+                transition: 'opacity 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
+                opacity: this.state.hide ? 0 : 100,
+                height: this.state.hide ? 0 : 'auto'
+            }
+        };
+        return <List style={style.root}>
+            {rows}
+        </List>;
     }
 });
-
