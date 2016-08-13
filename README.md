@@ -27,7 +27,6 @@ You will need the mock server as well `npm run mock-server`.
 * SidebarSearchBody and IspPanelBody can be merged
 * SidebarHeader and IspPanelHeader can be merged
 * Move the visibilty of the tree into the CourseCtrl.tree
-* Make the naming of events consistent: entity::action::id, so for example course::added:3150 and category::changed::3
 
 # LICENSE
 See the LICENSE file.
