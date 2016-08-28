@@ -2,6 +2,8 @@ import React, {PropTypes} from 'react';
 import SideBar from './components/sidebar/SideBar.js';
 import { withRouter } from 'react-router';
 import CourseModal from './components/CourseModal.js';
+import TrackSelection from './components/sidebar/TrackSelection';
+
 /**
  * Renders the tabs, sidebar and the main component (yearview/selectview)
  */
@@ -25,6 +27,7 @@ const Main = React.createClass({
     render(){
         return (<div>
             <CourseModal/>
+            <TrackSelection/>
             <div className="app">
                 <SideBar className="sidebar"/>
                 <div className="main">

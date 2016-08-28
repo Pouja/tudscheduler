@@ -4,7 +4,7 @@ import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
-import EventServer from '../../models/EventServer.js';
+import DialogCtrl from '../../models/DialogCtrl.js';
 import _ from 'lodash';
 
 /**
@@ -12,35 +12,36 @@ import _ from 'lodash';
  */
 export
 default React.createClass({
-    propTypes: {
-        close: React.PropTypes.func.isRequired,
-        show: React.PropTypes.bool.isRequired
-    },
     getInitialState() {
         return {
-            show: this.props.show,
+            show: false,
+            force: false,
             selectedFaculty: '',
             selectedMaster: '',
             selectedTrack: ''
         };
     },
     componentDidMount() {
-        EventServer.on('masters::loaded', () => this.init(), 'TrackSelection');
+        DialogCtrl.onOpen((force) => this.init(force), 'TrackSelection');
     },
-    componentWillUnmount() {
-        EventServer.remove('masters::loaded', 'TrackSelection');
-    },
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            show: nextProps.show
-        });
-    },
-    init() {
-        this.setState({
-            selectedFaculty: FacultyCtrl.selectedFaculty().facultyId,
-            selectedMaster: FacultyCtrl.selectedMaster().masterId,
-            selectedTrack: FacultyCtrl.selectedTrack().trackId
-        });
+    init(force) {
+        if(force) {
+            this.setState({
+                show: true,
+                force: true,
+                selectedFaculty: FacultyCtrl.faculties[0].facultyId,
+                selectedMaster: FacultyCtrl.faculties[0].masters[0].masterId,
+                selectedTrack: FacultyCtrl.faculties[0].masters[0].tracks[0].trackId
+            });
+        } else {
+            this.setState({
+                show: true,
+                force: false,
+                selectedFaculty: FacultyCtrl.selectedFaculty().facultyId,
+                selectedMaster: FacultyCtrl.selectedMaster().masterId,
+                selectedTrack: FacultyCtrl.selectedTrack().trackId
+            });
+        }
     },
     updateFaculty(event, index, value) {
         this.setState({
@@ -108,14 +109,20 @@ default React.createClass({
     },
     save(){
         FacultyCtrl.selectTrack(this.state.selectedTrack);
-        this.props.close();
+        this.close();
+    },
+    close() {
+        this.setState({
+            show: false
+        });
     },
     renderMenuItem(selection, key) {
         return <MenuItem key={key} value={selection.value} primaryText={selection.label}/>;
     },
     render() {
         const actions = [
-            <FlatButton label="Cancel" primary={true} onTouchTap={this.props.close}/>,
+            <FlatButton label="Cancel" disabled={this.state.force}
+                primary={true} onTouchTap={this.close}/>,
             <FlatButton label="Save" primary={true} onTouchTap={this.save}
                 disabled={this.state.selectedTrack === ''}/>
         ];
@@ -124,8 +131,9 @@ default React.createClass({
             autoScrollBodyContent={false}
             title="Select track"
             actions={actions}
+            modal={this.state.force}
             open={this.state.show}
-            onRequestClose={this.props.close}>
+            onRequestClose={this.close}>
                 <SelectField value={this.state.selectedFaculty}
                     floatingLabelText="Select faculty"
                     fullWidth={true}

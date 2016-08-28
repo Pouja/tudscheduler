@@ -1,6 +1,6 @@
 import request from 'superagent';
-import EventServer from '../models/EventServer.js';
-
+import EventServer from './EventServer.js';
+import DialogCtrl from './DialogCtrl.js';
 const FacultyCtrl = {
     faculties: [],
     init() {
@@ -8,7 +8,11 @@ const FacultyCtrl = {
             .accept('application/json')
             .then(function(response) {
                 FacultyCtrl.faculties = response.body;
-                EventServer.emit('masters::loaded');
+                if (FacultyCtrl.selectedTrack() === undefined) {
+                    DialogCtrl.open('TrackSelection', true);
+                } else {
+                    EventServer.emit('masters::loaded');
+                }
             });
     },
     selectedFaculty() {
@@ -38,7 +42,8 @@ const FacultyCtrl = {
         return track;
     },
     selectTrack(trackId) {
-        if(trackId === FacultyCtrl.selectedTrack().trackId) {
+        if (FacultyCtrl.selectedTrack() !== undefined &&
+            trackId === FacultyCtrl.selectedTrack().trackId) {
             return;
         }
 

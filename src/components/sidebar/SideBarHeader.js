@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react';
-import TrackSelection from './TrackSelection';
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ActionSettings from 'material-ui/svg-icons/action/settings';
@@ -9,6 +8,7 @@ import FacultyCtrl from '../../models/FacultyCtrl.js';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import IconButton from 'material-ui/IconButton';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
+import DialogCtrl from '../../models/DialogCtrl.js';
 import _ from 'lodash';
 
 export default React.createClass({
@@ -65,14 +65,7 @@ export default React.createClass({
         EventServer.emit('course::searching', value);
     },
     openSettings() {
-        this.setState({
-            showSettings: true
-        });
-    },
-    closeSettings(){
-        this.setState({
-            showSettings: false
-        });
+        DialogCtrl.open('TrackSelection');
     },
     toggleView() {
         const collapsed = !this.state.collapsed;
@@ -145,8 +138,7 @@ export default React.createClass({
             <ToolbarGroup>
                 <ToolbarGroup style={style.control}>
                     {this.renderControl()}
-                    <TrackSelection close={this.closeSettings}
-                        show={this.state.showSettings}/>
+
                 </ToolbarGroup>
                 <ToolbarGroup style={style.titleGroup}>
                     <span style={style.subTitle}>{this.state.faculty} \ {this.state.master}</span><br/>
