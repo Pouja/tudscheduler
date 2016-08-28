@@ -23,8 +23,8 @@ export default React.createClass({
         EventServer.on('courses::loaded', () => this.updateEcts(), id);
     },
     componentWillUnmount(){
-        EventServer.remove('course::added', id);
-        EventServer.remove('course::removed', id);
+        EventServer.remove('course::added::*', id);
+        EventServer.remove('course::removed::*', id);
         EventServer.remove('courses::loaded', id);
     },
     updateEcts() {

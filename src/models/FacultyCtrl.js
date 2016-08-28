@@ -38,6 +38,10 @@ const FacultyCtrl = {
         return track;
     },
     selectTrack(trackId) {
+        if(trackId === FacultyCtrl.selectedTrack().trackId) {
+            return;
+        }
+
         FacultyCtrl.faculties.forEach(function(faculty) {
             faculty.masters.forEach(function(master) {
                 master.tracks.forEach(function(track) {

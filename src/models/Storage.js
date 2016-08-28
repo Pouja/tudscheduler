@@ -17,8 +17,8 @@ const errorMapping = [{
 
 const Storage = {
     init(){
-        EventServer.on('category.remove::*', Storage.save, 'storage');
-        EventServer.on('category.added::*', Storage.save, 'storage');
+        EventServer.on('category::remove::*', Storage.save, 'storage');
+        EventServer.on('category::added::*', Storage.save, 'storage');
     },
     save() {
         const trackId = FacultyCtrl.selectedTrack().trackId;
