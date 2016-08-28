@@ -49,6 +49,11 @@ const FacultyCtrl = {
                 });
             });
         });
+        request
+            .post('http://localhost:8000/masters')
+            .send({
+                trackId: trackId
+            });
         EventServer.emit('masters::loaded');
     }
 };
