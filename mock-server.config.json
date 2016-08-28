@@ -1,7 +1,7 @@
 {
     "port": 8000,
     "root":["./build"],
-    "rewriteNotFound": true,
+    "rewriteNotFound": false,
     "rewriteTemplate": "build/index.html",
     "headers": {
         "Content-Type": "application/json"

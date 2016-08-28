@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import SideBar from './components/sidebar/SideBar.js';
-import {Tabs, Tab} from 'material-ui/Tabs';
 import { withRouter } from 'react-router';
 import CourseModal from './components/CourseModal.js';
 /**
@@ -25,12 +24,6 @@ const Main = React.createClass({
     },
     render(){
         return (<div>
-            <Tabs
-                value={this.props.location.pathname}
-                onChange={this.handleChange}>
-                <Tab label="Scheduler" value='/year'/>
-                <Tab label="IEP selection" value='/select'/>
-            </Tabs>
             <CourseModal/>
             <div className="app">
                 <SideBar className="sidebar"/>
