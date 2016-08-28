@@ -17,7 +17,7 @@ const errorMapping = [{
 
 const Storage = {
     init(){
-        EventServer.on('category::remove::*', Storage.save, 'storage');
+        EventServer.on('category::removed::*', Storage.save, 'storage');
         EventServer.on('category::added::*', Storage.save, 'storage');
     },
     save() {
@@ -34,7 +34,7 @@ const Storage = {
         const type = _.find(errorMapping, function(mapping){
             return Object.keys(err).indexOf(mapping.key) !== -1;
         });
-        EventServer.emit(`error::${type.value}::${err[type.key]}`, err.errors);
+        EventServer.emit(`${type.value}::error::${err[type.key]}`, err.errors);
     }
 };
 export default Storage;

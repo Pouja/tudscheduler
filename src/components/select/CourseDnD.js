@@ -71,8 +71,6 @@ class CourseDnD extends Component {
         style: PropTypes.object
     };
     componentWillMount(){
-        // Oke. Usually you will remove the event when unmounting, makes sense right?
-        // Except... react dnd first mounts the dragged element and then unmounts the prev element
         EventServer.on(`course::error::${this.props.course.id}`, (warnings) => this.setState({
             warnings: warnings.map(id => id)
         }), this.state.id);
