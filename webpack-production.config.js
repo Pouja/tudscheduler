@@ -37,6 +37,14 @@ const config = {
     ],
     module: {
         loaders: [{
+            test: /\.js$/, // All .js files
+            loader: 'webpack-replace',
+            query: {
+                search: 'http://localhost:8000',
+                replace: ''
+            }
+        },
+        {
             test: /\.css$/,
             loader: ExtractTextPlugin.extract('style-loader', 'css-loader'),
             include: [srcPath]

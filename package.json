@@ -70,6 +70,7 @@
     "style-loader": "^0.13.1",
     "transfer-webpack-plugin": "^0.1.4",
     "webpack": "^1.12.9",
-    "webpack-dev-server": "^1.14.0"
+    "webpack-dev-server": "^1.14.0",
+    "webpack-replace": "^1.0.0"
   }
 }
