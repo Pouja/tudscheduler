@@ -112,6 +112,19 @@ const CourseCtrl = {
             .every(CourseCtrl.isAdded);
     },
     /**
+     * @param  {String|Number}  courseId The course id
+     * @return {Boolean} true iff all the children of the course and the course
+     * itself are not added.
+     */
+    isNotAdded: function(courseId) {
+        if (!CourseCtrl.isAGroup(courseId)) {
+            return CourseCtrl.added.indexOf(courseId) === -1;
+        }
+        return _(CourseCtrl.getTree(courseId).children)
+            .map('id')
+            .every(CourseCtrl.isNotAdded);
+    },
+    /**
      * Checks if a course as the given needle.
      * @param  {Obect}  courseTree A course tree object.
      * @param  {String}  needle     The search keyword to search for.

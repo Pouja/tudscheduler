@@ -39,11 +39,12 @@ export default React.createClass({
     getInitialState() {
         return {
             added: CourseCtrl.isAdded(this.props.courseId),
+            nonAdded: CourseCtrl.isNotAdded(this.props.courseId),
             id: _.uniqueId(`AddRemoveMove::${this.props.courseId}::${_.uniqueId()}`)
         };
     },
     shouldComponentUpdate(nextProps, nextState){
-        return !_.isEqual(this.state, nextState);
+        return this.state.added !== nextState.added;
     },
     componentWillMount(){
         EventServer.on('course::added::*', this.updateAdded, this.state.id);
@@ -55,7 +56,8 @@ export default React.createClass({
     },
     updateAdded(){
         this.setState({
-            added: CourseCtrl.isAdded(this.props.courseId)
+            added: CourseCtrl.isAdded(this.props.courseId),
+            nonAdded: CourseCtrl.isNotAdded(this.props.courseId)
         });
     },
     /**
@@ -92,6 +94,22 @@ export default React.createClass({
                     .map(this.renderMoveItem)}
         />];
     },
+    renderAddRemoveGroup(style) {
+        const courseId = this.props.courseId;
+        return [<MenuItem key={1} disabled={this.state.nonAdded} style={style.menuItem}
+            onTouchTap={() => CourseCtrl.remove(courseId)}>Remove all</MenuItem>,
+            <MenuItem key={2} disabled={this.state.added} style={style.menuItem}
+            onTouchTap={() => CourseCtrl.add(courseId)}>Add all</MenuItem>];
+    },
+    renderAddRemoveCourse(style) {
+        const courseId = this.props.courseId;
+        if(this.state.added) {
+            return <MenuItem style={style.menuItem}
+            onTouchTap={() => CourseCtrl.remove(courseId)}>Remove</MenuItem>;
+        }
+        return <MenuItem style={style.menuItem}
+            onTouchTap={() => CourseCtrl.add(courseId)}>Add</MenuItem>;
+    },
     render(){
         const courseId = this.props.courseId;
         const style = {
@@ -108,20 +126,14 @@ export default React.createClass({
             </IconButton>
         );
 
-        const menuItemRemove = <MenuItem style={style.menuItem}
-            onTouchTap={() => CourseCtrl.remove(courseId)}>
-            {CourseCtrl.isAGroup(courseId) ? 'Remove all' : 'Remove'}</MenuItem>;
-        const menuItemAdd = <MenuItem style={style.menuItem}
-            onTouchTap={() => CourseCtrl.add(courseId)}>
-            {CourseCtrl.isAGroup(courseId) ? 'Add all' : 'Add'}</MenuItem>;
-
         return <IconMenu
             onTouchTap={(event) => event.stopPropagation()}
             useLayerForClickAway={true}
             style={style.root}
             iconButtonElement={iconButtonElement}>
             <MenuItem style={style.menuItem} onTouchTap={this.openModal}>Info</MenuItem>
-            {this.state.added ? menuItemRemove : menuItemAdd}
+            {CourseCtrl.isAGroup(courseId) ? this.renderAddRemoveGroup(style) :
+                this.renderAddRemoveCourse(style)}
             {this.props.move ? this.renderMoveMenu() : null}
         </IconMenu>;
     }

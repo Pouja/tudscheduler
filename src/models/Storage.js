@@ -16,6 +16,11 @@ const errorMapping = [{
 }];
 
 const Storage = {
+    /**
+     * Saves the current state of the categories.
+     * This should be called explicitly and it should not save an illegal state.
+     * As in, make sure the state is legal and then call this function.
+     */
     save() {
         const trackId = FacultyCtrl.selectedTrack().trackId;
         request
@@ -26,6 +31,11 @@ const Storage = {
                 response.body.forEach(Storage.emitError);
             }, console.error);
     },
+    /**
+     * Called by Storage.save.
+     * It emits the errors returned by POST /categories/:trackId
+     * @param  {Array} err A array of key, value pairs. Where key is one of `errorMapping` and value is an array of what is wrong with it.
+     */
     emitError(err) {
         const type = _.find(errorMapping, function(mapping){
             return Object.keys(err).indexOf(mapping.key) !== -1;
