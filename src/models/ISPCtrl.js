@@ -3,6 +3,7 @@ import EventServer from '../models/EventServer.js';
 import CourseCtrl from './CourseCtrl.js';
 import request from 'superagent';
 import FacultyCtrl from './FacultyCtrl.js';
+import Storage from './Storage.js';
 const id = 'ISPCtrl';
 
 /**
@@ -61,6 +62,7 @@ const ISPCtrl = {
             // (re)start listening
             ISPCtrl.startListening();
             EventServer.emit('categories::loaded');
+            Storage.save();
         });
     },
     /**
@@ -76,6 +78,7 @@ const ISPCtrl = {
             })
             .union(ISPCtrl.unlisted.courses)
             .value();
+        Storage.save();
         EventServer.emit('category::added::unlisted');
     },
     /**
@@ -93,6 +96,7 @@ const ISPCtrl = {
                 EventServer.emit(`category::removed::${category.catId}`);
             }
         });
+        Storage.save();
     },
     /**
      * Called when reset event is emitted.
@@ -127,9 +131,9 @@ const ISPCtrl = {
             return category.catId === categoryIdTo;
         });
         categoryTo.courses = _.union(categoryTo.courses, [courseId]);
-        EventServer.emit(`category::added::${categoryIdTo}`, courseId);
-
         categoryFrom.courses = _.without(categoryFrom.courses, courseId);
+        Storage.save();
+        EventServer.emit(`category::added::${categoryIdTo}`, courseId);
         EventServer.emit(`category::removed::${categoryIdFrom}`, courseId);
     }
 };
