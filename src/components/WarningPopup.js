@@ -23,7 +23,7 @@ const WarningPopup = React.createClass({
     },
     getInitialState(){
         return {
-            warnings: []
+            warnings: this.props.warnings
         };
     },
     componentWillReceiveProps(nextProps){

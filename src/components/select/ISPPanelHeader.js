@@ -7,6 +7,7 @@ import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import IconButton from 'material-ui/IconButton';
 import {red500} from 'material-ui/styles/colors';
+import Storage from '../../models/Storage.js';
 
 /**
  * Renders the header of an ISPPanel
@@ -25,7 +26,7 @@ default React.createClass({
             collapsed: false,
             search: false,
             searchValue: '',
-            errors: [],
+            errors: Storage.getErrors('category', this.props.category.catId),
             id: `ISPPanelHeader::${this.props.category.catId}::${_.uniqueId()}`
         };
     },

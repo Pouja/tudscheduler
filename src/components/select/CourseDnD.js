@@ -9,6 +9,7 @@ import AddRemoveMove from '../AddRemoveMove.js';
 import WarningPopup from '../WarningPopup.js';
 import EventServer from '../../models/EventServer.js';
 import _ from 'lodash';
+import Storage from '../../models/Storage.js';
 
 const courseSource = {
     /**
@@ -55,7 +56,7 @@ class CourseDnD extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            warnings: [],
+            warnings: Storage.getErrors('course', this.props.course.id),
             id: `CourseDndD::${this.props.course.id}::${_.uniqueId()}`
         };
     }
@@ -72,7 +73,7 @@ class CourseDnD extends Component {
     };
     componentWillMount(){
         EventServer.on(`course::error::${this.props.course.id}`, (warnings) => this.setState({
-            warnings: warnings.map(id => id)
+            warnings: warnings.map(warning => warning)
         }), this.state.id);
     }
     componentWillUnmount(){

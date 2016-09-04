@@ -61,8 +61,7 @@ const ISPCtrl = {
 
             // (re)start listening
             ISPCtrl.startListening();
-            EventServer.emit('categories::loaded');
-            Storage.save();
+            Storage.save().then(() => EventServer.emit('categories::loaded'));
         });
     },
     /**
