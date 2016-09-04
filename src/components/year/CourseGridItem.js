@@ -28,13 +28,21 @@ export default React.createClass({
                 bottom: 0,
                 right: 0,
                 top: 'initial'
+            },
+            badge: {
+                position: 'absolute',
+                bottom: 15
+            },
+            text: {
+                fontSize: 15,
+                wordWrap: 'break-word'
             }
         };
         const course = CourseCtrl.get(this.props.courseId);
         return <Paper zDepth={1} style={style.root}>
             <div style={style.inner}>
-                {course.name} {course.courseName}
-                <Badge>EC {course.ects}</Badge>
+                <div style={style.text}>{course.name} {course.courseName}</div>
+                <Badge style={style.badge}>EC {course.ects}</Badge>
                 <AddRemoveMove courseId={this.props.courseId} style={style.AddRemoveMove}/>
             </div>
         </Paper>;

@@ -6,6 +6,7 @@ import ReactGridLayout, {
 }
 from 'react-grid-layout';
 import CourseGridItem from './CourseGridItem.js';
+import _ from 'lodash';
 const DecoratedReactGridLayout = WidthProvider(ReactGridLayout); //eslint-disable-line new-cap
 
 /**
@@ -41,12 +42,27 @@ function isDifferent(left, right) {
     return left.some((el) => right.indexOf(el) === -1);
 }
 
+const breakPoints = [{
+    windowWidth: 768,
+    rowHeight: 160
+}, {
+    windowWidth: 1200,
+    rowHeight: 100
+}, {
+    windowWidth: 996,
+    rowHeight: 160
+}, {
+    windowWidth: 480,
+    rowHeight: 160
+}];
+
 const id = 'YearViewBody';
 export
 default React.createClass({
     getInitialState() {
         return {
-            courses: CourseCtrl.added.map((id)=>id)
+            courses: CourseCtrl.added.map((id)=>id),
+            windowWidth: window.innerWidth
         };
     },
     shouldComponentUpdate(nextProps, nextState) {
@@ -56,6 +72,11 @@ default React.createClass({
         EventServer.on('course::added::*', () => this.updateCourses(), id);
         EventServer.on('course::removed::*', () => this.updateCourses(), id);
         EventServer.on('courses::loaded', () => this.updateCourses(), id);
+        window.addEventListener('resize', this.handleResize);
+
+    },
+    handleResize: function() {
+        this.setState({windowWidth: window.innerWidth});
     },
     componentWillUnmount() {
         EventServer.remove('course::added::*', id);
@@ -68,6 +89,19 @@ default React.createClass({
             courses: CourseCtrl.added.map((id)=>id)
         });
     },
+    getRowHeight(){
+        const windowWidth = this.state.windowWidth;
+        return _.reduce(breakPoints, function(result, value){
+                if(_.isEmpty(result)){
+                    return value;
+                }
+                const diff = windowWidth - value.windowWidth;
+                if(diff > 0 && diff < windowWidth - result.windowWidth) {
+                    return value;
+                }
+                return result;
+            },{});
+    },
     render() {
         if (this.state.courses.length === 0) {
             return <span className='empty'>
@@ -79,11 +113,10 @@ default React.createClass({
             return <CourseGridItem data-grid={courseGrid(courseId, index)}
                 key={courseId} courseId={courseId}/>;
         });
-
         return <DecoratedReactGridLayout
             isResizable={false}
             isDraggable={false}
-            rowHeight={120}
+            rowHeight={this.getRowHeight().rowHeight}
             cols={4}>
             {gridItems}
         </DecoratedReactGridLayout>;

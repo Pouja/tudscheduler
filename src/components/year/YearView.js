@@ -12,7 +12,7 @@ default React.createClass({
         return false;
     },
     render() {
-        return <div className={this.props.className}>
+        return <div style={{minWidth:500}} className={this.props.className} >
             <Paper>
             <YearViewHeader/>
             <YearViewBody/>
