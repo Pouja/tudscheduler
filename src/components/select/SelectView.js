@@ -28,7 +28,7 @@ const SelectView = React.createClass({
         const unlistedOptions = {
             search: true,
             hideExpand: true,
-            onEmpty: 'Add a course from the bar on the left to start creating your ISP',
+            onEmpty: 'Add a course from the bar on the left to start creating your study planning',
             onHover: 'Drop'
         };
         const categoryOptions = {
