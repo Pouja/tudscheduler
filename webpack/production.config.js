@@ -10,14 +10,13 @@ const config = {
     // output config
     output: {
         path: paths.build, // Path of output file
-        filename: 'app.[hash].js' // Name of output file
+        filename: 'app.js' // Name of output file
     },
     plugins: [
-        plugins.css('main.[hash].css'),
+        plugins.css('main.css'),
         plugins.loaderOptionsPlugin,
         plugins.definePlugin,
-        plugins.uglifyJsPlugin,
-        plugins.hashReplace
+        plugins.uglifyJsPlugin
     ],
     module: {
         loaders: [loaders.replaceLocalhost, loaders.css, loaders.src]
