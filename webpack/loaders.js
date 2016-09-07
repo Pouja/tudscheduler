@@ -37,7 +37,7 @@ exports.replaceLocalhost = {
     include: [paths.src],
     loader: 'webpack-replace',
     query: {
-        search: 'http://localhost:8000',
+        search: 'http://localhost:8000/',
         replace: ''
     }
 };
