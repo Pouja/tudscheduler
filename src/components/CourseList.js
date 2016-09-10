@@ -2,6 +2,14 @@ import React, {PropTypes} from 'react';
 import CourseCtrl from '../models/CourseCtrl.js';
 import _ from 'lodash';
 import {List} from 'material-ui/List';
+
+/**
+ * Renders a list of courses based on the filter and the given courses.
+ * @example
+ * <CourseList courseIds={yourCoursIds} filter={'CS4093'} createItem={(course) => <CourseTree course={course}}
+ *     hide={false}/>
+ */
+
 export default React.createClass({
     propTypes: {
         hide: PropTypes.bool.isRequired,

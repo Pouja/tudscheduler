@@ -5,6 +5,10 @@ import EventServer from '../../models/EventServer.js';
 import CourseTree from './CourseTree.js';
 import CourseList from '../CourseList.js';
 
+/**
+ * Renders the sidebar when the user is searching for something.
+ */
+
 export default React.createClass({
     propTypes: {
         hide: PropTypes.bool
