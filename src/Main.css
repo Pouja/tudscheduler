@@ -1,14 +1,29 @@
-html {
-  font-family: 'Roboto', sans-serif;
+@media (max-device-width: 767px) {
+  .app {
+    flex-direction: column;
+  }
+  .sidebar {
+    margin-bottom: 10px;
+  }
+  .sidebar,
+  .main {
+    flex-basis: 100%;
+  }
 }
-body {
-  margin: 0;
-}
-.empty {
-  text-align: center;
-  display: block;
-  padding: 20px 20px;
-}
-.app {
-  display: flex;
+@media (min-device-width: 768px) {
+  .app {
+    justify-content: 'space-between';
+    flex-direction: row;
+    margin-top: 10px;
+  }
+  .sidebar {
+    flex-basis: 33.33333333%;
+  }
+  .main {
+    flex-basis: 66.66666667%;
+  }
+  .sidebar,
+  .main {
+    margin: 0 5px;
+  }
 }

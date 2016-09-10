@@ -17,6 +17,10 @@ const muiTheme = getMuiTheme({
     }
 });
 
+console.log(`Hi. Seems that you are interested in the internals of this project.
+    If you have any feedback/improvement about the layout or the internals you can make an issues/pr at
+    https://github.com/Pouja/tudscheduler. Have a nice day :).`);
+
 /**
  * Main entry point of React and the whole application
  * @type {React.element}
