@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import SideBarHeader from './SideBarHeader.js';
-import SideBarTreeBody from './SideBarTreeBody.js';
-import SideBarSearchBody from './SideBarSearchBody.js';
+import SideBarBody from './SideBarTreeBody.js';
 import Paper from 'material-ui/Paper';
 export
 default React.createClass({
@@ -10,7 +9,6 @@ default React.createClass({
     },
     getInitialState() {
         return {
-            filtering: false,
             collapsed: false
         };
     },
@@ -23,22 +21,15 @@ default React.createClass({
             collapsed: nextState
         });
     },
-    setFilter(nextFilter) {
-        this.setState({
-            filtering: nextFilter
-        });
-    },
     shouldComponentUpdate(nextProps, nextState) {
         return this.state.filtering !== nextState.filtering ||
             this.state.collapsed !== nextState.collapsed;
     },
     render() {
-        const body = this.state.filtering ? <SideBarSearchBody hide={this.state.collapsed}/> :
-            <SideBarTreeBody hide={this.state.collapsed}/>;
         return <div className={this.props.className}>
                 <Paper>
-                    <SideBarHeader setFilter={this.setFilter} toggleView={this.toggleView}/>
-                    {body}
+                    <SideBarHeader toggleView={this.toggleView}/>
+                    <SideBarTreeBody hide={this.state.collapsed}/>
                 </Paper>
             </div>;
     }

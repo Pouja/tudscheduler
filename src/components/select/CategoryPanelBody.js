@@ -3,6 +3,7 @@ import CourseDnD from './CourseDnD.js';
 import _ from 'lodash';
 import EventServer from '../../models/EventServer.js';
 import CourseList from '../CourseList.js';
+import CourseCtrl from '../../models/CourseCtrl.js';
 
 /**
  * Renders the isp panel body.
@@ -72,7 +73,8 @@ default React.createClass({
         return <CourseDnD key={course.id} category={category.catId} course={course}/>;
     },
     render() {
-        return <CourseList courseIds={this.state.courses} hide={this.props.hide} filter={this.state.filter}
+        return <CourseList courses={this.state.courses.map(CourseCtrl.get)}
+            hide={this.props.hide} filter={this.state.filter}
             onEmpty={this.props.options.onEmpty} createItem={this.createCourse}/>;
     }
 });

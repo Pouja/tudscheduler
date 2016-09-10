@@ -13,7 +13,6 @@ import _ from 'lodash';
 
 export default React.createClass({
     propTypes: {
-        setFilter: PropTypes.func.isRequired,
         toggleView: PropTypes.func.isRequired
     },
     getInitialState() {
@@ -61,7 +60,6 @@ export default React.createClass({
      * @param {String} value The input value
      */
     onChange(event, value) {
-        this.props.setFilter(value.length > 0);
         EventServer.emit('course::searching', value);
     },
     openSettings() {

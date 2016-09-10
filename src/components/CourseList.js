@@ -1,7 +1,13 @@
-import React, {PropTypes} from 'react';
+import React, {
+    PropTypes
+}
+from 'react';
 import CourseCtrl from '../models/CourseCtrl.js';
 import _ from 'lodash';
-import {List} from 'material-ui/List';
+import {
+    List
+}
+from 'material-ui/List';
 
 /**
  * Renders a list of courses based on the filter and the given courses.
@@ -10,25 +16,28 @@ import {List} from 'material-ui/List';
  *     hide={false}/>
  */
 
-export default React.createClass({
+export
+default React.createClass({
     propTypes: {
         hide: PropTypes.bool.isRequired,
-        courseIds: PropTypes.arrayOf(PropTypes.oneOfType([
-            PropTypes.string, PropTypes.number])).isRequired,
+        courses: PropTypes.arrayOf(PropTypes.object).isRequired,
         filter: PropTypes.string.isRequired,
         createItem: PropTypes.func.isRequired,
-        onEmpty: PropTypes.string.isRequired
+        onEmpty: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.element.isRequired]).isRequired,
+        tree: PropTypes.bool
     },
     getInitialState() {
         return {
-            courseIds: this.props.courseIds,
+            courses: this.props.courses,
             filter: this.props.filter,
-            hide: this.props.hide
+            hide: this.props.hide,
+            tree: this.props.tree
         };
     },
     componentWillReceiveProps(nextProps) {
         this.setState({
-            courseIds: nextProps.courseIds.map(id => id),
+            tree: nextProps.tree,
+            courses: nextProps.courses.map(id => id),
             filter: nextProps.filter,
             hide: nextProps.hide
         });
@@ -42,17 +51,24 @@ export default React.createClass({
                 height: this.state.hide ? 0 : 'auto'
             }
         };
-        const rows = _(this.state.courseIds)
-            .filter((courseId) => CourseCtrl.hasNeedle(courseId, this.state.filter))
-            .map(CourseCtrl.get)
-            .orderBy(['name','courseName'],['asc','asc'])
-            .map(this.props.createItem)
-            .value();
-        if(this.state.filter.length > 0 && rows.length === 0){
+        let rows;
+        if (this.state.tree) {
+            rows = _(this.state.courses)
+                .map(this.props.createItem)
+                .value();
+        } else {
+            rows = _(this.state.courses)
+                .filter((course) => CourseCtrl.hasNeedle(course.id, this.state.filter))
+                .orderBy(['name', 'courseName'], ['asc', 'asc'])
+                .map(this.props.createItem)
+                .value();
+        }
+
+        if (this.state.filter.length > 0 && rows.length === 0) {
             return <span style={style.root} className='empty'>
                 No matching course found
             </span>;
-        } else if(rows.length > 0) {
+        } else if (rows.length > 0) {
             return <List style={style.root}>{rows}</List>;
         }
         return <span style={style.root} className='empty'>
