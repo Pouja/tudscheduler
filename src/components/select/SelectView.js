@@ -1,8 +1,8 @@
 import React from 'react';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import ISPField from './ISPField.js';
-import ISPCtrl from '../../models/ISPCtrl.js';
+import Category from './Category.js';
+import CategoryCtrl from '../../models/CategoryCtrl.js';
 import EventServer from '../../models/EventServer.js';
 import GlobalTrack from './GlobalTrack.js';
 
@@ -18,7 +18,7 @@ const SelectView = React.createClass({
         EventServer.remove('categories::loaded', 'SelectView');
     },
     render() {
-        if(!ISPCtrl.unlisted || ISPCtrl.categories.length === 0){
+        if(!CategoryCtrl.unlisted || CategoryCtrl.categories.length === 0){
             return null;
         }
         const style = {
@@ -39,16 +39,16 @@ const SelectView = React.createClass({
             onHover: 'Drop'
         };
         return <div className="select-view">
-            <ISPField className="unlisted" key={1} category={ISPCtrl.unlisted}
+            <Category className="unlisted" key={1} category={CategoryCtrl.unlisted}
                 options={unlistedOptions}>
-            </ISPField>
+            </Category>
             <div className="categories">
                 <GlobalTrack style={style.categories}/>
-                {ISPCtrl.categories.
+                {CategoryCtrl.categories.
                     filter(function(category){
                         return category.catId !== 'unlisted';
                     }).map(function(category, idx){
-                    return <ISPField key={idx} category={category}
+                    return <Category key={idx} category={category}
                         style={style.categories}
                         options={categoryOptions}/>;
                 })}

@@ -7,7 +7,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
-import ISPCtrl from '../models/ISPCtrl.js';
+import CategoryCtrl from '../models/CategoryCtrl.js';
 import DialogCtrl from '../models/DialogCtrl.js';
 import _ from 'lodash';
 import EventServer from '../models/EventServer.js';
@@ -68,14 +68,14 @@ export default React.createClass({
     },
     /**
      * Renders one of the menuitem to move the given course to a the given category
-     * @param  {Object} category One of ISPCtrl.categories
+     * @param  {Object} category One of CategoryCtrl.categories
      * @param  {Number} idx      The key nr to be set
      * @return {React.element}   A material-ui/MenuItem component
      */
     renderMoveItem(category, idx) {
         return <MenuItem key={idx}
             primaryText={category.name}
-            onTouchTap={() => ISPCtrl.move(this.props.courseId, this.props.category,
+            onTouchTap={() => CategoryCtrl.move(this.props.courseId, this.props.category,
                 category.catId)}
             />;
     },
@@ -89,7 +89,7 @@ export default React.createClass({
                 key={7}
                 primaryText="Move to"
                 rightIcon={<ArrowDropRight />}
-                menuItems={ISPCtrl.categories
+                menuItems={CategoryCtrl.categories
                     .filter(category => category.catId !== this.props.category)
                     .map(this.renderMoveItem)}
         />];

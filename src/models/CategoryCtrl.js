@@ -4,7 +4,7 @@ import CourseCtrl from './CourseCtrl.js';
 import request from 'superagent';
 import FacultyCtrl from './FacultyCtrl.js';
 import Storage from './Storage.js';
-const id = 'ISPCtrl';
+const id = 'CategoryCtrl';
 
 /**
  * The ISP controller.
@@ -13,7 +13,7 @@ const id = 'ISPCtrl';
  * It also listens to the changes regarding adding/removing a course and reset/load events.
  * @type {Object}
  */
-const ISPCtrl = {
+const CategoryCtrl = {
     unlisted: {},
     categories: [],
     /**
@@ -22,7 +22,7 @@ const ISPCtrl = {
      * @return {Object}         A category
      */
     get(catId) {
-        return ISPCtrl.categories.find(function(category) {
+        return CategoryCtrl.categories.find(function(category) {
             return category.catId === catId;
         });
     },
@@ -37,30 +37,30 @@ const ISPCtrl = {
         });
     },
     /**
-     * Should be called when ISPCtrl is being used for the first time.
+     * Should be called when CategoryCtrl is being used for the first time.
      */
     init() {
-        ISPCtrl.fetch().then(function(categories) {
+        CategoryCtrl.fetch().then(function(categories) {
             // reset the listening
-            ISPCtrl.stopListening();
-            ISPCtrl.categories = categories;
+            CategoryCtrl.stopListening();
+            CategoryCtrl.categories = categories;
 
             // Set the unlisted 'special' category
-            ISPCtrl.unlisted = categories.find(category => category.catId === 'unlisted');
+            CategoryCtrl.unlisted = categories.find(category => category.catId === 'unlisted');
 
             // Merge the added courses with the unlisted courses
-            ISPCtrl.unlisted.courses = _.union(ISPCtrl.unlisted.courses,
+            CategoryCtrl.unlisted.courses = _.union(CategoryCtrl.unlisted.courses,
                 CourseCtrl.added.map(course => course.id));
 
             // Add the courses in all the categories to coursectrl.added
-            CourseCtrl.addMultiple(_(ISPCtrl.categories)
+            CourseCtrl.addMultiple(_(CategoryCtrl.categories)
                 .map('courses')
                 .flatten()
                 .map(CourseCtrl.get)
                 .value());
 
             // (re)start listening
-            ISPCtrl.startListening();
+            CategoryCtrl.startListening();
             Storage.save().then(() => EventServer.emit('categories::loaded'));
         });
     },
@@ -69,13 +69,13 @@ const ISPCtrl = {
      * Adds all the courses which are not currently in the selection to the unlisted category.
      */
     updateAdded() {
-        ISPCtrl.unlisted.courses = _(CourseCtrl.added)
+        CategoryCtrl.unlisted.courses = _(CourseCtrl.added)
             .filter(function(courseId) {
-                return !ISPCtrl.categories.some(function(category) {
+                return !CategoryCtrl.categories.some(function(category) {
                     return category.courses.indexOf(courseId) !== -1;
                 });
             })
-            .union(ISPCtrl.unlisted.courses)
+            .union(CategoryCtrl.unlisted.courses)
             .value();
         Storage.save();
         EventServer.emit('category::added::unlisted');
@@ -86,7 +86,7 @@ const ISPCtrl = {
      */
     updateRemoved() {
         const allCourses = CourseCtrl.added;
-        ISPCtrl.categories.forEach(function(category) {
+        CategoryCtrl.categories.forEach(function(category) {
             const removeCourses = _.filter(category.courses, function(courseId) {
                 return allCourses.indexOf(courseId) === -1;
             });
@@ -102,7 +102,7 @@ const ISPCtrl = {
      * Resets all the categories.
      */
     reset() {
-        ISPCtrl.categories.forEach(function(category) {
+        CategoryCtrl.categories.forEach(function(category) {
             category.reset();
             EventServer.emit(`category::added::${category.catId}`);
         });
@@ -112,8 +112,8 @@ const ISPCtrl = {
         EventServer.remove('course::removed::*', id);
     },
     startListening() {
-        EventServer.on('course::added::*', ISPCtrl.updateAdded, id);
-        EventServer.on('course::removed::*', ISPCtrl.updateRemoved, id);
+        EventServer.on('course::added::*', CategoryCtrl.updateAdded, id);
+        EventServer.on('course::removed::*', CategoryCtrl.updateRemoved, id);
     },
     /**
      * Moves a course from one category to another
@@ -122,11 +122,11 @@ const ISPCtrl = {
      * @param  {String} categoryIdTo   The category to which is should be moved
      */
     move(courseId, categoryIdFrom, categoryIdTo) {
-        const categoryFrom = (categoryIdFrom === 'unlisted') ? ISPCtrl.unlisted :
-            _.find(ISPCtrl.categories, function(category) {
+        const categoryFrom = (categoryIdFrom === 'unlisted') ? CategoryCtrl.unlisted :
+            _.find(CategoryCtrl.categories, function(category) {
                 return category.catId === categoryIdFrom;
             });
-        const categoryTo = (categoryIdTo === 'unlisted') ? ISPCtrl.unlisted : _.find(ISPCtrl.categories, function(category) {
+        const categoryTo = (categoryIdTo === 'unlisted') ? CategoryCtrl.unlisted : _.find(CategoryCtrl.categories, function(category) {
             return category.catId === categoryIdTo;
         });
         categoryTo.courses = _.union(categoryTo.courses, [courseId]);
@@ -136,6 +136,6 @@ const ISPCtrl = {
         EventServer.emit(`category::removed::${categoryIdFrom}`, courseId);
     }
 };
-EventServer.on('courses::loaded', ISPCtrl.init, 'ISPCtrl');
+EventServer.on('courses::loaded', CategoryCtrl.init, 'CategoryCtrl');
 export
-default ISPCtrl;
+default CategoryCtrl;

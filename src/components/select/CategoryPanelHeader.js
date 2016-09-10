@@ -10,7 +10,7 @@ import ToolbarErrors from './ToolbarErrors.js';
 import Storage from '../../models/Storage.js';
 
 /**
- * Renders the header of an ISPPanel
+ * Renders the header of an CategoryPanel
  */
 export
 default React.createClass({
@@ -27,7 +27,7 @@ default React.createClass({
             search: false,
             searchValue: '',
             errors: Storage.getErrors('category', this.props.category.catId),
-            id: `ISPPanelHeader::${this.props.category.catId}::${_.uniqueId()}`
+            id: `CategoryPanelHeader::${this.props.category.catId}::${_.uniqueId()}`
         };
     },
     componentWillMount() {

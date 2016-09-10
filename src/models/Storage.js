@@ -1,6 +1,6 @@
 import EventServer from './EventServer.js';
 import request from 'superagent';
-import ISPCtrl from './ISPCtrl.js';
+import CategoryCtrl from './CategoryCtrl.js';
 import FacultyCtrl from './FacultyCtrl.js';
 import _ from 'lodash';
 
@@ -31,7 +31,7 @@ const Storage = {
         return new Promise(function(resolve, reject) {
             request
                 .post(`http://localhost:8000/categories/${trackId}`)
-                .send(ISPCtrl.categories)
+                .send(CategoryCtrl.categories)
                 .accept('application/json')
                 .then(function(response) {
                     Storage.errors = {};

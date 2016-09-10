@@ -2,7 +2,7 @@ import CourseCtrl from '../../models/CourseCtrl.js';
 import React, {Component, PropTypes} from 'react';
 import CourseTypes from '../../constants/CourseTypes.js';
 import {DragSource} from 'react-dnd';
-import ISPCtrl from '../../models/ISPCtrl.js';
+import CategoryCtrl from '../../models/CategoryCtrl.js';
 import {ListItem} from 'material-ui/List';
 import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
 import AddRemoveMove from '../AddRemoveMove.js';
@@ -27,7 +27,7 @@ const courseSource = {
     /**
      * Called by react-dnd when a DragSource stops being dragged by the user.
      * Handles the drop if it is not dropped already.
-     * It moves the course to another ISPField.
+     * It moves the course to another Category.
      * @param  {Object} props   The props of the react component binded to the DragSource
      * @param  {Object} monitor The monitor object retuned by react-dnd. See react-dnd for more info.
      */
@@ -37,7 +37,7 @@ const courseSource = {
         if (!monitor.didDrop() || item.currentFieldId === dropResult.id) {
             return;
         }
-        ISPCtrl.move(item.course.id, item.currentFieldId, dropResult.id);
+        CategoryCtrl.move(item.course.id, item.currentFieldId, dropResult.id);
     }
 };
 

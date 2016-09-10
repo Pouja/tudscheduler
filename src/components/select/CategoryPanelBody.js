@@ -28,7 +28,7 @@ default React.createClass({
             filter: null,
             courses: this.props.category.courses,
             catId: this.props.category.catId,
-            id: `ISPPanelBody::${this.props.category.catId}::${_.uniqueId()}`
+            id: `CategoryPanelBody::${this.props.category.catId}::${_.uniqueId()}`
         };
     },
     componentWillReceiveProps(nextProps){

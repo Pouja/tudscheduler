@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react';
 import SimpleDropTarget from './SimpleDropTarget.js';
-import ISPPanel from './ISPPanel.js';
+import CategoryPanel from './CategoryPanel.js';
 
 /**
- * Renders an ISPField which is turn a drop target for CourseDnD.
+ * Renders an Category which is turn a drop target for CourseDnD.
  */
 export
 default React.createClass({
@@ -14,7 +14,7 @@ default React.createClass({
     render() {
         const category = this.props.category;
         return <SimpleDropTarget className={this.props.className} id={category.catId}>
-            <ISPPanel {...this.props}/>
+            <CategoryPanel {...this.props}/>
         </SimpleDropTarget>;
     }
 });
