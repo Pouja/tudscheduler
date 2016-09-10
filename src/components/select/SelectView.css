@@ -1,0 +1,25 @@
+@media (max-device-width: 767px) {
+  .unlisted {
+    margin-bottom: 10px;
+  }
+  .select-view {
+    flex-basis: 100%;
+  }
+}
+@media (min-device-width: 768px) {
+  .select-view {
+    display: flex;
+    justify-content: 'space-between';
+  }
+  .unlisted,
+  .categories {
+    flex-basis: 50%;
+  }
+  .unlisted {
+    margin-right: 10px;
+  }
+  .categories {
+    display: flex;
+    flex-direction: column;
+  }
+}

@@ -1,3 +1,4 @@
+import 'Main.css';
 import React, {PropTypes} from 'react';
 import SideBar from './components/sidebar/SideBar.js';
 import { withRouter } from 'react-router';
