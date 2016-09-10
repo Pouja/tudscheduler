@@ -44,6 +44,12 @@
             }, {
                 "catId": 5,
                 "errors": ["I have no idea what", "I am ding dong dung"]
+            }, {
+                "masterId": 3,
+                "errors": ["Max 100 ECTs for this master"]
+            }, {
+                "trackId": 1,
+                "errors": ["Invalid track, just kidding"]
             }]
         }
     },

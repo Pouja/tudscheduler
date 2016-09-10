@@ -13,6 +13,9 @@ const errorMapping = [{
 }, {
     key: 'masterId',
     value: 'master'
+}, {
+    key: 'trackId',
+    value: 'track'
 }];
 
 const Storage = {
@@ -56,6 +59,9 @@ const Storage = {
         const type = _.find(errorMapping, function(mapping) {
             return Object.keys(err).indexOf(mapping.key) !== -1;
         });
+        if(type === undefined) {
+            throw new Error(`An unknown type error was given with ${JSON.stringify(err)}.`);
+        }
         if (!Storage.errors[type.value]) {
             Storage.errors[type.value] = {};
         }

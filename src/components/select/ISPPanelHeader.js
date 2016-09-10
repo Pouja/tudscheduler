@@ -6,7 +6,7 @@ import EventServer from '../../models/EventServer.js';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import IconButton from 'material-ui/IconButton';
-import {red500} from 'material-ui/styles/colors';
+import ToolbarErrors from './ToolbarErrors.js';
 import Storage from '../../models/Storage.js';
 
 /**
@@ -84,21 +84,7 @@ default React.createClass({
         if(this.state.errors.length === 0 || this.state.collapsed) {
             return null;
         }
-        const style = {
-            root: {
-                flexDirection: 'column',
-                marginBottom: 5,
-                display: this.state.collapsed ? 'none' : 'flex'
-            },
-            line: {
-                lineHeight: '1.5em',
-                color: red500
-            }
-        };
-        return <ToolbarGroup style={style.root}>
-            {this.state.errors.map((err, idx) => <span key={idx}
-                style={style.line}>{err}</span>)}
-        </ToolbarGroup>;
+        return <ToolbarErrors errors={this.state.errors}/>;
     },
     renderTitle(){
         return this.props.category.name;

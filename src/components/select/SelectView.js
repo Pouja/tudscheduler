@@ -4,6 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import ISPField from './ISPField.js';
 import ISPCtrl from '../../models/ISPCtrl.js';
 import EventServer from '../../models/EventServer.js';
+import GlobalTrack from './GlobalTrack.js';
 
 /**
  * The select view, renders the isp categorys which are the drop targets for the CourseDnD.
@@ -42,6 +43,7 @@ const SelectView = React.createClass({
                 options={unlistedOptions}>
             </ISPField>
             <div className="categories">
+                <GlobalTrack style={style.categories}/>
                 {ISPCtrl.categories.
                     filter(function(category){
                         return category.catId !== 'unlisted';
