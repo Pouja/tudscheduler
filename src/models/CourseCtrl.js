@@ -126,16 +126,16 @@ const CourseCtrl = {
     },
     /**
      * Checks if a course as the given needle.
-     * @param  {Obect}  courseTree A course tree object.
+     * @param  {Obect}  courseId A course identifier.
      * @param  {String}  needle     The search keyword to search for.
      * @return {Boolean}            true iff the course contains the needle.
      */
-    hasNeedle(courseTree, needle) {
-        if (!needle || needle.length === 0 || !courseTree) {
+    hasNeedle(courseId, needle) {
+        if (!needle || needle.length === 0 || !courseId) {
             return true;
         }
         const lowerNeedle = needle.toLowerCase();
-        const course = CourseCtrl.get(courseTree.id);
+        const course = CourseCtrl.get(courseId);
         return course.name.toLowerCase().indexOf(lowerNeedle) !== -1 ||
             (!!course.courseName &&
                 course.courseName.toLowerCase().indexOf(lowerNeedle) !== -1);
