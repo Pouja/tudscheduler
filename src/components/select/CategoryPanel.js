@@ -42,7 +42,7 @@ default React.createClass({
             toggleView={this.toggleView}/>;
         return <Paper style={style} transitionEnabled={false}>
             {header}
-            <CategoryPanelBody hide={this.state.collapsed}
+            <CategoryPanelBody collapse={this.state.collapsed}
                 category={this.props.category}
                 isOver={this.state.isOver}
                 options={this.props.options}/>

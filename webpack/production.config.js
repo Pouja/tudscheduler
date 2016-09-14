@@ -16,7 +16,8 @@ const config = {
         plugins.css('main.css'),
         plugins.loaderOptionsPlugin,
         plugins.definePlugin,
-        plugins.uglifyJsPlugin
+        plugins.uglifyJsPlugin,
+        plugins.transferWww
     ],
     module: {
         loaders: [loaders.replaceLocalhost, loaders.css, loaders.src]

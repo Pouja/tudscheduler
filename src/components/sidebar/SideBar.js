@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import SideBarHeader from './SideBarHeader.js';
-import SideBarBody from './SideBarTreeBody.js';
+import SideBarBody from './SideBarBody.js';
 import Paper from 'material-ui/Paper';
 export
 default React.createClass({
@@ -29,7 +29,7 @@ default React.createClass({
         return <div className={this.props.className}>
                 <Paper>
                     <SideBarHeader toggleView={this.toggleView}/>
-                    <SideBarTreeBody hide={this.state.collapsed}/>
+                    <SideBarBody hide={this.state.collapsed}/>
                 </Paper>
             </div>;
     }

@@ -14,7 +14,7 @@ default React.createClass({
         options: PropTypes.object.isRequired,
         className: PropTypes.string,
         category: PropTypes.object.isRequired,
-        hide: PropTypes.bool.isRequired
+        collapse: PropTypes.bool.isRequired
     },
     shouldComponentUpdate(nextProps, nextState){
         return !_.isEqual(this.state, nextState) ||
@@ -22,7 +22,7 @@ default React.createClass({
     },
     getInitialState() {
         return {
-            collapsed: false,
+            collapsed: this.props.collapse,
             isOver: false,
             filter: '',
             courses: this.props.category.courses,
@@ -33,6 +33,7 @@ default React.createClass({
     componentWillReceiveProps(nextProps){
         const shouldReset = this.state.catId !== nextProps.category.catId;
         this.setState({
+            collapsed: nextProps.collapse,
             catId: nextProps.category.catId,
             courses: nextProps.category.courses
         }, () => {
@@ -74,7 +75,7 @@ default React.createClass({
     },
     render() {
         return <CourseList courses={this.state.courses.map(CourseCtrl.get)}
-            hide={this.props.hide} filter={this.state.filter}
+            hide={this.state.collapsed} filter={this.state.filter}
             onEmpty={this.props.options.onEmpty} createItem={this.createCourse}/>;
     }
 });
