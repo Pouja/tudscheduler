@@ -8,7 +8,9 @@ Includes the hot module reload feature.
 You will need the mock server as well `npm run mock-server`.    
 `npm run build` To build the frontend to the build directory.  
 `npm run zip` To zip the build with the version number.  
-`npm lint` To run eslint, when commit'ing it should pass this.  
+`npm lint` To run eslint only.  
+`npm test:dev` To continuesly run mocha/enzyme/eslint/sinon/enzyme.  
+`npm test` To run do a single rune of `npm test:dev`.
 
 # LICENSE
 See the LICENSE file.
