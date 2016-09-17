@@ -21,6 +21,11 @@ const config = {
     ],
     module: {
         loaders: [loaders.replaceLocalhost, loaders.css, loaders.src]
+    },
+    externals:{
+        'react/addons': true,
+        'react/lib/ExecutionEnvironment': true,
+        'react/lib/ReactContext': true
     }
 };
 
