@@ -28,9 +28,11 @@ export default React.createClass({
     },
     componentDidMount(){
         EventServer.on('masters::loaded', this.updateTitle, 'GlobalTrack');
+        this.startListening();
     },
     componentWillUnmount() {
         EventServer.remove('masters::loaded', 'GlobalTrack');
+        this.stopListening();
     },
     startListening() {
         EventServer.on(`track::error::${this.state.trackId}`,
