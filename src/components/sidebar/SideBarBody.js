@@ -34,11 +34,11 @@ default React.createClass({
         EventServer.remove('course::searching', this.state.id);
     },
     createCourse(course) {
-        return <CourseTree key={course.id} filtering={false} visible={true}
+        return <CourseTree key={course.id} visible={true}
                     course={course}/>;
     },
     createTreeCourse(courseTree) {
-        return <CourseTree key={courseTree.nr} filtering={false} visible={courseTree.parent === 1}
+        return <CourseTree key={courseTree.nr} visible={courseTree.parent === 1}
             course={courseTree}/>;
     },
     render() {

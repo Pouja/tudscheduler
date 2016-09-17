@@ -12,21 +12,19 @@ import _ from 'lodash';
 /**
  * A list group item for in the sidebar.
  * Shows the course id, name, ects and optional control functions
- * It renders a chevron when filtering set to false and the course is a group.
+ * It renders a chevron when the course is a group.
  */
 export default React.createClass({
     propTypes:{
         style: PropTypes.object,
         course: PropTypes.object.isRequired,
-        visible: PropTypes.bool.isRequired,
-        filtering: PropTypes.bool.isRequired
+        visible: PropTypes.bool.isRequired
     },
     getInitialState() {
         return {
             ects: CourseCtrl.addedEcts(this.props.course),
             childVisible: false,
             isAdded: CourseCtrl.isAdded(this.props.course.id),
-            filtering: this.props.filtering,
             filter: '',
             visible: this.props.visible,
             id: `CourseTree::${this.props.course.id}::${_.uniqueId()}`
@@ -40,13 +38,12 @@ export default React.createClass({
         this.stopListening();
     },
     componentWillReceiveProps(nextProps){
-        if(nextProps.filtering || nextProps.visible) {
+        if(nextProps.visible) {
             this.startListening();
         } else {
             this.stopListening();
         }
         this.setState({
-            filtering: nextProps.filtering,
             visible: nextProps.visible
         });
     },
@@ -55,7 +52,7 @@ export default React.createClass({
      * Starts listening to events if it is visible.
      */
     componentDidMount() {
-        if(this.props.visible || this.props.filtering){
+        if(this.props.visible){
             this.startListening();
         }
 
@@ -114,7 +111,7 @@ export default React.createClass({
      * @return {React}     A react component
      */
     renderChevron() {
-        if (this.state.filtering || !CourseCtrl.isAGroup(this.props.course.id)) {
+        if (!CourseCtrl.isAGroup(this.props.course.id)) {
             return null;
         }
         const style = {
@@ -153,7 +150,7 @@ export default React.createClass({
         return (<Badge style={style}>EC {subEcts}/{totalEcts}</Badge>);
     },
     render() {
-        if (!this.state.visible && !this.state.filtering) {
+        if (!this.state.visible) {
             return null;
         }
         const course = CourseCtrl.get(this.props.course.id);
@@ -179,7 +176,7 @@ export default React.createClass({
                 color: green500
             }
         };
-        if (!this.state.filtering && this.props.course.depth > 1) {
+        if (this.props.course.depth > 1) {
             style.root.marginLeft = (this.props.course.depth - 1) * 10 +
                 (!CourseCtrl.isAGroup(course.id) * 45);
         }
