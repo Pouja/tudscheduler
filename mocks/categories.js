@@ -1,4 +1,5 @@
-{
+const _ = require('lodash');
+module.exports = {
     "/categories/1": {
         "GET": {
             "data": [{
@@ -31,7 +32,7 @@
         "POST": {
             "data": [{
                 "catId": 3,
-                "errors": ["More ects needed", "You have too many courses"]
+                "errors": _.sample([["More ects needed", "You have too many courses"],["a different error!"]])
             }, {
                 "courseId": 35297,
                 "errors": ["Not allowed here", "Some other meaningless error"]
@@ -46,7 +47,7 @@
                 "errors": ["I have no idea what", "I am ding dong dung"]
             }, {
                 "masterId": 3,
-                "errors": ["Max 100 ECTs for this master"]
+                "errors": _.sample([["Max 100 ECTs for this master"],["Max 10 ECTS"]])
             }, {
                 "trackId": 1,
                 "errors": ["Invalid track, just kidding"]
@@ -74,4 +75,4 @@
             }]
         }
     }
-}
+};
