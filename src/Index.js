@@ -13,6 +13,7 @@ injectTapEventPlugin();
 
 const muiTheme = getMuiTheme({
     palette: {
+        primary1Color: '#008cba',
         accent1Color: deepOrange500
     }
 });
