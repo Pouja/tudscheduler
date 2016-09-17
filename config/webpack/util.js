@@ -2,7 +2,7 @@ const path = require('path');
 const _ = require('lodash');
 
 exports.resolve = function(...paths) {
-    return path.resolve(__dirname, '../', ...paths);
+    return path.resolve(__dirname, '../../', ...paths);
 };
 
 exports.isDevMode = function() {

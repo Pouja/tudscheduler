@@ -18,11 +18,12 @@
     "superagent": "^2.0.0"
   },
   "scripts": {
-    "test": "mocha mocha.conf.js src/**/*.spec.js",
-    "test:dev": "npm test -- --watch",
+    "test": "npm run test:mocha --silent",
+    "test:mocha": "mocha config/mocha/jsdom.js config/mocha/eslint.js src/**/*.spec.js",
+    "test:dev": "npm run test:mocha -- --reporter min --watch", 
     "lint": "eslint src;exit 0",
-    "start": "webpack-dev-server --config webpack/dev.config.js --progress --inline",
-    "build": "rimraf build && NODE_ENV=production webpack --config webpack/production.config.js --progress --colors",
+    "start": "webpack-dev-server --config config/webpack/dev.config.js --progress --inline",
+    "build": "rimraf build && NODE_ENV=production webpack --config config/webpack/production.config.js --progress --colors",
     "mock-server": "mock-server mock-server.config.json",
     "zip": "zip -j tud-scheduler.${npm_package_version}.zip build/**"
   },
