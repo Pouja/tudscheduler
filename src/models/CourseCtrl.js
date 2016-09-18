@@ -2,6 +2,7 @@ import _ from 'lodash';
 import EventServer from './EventServer.js';
 import request from 'superagent';
 import FacultyCtrl from './FacultyCtrl.js';
+import SearchUtil from '../util/search.js';
 
 /**
  * The course controller.
@@ -131,14 +132,7 @@ const CourseCtrl = {
      * @return {Boolean}            true iff the course contains the needle.
      */
     hasNeedle(courseId, needle) {
-        if (!needle || needle.length === 0 || !courseId) {
-            return true;
-        }
-        const lowerNeedle = needle.toLowerCase();
-        const course = CourseCtrl.get(courseId);
-        return course.name.toLowerCase().indexOf(lowerNeedle) !== -1 ||
-            (!!course.courseName &&
-                course.courseName.toLowerCase().indexOf(lowerNeedle) !== -1);
+        return SearchUtil.hasNeedle(needle, CourseCtrl.get(courseId));
     },
     /**
      * Creates a flatten representation of the course tree

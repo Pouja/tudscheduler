@@ -20,7 +20,7 @@
   "scripts": {
     "test": "npm run test:mocha --silent",
     "test:mocha": "mocha config/mocha/jsdom.js config/mocha/eslint.js src/**/*.spec.js",
-    "test:dev": "npm run test:mocha -- --reporter min --watch", 
+    "test:dev": "npm run test:mocha -- --reporter min --watch",
     "lint": "eslint src;exit 0",
     "start": "webpack-dev-server --config config/webpack/dev.config.js --progress --inline",
     "build": "rimraf build && NODE_ENV=production webpack --config config/webpack/production.config.js --progress --colors",

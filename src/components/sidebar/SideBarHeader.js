@@ -104,7 +104,7 @@ export default React.createClass({
             display: this.state.collapsed ? 'none' : 'flex'
         };
         return <ToolbarGroup style={style}>
-            <TextField hintText="Search through the courses" fullWidth={true}
+            <TextField hintText="Search, ex: algorithm ects:4 period:3" fullWidth={true}
                 onChange={_.debounce(this.onChange, 200)}/>
         </ToolbarGroup>;
     },
