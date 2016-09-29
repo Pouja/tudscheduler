@@ -49,7 +49,7 @@ function collect(connect, monitor) {
     };
 }
 
-/**
+/**3
  * The drag and drop list item in the select view.
  */
 class CourseDnD extends Component {

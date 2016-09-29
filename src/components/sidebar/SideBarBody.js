@@ -4,6 +4,7 @@ import EventServer from '../../models/EventServer.js';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
 import CourseTree from './CourseTree.js';
 import CourseList from '../CourseList.js';
+
 export
 default React.createClass({
     getInitialState() {

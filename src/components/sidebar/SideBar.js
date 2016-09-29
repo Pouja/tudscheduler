@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react';
 import SideBarHeader from './SideBarHeader.js';
 import SideBarBody from './SideBarBody.js';
-import Paper from 'material-ui/Paper';
+import DropPanel from '../dnd/DropPanel';
+
 export
 default React.createClass({
     propTypes: {
@@ -26,11 +27,9 @@ default React.createClass({
             this.state.collapsed !== nextState.collapsed;
     },
     render() {
-        return <div className={this.props.className}>
-                <Paper>
-                    <SideBarHeader toggleView={this.toggleView}/>
-                    <SideBarBody hide={this.state.collapsed}/>
-                </Paper>
-            </div>;
+        return <DropPanel id='sidebar'>
+            <SideBarHeader toggleView={this.toggleView}/>
+            <SideBarBody hide={this.state.collapsed}/>
+        </DropPanel>;
     }
 });

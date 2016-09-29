@@ -9,16 +9,56 @@ import Check from 'material-ui/svg-icons/navigation/check';
 import {green500} from 'material-ui/styles/colors';
 import Badge from '../Badge.js';
 import _ from 'lodash';
+import {DragSource} from 'react-dnd';
+import CourseTypes from '../../constants/CourseTypes.js';
+import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
+
+const courseSource = {
+    /**
+     * Called by react-dnd when a DragSource starts to being dragged.
+     * Should return an object with the necessary values to make a drop and to identify this DragSource.
+     * @param  {Object} props The props of the react component bind to the DragSource
+     * @return {Object}       Object containing values to identify the DragSource.
+     */
+    beginDrag(props) {
+        return {
+            course: props.course.id
+        };
+    }
+    /**
+     * Called by react-dnd when a DragSource stops being dragged by the user.
+     * Handles the drop if it is not dropped already.
+     * It moves the course to another Category.
+     * @param  {Object} props   The props of the react component binded to the DragSource
+     * @param  {Object} monitor The monitor object retuned by react-dnd. See react-dnd for more info.
+     */
+    // endDrag(props, monitor) {
+
+    // }
+};
+
+function collect(connect, monitor) {
+    return {
+        connectDragSource: connect.dragSource(),
+        connectDragPreview: connect.dragPreview(),
+        isDragging: monitor.isDragging()
+    };
+}
+
+
 /**
  * A list group item for in the sidebar.
  * Shows the course id, name, ects and optional control functions
  * It renders a chevron when the course is a group.
  */
-export default React.createClass({
+const CourseTree = React.createClass({
     propTypes:{
         style: PropTypes.object,
         course: PropTypes.object.isRequired,
-        visible: PropTypes.bool.isRequired
+        visible: PropTypes.bool.isRequired,
+        connectDragSource: PropTypes.func.isRequired,
+        connectDragPreview: PropTypes.func.isRequired,
+        isDragging: PropTypes.bool.isRequired
     },
     getInitialState() {
         return {
@@ -111,12 +151,12 @@ export default React.createClass({
      * @return {React}     A react component
      */
     renderChevron() {
-        if (!CourseCtrl.isAGroup(this.props.course.id)) {
-            return null;
-        }
         const style = {
             top: 3
         };
+        if (!CourseCtrl.isAGroup(this.props.course.id)) {
+            return <EditorDragHandle style={style}/>;
+        }
         return (this.state.childVisible) ? <ExpandLess style={style}/> :
             <ExpandMore style={style}/>;
     },
@@ -149,14 +189,14 @@ export default React.createClass({
         }
         return (<Badge style={style}>EC {subEcts}/{totalEcts}</Badge>);
     },
-    render() {
+    renderListItem() {
         if (!this.state.visible) {
             return null;
         }
         const course = CourseCtrl.get(this.props.course.id);
         const style = {
             root: Object.assign({}, this.props.style, {
-                marginLeft: 0
+                marginLeft: (this.props.course.depth - 1) * 10
             }),
             innerDiv: {
                 paddingTop: 6,
@@ -176,11 +216,9 @@ export default React.createClass({
                 color: green500
             }
         };
-        if (this.props.course.depth > 1) {
-            style.root.marginLeft = (this.props.course.depth - 1) * 10 +
-                (!CourseCtrl.isAGroup(course.id) * 45);
-        }
         return <ListItem
+            disableTouchRipple
+            disableFocusRipple
             onTouchTap={this.toggle}
             primaryText={<span>{course.name} {course.courseName}
                 {<Check style={style.check}/>}</span>}
@@ -192,6 +230,12 @@ export default React.createClass({
             innerDivStyle={style.innerDiv}
             key={course.nr || course.id}
             style={style.root}/>;
+    },
+    render() {
+        return this.props.connectDragSource(<div key={`coursednd.${this.props.course.id}`}>
+            {this.renderListItem()}</div>);
     }
 });
 
+export
+default DragSource(CourseTypes.COMPULSORY, courseSource, collect)(CourseTree); //eslint-disable-line new-cap

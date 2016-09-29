@@ -1,8 +1,6 @@
 import './SelectView.css';
 import React from 'react';
-import {DragDropContext} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import Category from './Category.js';
+import CategoryPanel from './CategoryPanel.js';
 import CategoryCtrl from '../../models/CategoryCtrl.js';
 import EventServer from '../../models/EventServer.js';
 import GlobalTrack from './GlobalTrack.js';
@@ -11,7 +9,7 @@ import GlobalTrack from './GlobalTrack.js';
  * The select view, renders the isp categorys which are the drop targets for the CourseDnD.
  * Lets the user set up his isp form which should be printed/send.
  */
-const SelectView = React.createClass({
+export default React.createClass({
     componentWillMount() {
         EventServer.on('categories::loaded', () => this.forceUpdate(), 'SelectView');
     },
@@ -40,16 +38,16 @@ const SelectView = React.createClass({
             onHover: 'Drop'
         };
         return <div className="select-view">
-            <Category className="unlisted" key={1} category={CategoryCtrl.unlisted}
+            <CategoryPanel className="unlisted" key={1} category={CategoryCtrl.unlisted}
                 options={unlistedOptions}>
-            </Category>
+            </CategoryPanel>
             <div className="categories">
                 <GlobalTrack style={style.categories}/>
                 {CategoryCtrl.categories.
                     filter(function(category){
                         return category.catId !== 'unlisted';
                     }).map(function(category, idx){
-                    return <Category key={idx} category={category}
+                    return <CategoryPanel key={idx} category={category}
                         style={style.categories}
                         options={categoryOptions}/>;
                 })}
@@ -57,5 +55,3 @@ const SelectView = React.createClass({
         </div>;
     }
 });
-
-module.exports = DragDropContext(HTML5Backend)(SelectView);//eslint-disable-line new-cap

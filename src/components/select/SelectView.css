@@ -9,7 +9,7 @@
 @media (min-device-width: 768px) {
   .select-view {
     display: flex;
-    justify-content: 'space-between';
+    justify-content: space-between;
   }
   .unlisted,
   .categories {
