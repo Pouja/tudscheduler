@@ -4,9 +4,14 @@
         "react",
         "babel"
     ],
-    "ecmaFeatures": {
-        "modules": true,
-        "jsx": true
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "modules": true,
+            "jsx": true,
+            "experimentalDecorators": true
+        }
     },
     "env": {
         "browser": true,
@@ -14,14 +19,13 @@
         "node": true,
         "mocha": true
     },
-
     "rules": {
+        "babel/new-cap": 0,
         "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error",
+        "react/jsx-uses-vars": "error",
         "no-undef": 2,
         "no-unused-vars": 2,
         "no-var": 2,
-        "new-cap": 2,
         "prefer-template": 2,
         "semi": ["error", "always", {
             "omitLastInOneLineBlock": true
