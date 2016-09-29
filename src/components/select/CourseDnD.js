@@ -2,7 +2,7 @@ import CourseCtrl from '../../models/CourseCtrl.js';
 import React, {Component, PropTypes} from 'react';
 import CourseTypes from '../../constants/CourseTypes.js';
 import {DragSource} from 'react-dnd';
-import CategoryCtrl from '../../models/CategoryCtrl.js';
+import DnDCtrl from '../../models/DnDCtrl.js';
 import {ListItem} from 'material-ui/List';
 import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
 import AddRemoveMove from '../AddRemoveMove.js';
@@ -37,7 +37,7 @@ const courseSource = {
         if (!monitor.didDrop() || item.currentFieldId === dropResult.id) {
             return;
         }
-        CategoryCtrl.move(item.course.id, item.currentFieldId, dropResult.id);
+        DnDCtrl.move(item.course.id, item.currentFieldId, dropResult.id);
     }
 };
 

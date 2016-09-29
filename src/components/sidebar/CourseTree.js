@@ -12,6 +12,7 @@ import _ from 'lodash';
 import {DragSource} from 'react-dnd';
 import CourseTypes from '../../constants/CourseTypes.js';
 import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
+import DnDCtrl from '../../models/DnDCtrl.js';
 
 const courseSource = {
     /**
@@ -22,9 +23,10 @@ const courseSource = {
      */
     beginDrag(props) {
         return {
-            course: props.course.id
+            course: props.course,
+            currentFieldId: 'sidebar'
         };
-    }
+    },
     /**
      * Called by react-dnd when a DragSource stops being dragged by the user.
      * Handles the drop if it is not dropped already.
@@ -32,9 +34,14 @@ const courseSource = {
      * @param  {Object} props   The props of the react component binded to the DragSource
      * @param  {Object} monitor The monitor object retuned by react-dnd. See react-dnd for more info.
      */
-    // endDrag(props, monitor) {
-
-    // }
+    endDrag(props, monitor) {
+        const item = monitor.getItem();
+        const dropResult = monitor.getDropResult();
+        if (!monitor.didDrop() || item.currentFieldId === dropResult.id) {
+            return;
+        }
+        DnDCtrl.move(item.course.id, item.currentFieldId, dropResult.id);
+    }
 };
 
 function collect(connect, monitor) {

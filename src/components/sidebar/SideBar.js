@@ -27,7 +27,7 @@ default React.createClass({
             this.state.collapsed !== nextState.collapsed;
     },
     render() {
-        return <DropPanel id='sidebar'>
+        return <DropPanel id='sidebar' className='sidebar'>
             <SideBarHeader toggleView={this.toggleView}/>
             <SideBarBody hide={this.state.collapsed}/>
         </DropPanel>;
