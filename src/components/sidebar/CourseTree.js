@@ -84,22 +84,8 @@ const CourseTree = React.createClass({
         EventServer.remove(`CourseTree::visible::${this.props.course.parent}`, this.state.id);
         this.stopListening();
     },
-    componentWillReceiveProps(nextProps){
-        if(nextProps.visible) {
-            this.startListening();
-        } else {
-            this.stopListening();
-        }
-        this.setState({
-            visible: nextProps.visible
-        });
-    },
-    /**
-     * Called by React when it is mounted in the DOM
-     * Starts listening to events if it is visible.
-     */
     componentDidMount() {
-        if(this.props.visible){
+        if(this.state.visible){
             this.startListening();
         }
 
