@@ -8,7 +8,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import './Main.css';
 
 /**
- * Renders the tabs, sidebar and the main component (yearview/selectview)
+ * Renders sidebar and the main component (yearview/selectview)
  */
 const Main = React.createClass({
     shouldComponentUpdate(nextProps){

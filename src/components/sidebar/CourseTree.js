@@ -52,7 +52,6 @@ function collect(connect, monitor) {
     };
 }
 
-
 /**
  * A list group item for in the sidebar.
  * Shows the course id, name, ects and optional control functions
@@ -60,8 +59,11 @@ function collect(connect, monitor) {
  */
 const CourseTree = React.createClass({
     propTypes:{
+        // Can override the root style of the CourseTree
         style: PropTypes.object,
+        // The course object, should atleast have the course id.
         course: PropTypes.object.isRequired,
+        // The initial visibility state
         visible: PropTypes.bool.isRequired,
         connectDragSource: PropTypes.func.isRequired,
         connectDragPreview: PropTypes.func.isRequired,
@@ -69,14 +71,23 @@ const CourseTree = React.createClass({
     },
     getInitialState() {
         return {
+            // The total ects from all the child courses that are added
             ects: CourseCtrl.addedEcts(this.props.course),
+            // Used by the chevron to display the visibility state of the children
             childVisible: false,
             isAdded: CourseCtrl.isAdded(this.props.course.id),
-            filter: '',
+            // Changed when the visibility of the parent is changed
             visible: this.props.visible,
+            // The unique identifier of this CourseTree instant
             id: `CourseTree::${this.props.course.id}::${_.uniqueId()}`
         };
     },
+    /**
+     * Only update when the state is mutated.
+     * @param {Object} nextProps The next set of props to be set.
+     * @param {Object} nextState The next state of the CourseTree.
+     * @return {boolean} true iff the state deep differs from the next state.
+     */
     shouldComponentUpdate(nextProps, nextState){
         return !_.isEqual(this.state, nextState);
     },
@@ -84,6 +95,9 @@ const CourseTree = React.createClass({
         EventServer.remove(`CourseTree::visible::${this.props.course.parent}`, this.state.id);
         this.stopListening();
     },
+    /**
+     * Will start/stop listening to course changes depending on the course state.
+     */
     componentDidMount() {
         if(this.state.visible){
             this.startListening();
@@ -115,7 +129,7 @@ const CourseTree = React.createClass({
         EventServer.emit(`CourseTree::visible::${this.props.course.nr}`, nextVisibility);
     },
     /**
-     * Start listening to events.
+     * Start listening to course changes.
      */
     startListening() {
         EventServer.on('course::added::*', () => this.update(), this.state.id);

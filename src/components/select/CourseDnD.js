@@ -49,14 +49,18 @@ function collect(connect, monitor) {
     };
 }
 
-/**3
+/**
  * The drag and drop list item in the select view.
+ * Assumes it is used in the Category context.
+ * @example
+ * <CourseDndD course={courseObject} warnings={['warning1','warning2']} />
  */
 class CourseDnD extends Component {
     constructor(props) {
         super(props);
         this.state = {
             warnings: Storage.getErrors('course', this.props.course.id),
+            // The unique identifier of this specifiek instant CourseDnD
             id: `CourseDndD::${this.props.course.id}::${_.uniqueId()}`
         };
     }
@@ -71,6 +75,9 @@ class CourseDnD extends Component {
         ]),
         style: PropTypes.object
     };
+    /**
+     * Will start listening to course errors to display
+     */
     componentWillMount(){
         EventServer.on(`course::error::${this.props.course.id}`, (warnings) => this.setState({
             warnings: warnings.map(warning => warning)
@@ -108,6 +115,7 @@ class CourseDnD extends Component {
                 leftIcon={<EditorDragHandle/>}/>;
     }
     render() {
+        // ReactDnD only accepts native elements
         return this.props.connectDragSource(<div key={`coursednd.${this.props.course.id}`}>
             {this.renderList()}</div>);
     }

@@ -5,6 +5,12 @@ import FacultyCtrl from '../../models/FacultyCtrl.js';
 import CourseTree from './CourseTree.js';
 import CourseList from '../CourseList.js';
 
+/**
+ * The body of the the sidebar.
+ * Renders the courses as a tree.
+ * @example
+ * <sidebarbody hide={true}/>
+ */
 export
 default React.createClass({
     getInitialState() {
