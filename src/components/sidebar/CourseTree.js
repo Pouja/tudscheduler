@@ -9,48 +9,8 @@ import Check from 'material-ui/svg-icons/navigation/check';
 import {green500} from 'material-ui/styles/colors';
 import Badge from '../Badge.js';
 import _ from 'lodash';
-import {DragSource} from 'react-dnd';
-import CourseTypes from '../../constants/CourseTypes.js';
 import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
-import DnDCtrl from '../../models/DnDCtrl.js';
-
-const courseSource = {
-    /**
-     * Called by react-dnd when a DragSource starts to being dragged.
-     * Should return an object with the necessary values to make a drop and to identify this DragSource.
-     * @param  {Object} props The props of the react component bind to the DragSource
-     * @return {Object}       Object containing values to identify the DragSource.
-     */
-    beginDrag(props) {
-        return {
-            course: props.course,
-            currentFieldId: 'sidebar'
-        };
-    },
-    /**
-     * Called by react-dnd when a DragSource stops being dragged by the user.
-     * Handles the drop if it is not dropped already.
-     * It moves the course to another Category.
-     * @param  {Object} props   The props of the react component binded to the DragSource
-     * @param  {Object} monitor The monitor object retuned by react-dnd. See react-dnd for more info.
-     */
-    endDrag(props, monitor) {
-        const item = monitor.getItem();
-        const dropResult = monitor.getDropResult();
-        if (!monitor.didDrop() || item.currentFieldId === dropResult.id) {
-            return;
-        }
-        DnDCtrl.move(item.course.id, item.currentFieldId, dropResult.id);
-    }
-};
-
-function collect(connect, monitor) {
-    return {
-        connectDragSource: connect.dragSource(),
-        connectDragPreview: connect.dragPreview(),
-        isDragging: monitor.isDragging()
-    };
-}
+import {createSource, defaultCollect, createDragSource} from '../dnd/CreateDragSource';
 
 /**
  * A list group item for in the sidebar.
@@ -65,9 +25,7 @@ const CourseTree = React.createClass({
         course: PropTypes.object.isRequired,
         // The initial visibility state
         visible: PropTypes.bool.isRequired,
-        connectDragSource: PropTypes.func.isRequired,
-        connectDragPreview: PropTypes.func.isRequired,
-        isDragging: PropTypes.bool.isRequired
+        connectDragSource: PropTypes.func.isRequired
     },
     getInitialState() {
         return {
@@ -243,6 +201,4 @@ const CourseTree = React.createClass({
             {this.renderListItem()}</div>);
     }
 });
-
-export
-default DragSource(CourseTypes.COMPULSORY, courseSource, collect)(CourseTree); //eslint-disable-line new-cap
+export default createDragSource(createSource(() => 'sidebar'), defaultCollect, CourseTree);

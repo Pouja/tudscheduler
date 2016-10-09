@@ -47,6 +47,7 @@ export default React.createClass({
         return this.state.added !== nextState.added;
     },
     componentWillMount(){
+        // Bug when removing a CourseDnD through drag n drop it will call update when it is unmounting
         EventServer.on('course::added::*', this.updateAdded, this.state.id);
         EventServer.on('course::removed::*', this.updateAdded, this.state.id);
     },
