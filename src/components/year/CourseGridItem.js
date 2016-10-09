@@ -4,16 +4,19 @@ import AddRemoveMove from '../AddRemoveMove.js';
 import CourseCtrl from '../../models/CourseCtrl.js';
 import Paper from 'material-ui/Paper';
 import {grey100} from 'material-ui/styles/colors.js';
+import {createSource, defaultCollect, createDragSource} from '../dnd/CreateDragSource';
+
 /**
  * Used by YearView to render a course in the grid layout.
  */
-export default React.createClass({
+const CourseGridItem = React.createClass({
     propTypes: {
         courseId: PropTypes.oneOfType([
             PropTypes.string.isRequired,
             PropTypes.number.isRequired
         ]).isRequired,
-        style: React.PropTypes.object
+        style: React.PropTypes.object,
+        connectDragSource: PropTypes.func.isRequired
     },
     render(){
         const style = {
@@ -21,7 +24,10 @@ export default React.createClass({
                 backgroundColor: grey100
             }, this.props.style),
             inner: {
-                padding: 8
+                padding: 8,
+                cursor: 'move',
+                height: '80%',
+                width: '80%'
             },
             AddRemoveMove: {
                 position: 'absolute',
@@ -40,11 +46,14 @@ export default React.createClass({
         };
         const course = CourseCtrl.get(this.props.courseId);
         return <Paper zDepth={1} style={style.root}>
-            <div style={style.inner}>
+            {this.props.connectDragSource(<div style={style.inner}>
                 <div style={style.text}>{course.name} {course.courseName}</div>
                 <Badge style={style.badge}>EC {course.ects}</Badge>
                 <AddRemoveMove courseId={this.props.courseId} style={style.AddRemoveMove}/>
-            </div>
+            </div>)}
         </Paper>;
     }
 });
+export default createDragSource(createSource(() => 'yearview', (props) => { return {
+    id: props.courseId
+};}), defaultCollect, CourseGridItem);

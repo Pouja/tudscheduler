@@ -2,7 +2,7 @@ import DnDCtrl from '../../models/DnDCtrl';
 import {DragSource} from 'react-dnd';
 import CourseTypes from '../../constants/CourseTypes.js';
 
-export function createSource(getCurrentFieldId) {
+export function createSource(getCurrentFieldId, getCourse) {
     return {
         /**
          * Called by react-dnd when a DragSource starts to being dragged.
@@ -13,7 +13,7 @@ export function createSource(getCurrentFieldId) {
         beginDrag(props) {
             return {
                 currentFieldId: getCurrentFieldId(props),
-                course: props.course
+                course: (getCourse) ? getCourse(props) : props.course
             };
         },
         /**
