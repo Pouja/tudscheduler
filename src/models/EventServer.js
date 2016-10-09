@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 let listeners = {};
+let currentListeners = [];
 /**
  * A simple EventListeners.
  * There are other modules that have the exact functionality and are tested.
@@ -10,6 +11,7 @@ let listeners = {};
 const EventListener = {
     flush() {
         listeners = {};
+        currentListeners = [];
     },
     /**
      * Will call fn when 'name' event is emitted.
@@ -22,6 +24,9 @@ const EventListener = {
         if(_.isEmpty(id)) {
             throw new Error('All event listeners must supply an unique id');
         }
+        if(_.find(currentListeners, {id: id, name: name}) !== undefined) {
+            throw new Error(`Duplicate listener added: ${id}`);
+        }
         // console.log(`Adding listener ${name} with id ${id}`);
         if (!listeners.hasOwnProperty(name)) {
             listeners[name] = [];
@@ -33,6 +38,7 @@ const EventListener = {
             id: id,
             fn: fn
         });
+        currentListeners.push({id:id, name:name});
     },
     /**
      * Emit the event.
@@ -48,9 +54,7 @@ const EventListener = {
             .concat(listeners[name])
             .filter(Boolean)
             .forEach(function(listener) {
-                if (listener === null || listener === undefined) {
-                    console.error(`EventServer supposed to invoke a listener ${name} for id ${listener.id}. But the listener got removed.`);
-                } else {
+                if (_.find(currentListeners, {id: listener.id}) !== undefined) {
                     // console.log(`invoking ${listener.id} for event ${name}`);
                     listener.fn(...values);
                     // console.log(`done ${listener.id} for event ${name}`);
@@ -71,6 +75,7 @@ const EventListener = {
             _.remove(listeners[name], {
                 id: id
             });
+            _.remove(currentListeners, {id:id, name:name});
         }
     },
     /**
