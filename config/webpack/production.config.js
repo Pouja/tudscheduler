@@ -2,9 +2,14 @@ const paths = require('./paths.js');
 const plugins = require('./plugins.js');
 const loaders = require('./loaders.js');
 const util = require('./util.js');
+const pkg = require('../../package.json');
+const webpack = require('webpack');
 
 const config = {
-    entry: [paths.entry],
+    entry: {
+        app: paths.entry,
+        vendor: Object.keys(pkg.dependencies)
+    },
     // Render source-map file for final build
     devtool: 'source-map',
     // output config
@@ -13,6 +18,7 @@ const config = {
         filename: 'app.js' // Name of output file
     },
     plugins: [
+        plugins.commonChunk('vendor'),
         plugins.css('main.css'),
         plugins.loaderOptionsPlugin,
         plugins.definePlugin,
@@ -20,7 +26,7 @@ const config = {
         plugins.transferWww
     ],
     module: {
-        loaders: [loaders.replaceLocalhost, loaders.css, loaders.src]
+        loaders: [loaders.replaceLocalhost, loaders.json, loaders.css, loaders.src]
     },
     externals:{
         'react/addons': true,

@@ -31,6 +31,9 @@ exports.uglifyJsPlugin = new webpack.optimize.UglifyJsPlugin({
     sourceMap: true
 });
 
+exports.commonChunk = (chunk ) => new webpack.optimize.CommonsChunkPlugin({name: chunk, filename: `${chunk}.js`}),
+
+
 exports.loaderOptionsPlugin = new webpack.LoaderOptionsPlugin({
     debug: util.isDevMode(),
     minimize: !util.isDevMode()
