@@ -28,6 +28,7 @@ exports.src = {
 };
 
 exports.eslint = {
+    enforce: 'pre',
     test: /\.js$/,
     loader: 'eslint-loader',
     exclude: /node_modules/
@@ -40,4 +41,8 @@ exports.replaceLocalhost = {
         search: 'http://localhost:8000/',
         replace: ''
     }
+};
+exports.json = {
+    test: /\.json$/,
+    loader: 'json'
 };

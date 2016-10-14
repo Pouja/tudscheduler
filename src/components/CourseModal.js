@@ -5,6 +5,7 @@ import request from 'superagent';
 import CourseCtrl from '../models/CourseCtrl.js';
 import DialogCtrl from '../models/DialogCtrl.js';
 import _ from 'lodash';
+import ReactMarkdown from 'react-markdown';
 
 /**
  * Renders the detailed information of a course.
@@ -78,10 +79,10 @@ default React.createClass({
                 {Object.keys(course)
                     .filter(key => filterKeys.indexOf(key) === -1)
                     .map(function(key, idx){
-                        return <p style={style.p} key={idx}>
+                        return <div style={style.p} key={idx}>
                             <span style={style.header}>{_.upperFirst(key)}</span><br/>
-                            <span>{course[key]}</span>
-                        </p>;
+                            <ReactMarkdown source={course[key]}></ReactMarkdown>
+                        </div>;
                     })
                 }
                 </div>

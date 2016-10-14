@@ -2,11 +2,9 @@ const paths = require('./paths.js');
 const plugins = require('./plugins.js');
 const loaders = require('./loaders.js');
 const util = require('./util.js');
-
 const config = {
     // Entry points to the project
     entry: [
-        'webpack/hot/dev-server',
         'webpack/hot/only-dev-server',
         paths.entry
     ],
@@ -32,11 +30,7 @@ const config = {
         plugins.transferWww
     ],
     module: {
-        loaders: [loaders.css, loaders.components, loaders.nonReact],
-        preLoaders: [loaders.eslint]
-    },
-    eslint: {
-        failOnError: true
+        loaders: [loaders.css, loaders.json, loaders.eslint,loaders.components, loaders.nonReact]
     }
 };
 
