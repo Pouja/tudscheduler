@@ -21,8 +21,8 @@ export default React.createClass({
         return {
             trackId: FacultyCtrl.selectedTrack().trackId,
             masterId: FacultyCtrl.selectedMaster().masterId,
-            trackErrors: Storage.getErrors('track', FacultyCtrl.selectedTrack().trackId),
-            masterErrors: Storage.getErrors('master', FacultyCtrl.selectedMaster().masterId),
+            trackErrors: Storage.getWarnings('track', FacultyCtrl.selectedTrack().trackId),
+            masterErrors: Storage.getWarnings('master', FacultyCtrl.selectedMaster().masterId),
             title: FacultyCtrl.selectedTrack().name
         };
     },
@@ -35,14 +35,14 @@ export default React.createClass({
         this.stopListening();
     },
     startListening() {
-        EventServer.on(`track::error::${this.state.trackId}`,
+        EventServer.on(`track::warning::${this.state.trackId}`,
             (errors) => this.updateErrors(errors,'track'), 'GlobalTrack');
-        EventServer.on(`master::error::${this.state.masterId}`,
+        EventServer.on(`master::warning::${this.state.masterId}`,
             (errors) => this.updateErrors(errors,'master'), 'GlobalTrack');
     },
     stopListening() {
-        EventServer.remove(`master::error::${this.state.masterId}`, 'GlobalTrack');
-        EventServer.remove(`track::error::${this.state.trackId}`, 'GlobalTrack');
+        EventServer.remove(`master::warning::${this.state.masterId}`, 'GlobalTrack');
+        EventServer.remove(`track::warning::${this.state.trackId}`, 'GlobalTrack');
     },
     updateTitle() {
         this.stopListening();

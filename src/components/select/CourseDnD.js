@@ -19,7 +19,7 @@ class CourseDnD extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            warnings: Storage.getErrors('course', this.props.course.id),
+            warnings: Storage.getWarnings('course', this.props.course.id),
             // The unique identifier of this specifiek instant CourseDnD
             id: `CourseDndD::${this.props.course.id}::${_.uniqueId()}`
         };
@@ -37,15 +37,15 @@ class CourseDnD extends Component {
         return !_.isEqual(this.state, nextState);
     }
     /**
-     * Will start listening to course errors to display
+     * Will start listening to course warnings to display
      */
     componentWillMount(){
-        EventServer.on(`course::error::${this.props.course.id}`, (warnings) => this.setState({
+        EventServer.on(`course::warning::${this.props.course.id}`, (warnings) => this.setState({
             warnings: warnings.map(warning => warning)
         }), this.state.id);
     }
     componentWillUnmount(){
-        EventServer.remove(`course::error::${this.props.course.id}`, this.state.id);
+        EventServer.remove(`course::warning::${this.props.course.id}`, this.state.id);
     }
     renderList() {
         const course = CourseCtrl.get(this.props.course.id);

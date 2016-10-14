@@ -26,7 +26,6 @@ const Storage = {
      * @return {Promise} empty resolve if the post succeeeds otherwise a reject with the error object.
      */
     save() {
-
         const trackId = FacultyCtrl.selectedTrack().trackId;
         return new Promise(function(resolve, reject) {
             request
@@ -43,7 +42,7 @@ const Storage = {
                 });
             });
     },
-    getErrors(type, id) {
+    getWarnings(type, id) {
         if (Storage.errors[type] && Storage.errors[type][id]) {
             return Storage.errors[type][id];
         }
@@ -66,7 +65,7 @@ const Storage = {
             Storage.errors[type.value] = {};
         }
         Storage.errors[type.value][err[type.key]] = err.errors;
-        EventServer.emit(`${type.value}::error::${err[type.key]}`, err.errors);
+        EventServer.emit(`${type.value}::warning::${err[type.key]}`, err.errors);
     }
 };
 export

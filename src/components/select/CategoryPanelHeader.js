@@ -26,18 +26,18 @@ default React.createClass({
             collapsed: false,
             search: false,
             searchValue: '',
-            errors: Storage.getErrors('category', this.props.category.catId),
+            errors: Storage.getWarnings('category', this.props.category.catId),
             id: `CategoryPanelHeader::${this.props.category.catId}::${_.uniqueId()}`
         };
     },
     componentWillMount() {
-        EventServer.on(`category::error::${this.props.category.catId}`,
+        EventServer.on(`category::warning::${this.props.category.catId}`,
             (errors) =>this.setState({
                 errors: errors
             }), this.state.id);
     },
     componentWillUnmount() {
-        EventServer.remove(`category::error::${this.props.category.catId}`, this.state.id);
+        EventServer.remove(`category::warning::${this.props.category.catId}`, this.state.id);
     },
     /**
      * Toggles the panel body visibility
