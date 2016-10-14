@@ -5,7 +5,6 @@ import AddRemoveMove from './../AddRemoveMove.js';
 import {ListItem} from 'material-ui/List';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
-import Check from 'material-ui/svg-icons/navigation/check';
 import {green500} from 'material-ui/styles/colors';
 import Badge from '../Badge.js';
 import _ from 'lodash';
@@ -174,11 +173,14 @@ const CourseTree = React.createClass({
                 height: 22
             },
             check:{
+                width: 11,
+                height: 11,
                 display: this.state.isAdded ? 'inline-block' : 'none',
                 position: 'absolute',
                 right: 40,
-                top: 11,
-                color: green500
+                top: 18,
+                borderRadius: '50%',
+                backgroundColor: green500
             }
         };
         return <ListItem
@@ -186,7 +188,7 @@ const CourseTree = React.createClass({
             disableFocusRipple
             onTouchTap={this.toggle}
             primaryText={<span>{course.name} {course.courseName}
-                {<Check style={style.check}/>}</span>}
+                <div style={style.check}/></span>}
             secondaryText={<div style={style.secondaryText}>
                 {this.renderECBadge()}{this.renderQBadge()}
             </div>}
