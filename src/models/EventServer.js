@@ -27,12 +27,11 @@ const EventListener = {
         if(_.find(currentListeners, {id: id, name: name}) !== undefined) {
             throw new Error(`Duplicate listener added: ${id}`);
         }
-        // console.log(`Adding listener ${name} with id ${id}`);
-        if (!listeners.hasOwnProperty(name)) {
-            listeners[name] = [];
-        }
         if (!_.isFunction(fn)) {
             throw new Error(`EventServer expected a function as second argument but got ${typeof fn} with id ${id}`);
+        }
+        if (!listeners.hasOwnProperty(name)) {
+            listeners[name] = [];
         }
         listeners[name].push({
             id: id,
@@ -69,7 +68,7 @@ const EventListener = {
      */
     remove(name, id) {
         if(_.isEmpty(id)) {
-            throw new Error('Second argument \'id\' is not set in EventListener::remove');
+            throw new Error('Second argument \'id\' is not set.');
         }
         if (listeners.hasOwnProperty(name)) {
             _.remove(listeners[name], {
@@ -77,16 +76,6 @@ const EventListener = {
             });
             _.remove(currentListeners, {id:id, name:name});
         }
-    },
-    /**
-     * Partial call emit, this is usefull when you want to emit this when a dom event occurs.
-     * For example: onClick(EventListener.partialEmit('click', 'some', 'values')).
-     * @param  {String}    name   The name of the event.
-     * @param  {Array} values     The values that should be sent with the emit.
-     * @return {Function}         A partial function of EventListener.emit
-     */
-    partialEmit(name, ...values) {
-        return _.partial(EventListener.emit, name, ...values);
     },
     /**
      * Retrieves a list of functions where the event which they listen on partially matches
@@ -101,14 +90,15 @@ const EventListener = {
      * @return {[type]}      [description]
      */
     getWildCardFn(name) {
-        return Object.keys(listeners).filter(function(key) {
-            let split = key.split('*');
+        return Object.keys(listeners)
+        .filter(function(key) {
+            const split = key.split('*');
             return (split.length === 2 && name.slice(0, split[0].length) === split[0]);
         }).map(function(key) {
             return listeners[key];
         }).reduce(function(current, next){
             return current.concat(next);
-        }, []);
+        }, []) || [];
     }
 };
 
