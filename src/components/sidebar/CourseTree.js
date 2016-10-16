@@ -59,21 +59,29 @@ const CourseTree = React.createClass({
         if(this.state.visible){
             this.startListening();
         }
-
-        EventServer.on(`CourseTree::visible::${this.props.course.parent}`, (toggle) => {
-            let nextState = {
-                visible: toggle
-            };
-            if (!toggle) {
-                this.stopListening();
-                EventServer.emit(`CourseTree::visible::${this.props.course.nr}`, toggle);
-                nextState.childVisible = false;
-            } else {
-                this.startListening();
-                this.update();
-            }
-            this.setState(nextState);
-        }, this.state.id);
+        EventServer.on(`CourseTree::visible::${this.props.course.parent}`, this.onVisible, this.state.id);
+    },
+    /**
+     * Called when the parent visibility changes.
+     * If the parent is not visible any more it will emit that this comp will also hide.
+     * Furthermore it will stop listening to changes to increase performance
+     * (No need to update things which are not visible).
+     * If the parent has become visible, start listening to changes.
+     * @param {bool} toggle The visibility state of the parent.
+     */
+    onVisible(toggle) {
+        let nextState = {
+            visible: toggle
+        };
+        if (!toggle) {
+            this.stopListening();
+            EventServer.emit(`CourseTree::visible::${this.props.course.nr}`, toggle);
+            nextState.childVisible = false;
+        } else {
+            this.startListening();
+            this.update();
+        }
+        this.setState(nextState);
     },
     /**
      * Toggle the visibility of the children
