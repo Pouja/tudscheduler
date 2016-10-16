@@ -1330,7 +1330,7 @@
                 "Education Period": "3,4",
                 "Start Education": "3"
             }],
-            "timeout": 500
+            "timeout": 5000
         }
     },
     "/courseData/2": {

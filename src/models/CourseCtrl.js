@@ -22,7 +22,7 @@ const CourseCtrl = {
     /**
      * Initialises the course controller.
      * Fetches the course tree and all the courses.
-     * Sets the depth and numbers the ree
+     * Sets the depth and numbers the tree
      */
     init() {
         const masterId = FacultyCtrl.selectedMaster().masterId;
