@@ -2,14 +2,12 @@ import React, {PropTypes} from 'react';
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ActionSettings from 'material-ui/svg-icons/action/settings';
-import TextField from 'material-ui/TextField';
 import EventServer from '../../models/EventServer.js';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
-import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
-import IconButton from 'material-ui/IconButton';
-import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import DialogCtrl from '../../models/DialogCtrl.js';
 import _ from 'lodash';
+import ToolbarSearch from '../Toolbars/ToolbarSearch';
+import ToolbarCollapse from '../Toolbars/ToolbarCollapse';
 
 export default React.createClass({
     propTypes: {
@@ -82,31 +80,13 @@ export default React.createClass({
             <ActionSettings/></FloatingActionButton>;
         return <div>{setting}</div>;
     },
-    renderCollapse() {
-        let collapse;
-        if(this.state.collapsed) {
-            collapse = <IconButton onTouchTap={this.toggleView}
-                tooltip="Show courses"
-                tooltipPosition="top-left">
-                <ExpandMore/>
-            </IconButton>;
-        } else {
-            collapse = <IconButton onTouchTap={this.toggleView}
-                tooltip="Hide courses"
-                tooltipPosition="top-left">
-                <ExpandLess/>
-            </IconButton>;
-        }
-        return <ToolbarGroup>{collapse}</ToolbarGroup>;
-    },
     renderSearch(){
         const style = {
             display: this.state.collapsed ? 'none' : 'flex'
         };
-        return <ToolbarGroup style={style}>
-            <TextField hintText="Search, ex: algorithm ec:4 period:3" fullWidth={true}
-                onChange={_.debounce(this.onChange, 200)}/>
-        </ToolbarGroup>;
+        return <ToolbarSearch style={style}
+            placeholder="Search, ex algorithm ec:4 period:3"
+            onChange={this.onChange}/>;
     },
     render(){
         const style = {
@@ -136,13 +116,12 @@ export default React.createClass({
             <ToolbarGroup>
                 <ToolbarGroup style={style.control}>
                     {this.renderControl()}
-
                 </ToolbarGroup>
                 <ToolbarGroup style={style.titleGroup}>
                     <span style={style.subTitle}>{this.state.faculty} \ {this.state.master}</span><br/>
                     <span style={style.title}>{this.state.track}</span>
                 </ToolbarGroup>
-                {this.renderCollapse()}
+                <ToolbarCollapse toggleView={this.toggleView} collapsed={this.state.collapsed}/>
             </ToolbarGroup>
             {this.renderSearch()}
         </Toolbar>;

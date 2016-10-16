@@ -4,7 +4,7 @@ import React, {PropTypes} from 'react';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
 import EventServer from '../../models/EventServer.js';
 import Storage from '../../models/Storage.js';
-import ToolbarErrors from './ToolbarErrors.js';
+import ToolbarErrors from '../Toolbars/ToolbarErrors.js';
 
 /**
  * An unique component which will only be rendered one.

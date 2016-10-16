@@ -1,13 +1,11 @@
 import React, {PropTypes} from 'react';
-import TextField from 'material-ui/TextField';
 import _ from 'lodash';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import EventServer from '../../models/EventServer.js';
-import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
-import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
-import IconButton from 'material-ui/IconButton';
-import ToolbarErrors from './ToolbarErrors.js';
+import ToolbarErrors from '../Toolbars/ToolbarErrors.js';
 import Storage from '../../models/Storage.js';
+import ToolbarSearch from '../Toolbars/ToolbarSearch';
+import ToolbarCollapse from '../Toolbars/ToolbarCollapse';
 
 /**
  * Renders the header of an CategoryPanel
@@ -39,9 +37,6 @@ default React.createClass({
     componentWillUnmount() {
         EventServer.remove(`category::warning::${this.props.category.catId}`, this.state.id);
     },
-    /**
-     * Toggles the panel body visibility
-     */
     toggleView() {
         const collapsed = !this.state.collapsed;
         this.setState({
@@ -51,23 +46,6 @@ default React.createClass({
     onChange(event, value) {
         EventServer.emit(`category::searching::${this.props.category.catId}`, value);
     },
-    renderCollapse() {
-        let collapse;
-        if(this.state.collapsed) {
-            collapse = <IconButton onTouchTap={this.toggleView}
-                tooltip="Show courses"
-                tooltipPosition="top-left">
-                <ExpandMore/>
-            </IconButton>;
-        } else {
-            collapse = <IconButton onTouchTap={this.toggleView}
-                tooltip="Hide courses"
-                tooltipPosition="top-left">
-                <ExpandLess/>
-            </IconButton>;
-        }
-        return <ToolbarGroup>{collapse}</ToolbarGroup>;
-    },
     renderSearch() {
         if(!this.props.options.search) {
             return null;
@@ -75,19 +53,16 @@ default React.createClass({
         const style = {
             display: this.state.collapsed ? 'none' : 'flex'
         };
-        return <ToolbarGroup style={style}>
-            <TextField hintText="Search through the courses" fullWidth={true}
-                onChange={_.debounce(this.onChange, 200)}/>
-        </ToolbarGroup>;
+        return <ToolbarSearch
+            placeholder="Search through the selected courses"
+            style={style}
+            onChange={this.onChange}/>;
     },
     renderErrors() {
         if(this.state.errors.length === 0 || this.state.collapsed) {
             return null;
         }
         return <ToolbarErrors errors={this.state.errors}/>;
-    },
-    renderTitle(){
-        return this.props.category.name;
     },
     render() {
         const style = {
@@ -100,9 +75,10 @@ default React.createClass({
         return <Toolbar style={style.root}>
             <ToolbarGroup>
                 <ToolbarGroup>
-                    <ToolbarTitle text={this.renderTitle()}/>
+                    <ToolbarTitle text={this.props.category.name}/>
                 </ToolbarGroup>
-                {this.renderCollapse()}
+                <ToolbarCollapse collapsed={this.state.collapsed}
+                    toggleView={this.toggleView}/>
             </ToolbarGroup>
             {this.renderErrors()}
             {this.renderSearch()}
