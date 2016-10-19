@@ -40,26 +40,6 @@ const FacultyCtrl = {
             });
         });
         return track;
-    },
-    selectTrack(trackId) {
-        if (FacultyCtrl.selectedTrack() !== undefined &&
-            trackId === FacultyCtrl.selectedTrack().trackId) {
-            return;
-        }
-
-        FacultyCtrl.faculties.forEach(function(faculty) {
-            faculty.masters.forEach(function(master) {
-                master.tracks.forEach(function(track) {
-                    track.selected = track.trackId === trackId;
-                });
-            });
-        });
-        request
-            .post('http://localhost:8000/masters')
-            .send({
-                trackId: trackId
-            });
-        EventServer.emit('masters::loaded');
     }
 };
 FacultyCtrl.init();

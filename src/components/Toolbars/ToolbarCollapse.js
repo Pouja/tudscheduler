@@ -34,13 +34,13 @@ export default class ToolbarCollapse extends Component {
         if(this.state.collapsed) {
             collapse = <IconButton onTouchTap={this.props.toggleView}
                 tooltip="Show courses"
-                tooltipPosition="bottom">
+                tooltipPosition="bottom-center">
                 <ExpandMore/>
             </IconButton>;
         } else {
             collapse = <IconButton onTouchTap={this.props.toggleView}
                 tooltip="Hide courses"
-                tooltipPosition="bottom">
+                tooltipPosition="bottom-center">
                 <ExpandLess/>
             </IconButton>;
         }

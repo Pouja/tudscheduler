@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import SideBar from './components/sidebar/SideBar.js';
 import { withRouter } from 'react-router';
 import CourseModal from './components/CourseModal.js';
-import TrackSelection from './components/sidebar/TrackSelection';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import './Main.css';
@@ -30,7 +29,6 @@ const Main = React.createClass({
     render(){
         return (<div>
             <CourseModal/>
-            <TrackSelection/>
             <div className="app">
                 <SideBar className="sidebar"/>
                 <div className="main">

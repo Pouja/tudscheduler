@@ -1,10 +1,7 @@
 import React, {PropTypes} from 'react';
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ActionSettings from 'material-ui/svg-icons/action/settings';
 import EventServer from '../../models/EventServer.js';
 import FacultyCtrl from '../../models/FacultyCtrl.js';
-import DialogCtrl from '../../models/DialogCtrl.js';
 import _ from 'lodash';
 import ToolbarSearch from '../Toolbars/ToolbarSearch';
 import ToolbarCollapse from '../Toolbars/ToolbarCollapse';
@@ -60,9 +57,6 @@ export default React.createClass({
     onChange(event, value) {
         EventServer.emit('course::searching', value);
     },
-    openSettings() {
-        DialogCtrl.open('TrackSelection');
-    },
     toggleView() {
         const collapsed = !this.state.collapsed;
         this.setState({
@@ -70,15 +64,6 @@ export default React.createClass({
         }, () => {
             this.props.toggleView(collapsed);
         });
-    },
-    renderControl(){
-        const style = {
-            margin: '7px 0px 7px 2px'
-        };
-        const setting = <FloatingActionButton style={style}
-            zDepth={1} mini={true} onTouchTap={this.openSettings}>
-            <ActionSettings/></FloatingActionButton>;
-        return <div>{setting}</div>;
     },
     renderSearch(){
         const style = {
@@ -114,9 +99,6 @@ export default React.createClass({
         };
         return <Toolbar style={style.root}>
             <ToolbarGroup>
-                <ToolbarGroup style={style.control}>
-                    {this.renderControl()}
-                </ToolbarGroup>
                 <ToolbarGroup style={style.titleGroup}>
                     <span style={style.subTitle}>{this.state.faculty} \ {this.state.master}</span><br/>
                     <span style={style.title}>{this.state.track}</span>

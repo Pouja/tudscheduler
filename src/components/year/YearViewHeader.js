@@ -53,7 +53,7 @@ export default React.createClass({
             </ToolbarGroup>
             <ToolbarGroup style={style.ects}>
             {this.state.ects.map(function(ects, index){
-                const qBadge = (index === 0) ? 'Q1/Q5' : `Q${index + 1}`;
+                const qBadge = `Q${index + 1}`;
                 return <span key={index}>
                     {`${qBadge} `}<Badge>EC {ects}</Badge>
                 </span>;
