@@ -1,78 +1,80 @@
 const _ = require('lodash');
 module.exports = {
-    "/categories/1": {
-        "GET": {
-            "data": [{
-                "catId": "unlisted",
-                "name": "Selected courses",
-                "courses": [35297]
-            }, {
-                "catId": 1,
-                "name": "Compulsory",
-                "courses": []
-            }, {
-                "name": "Specialisation",
-                "catId": 2,
-                "courses": []
-            }, {
-                "name": "Homolagation courses",
-                "catId": 3,
-                "courses": []
-            }, {
-                "catId": 4,
-                "name": "Free electives",
-                "courses": []
-            }, {
-                "catId": 5,
-                "name": "Seminar",
-                "courses": []
-            }],
-            "timeout": 250
+    '/categories/cd79039f-c1e3-4363-8a48-6e6124e06b94': {
+    'GET': {
+      'data': [
+        {
+          'catId': '9b6888d1-f07e-4ac8-bedd-7ed35acb67be',
+          'courses': [
+            '997dde1f-e186-4211-877c-28e7a6383809',
+            'f3a2029d-4139-414f-93b5-f559b41d8cf5'
+          ],
+          'name': 'Common Core'
         },
-        "POST": {
-            "data": [{
-                "catId": 3,
-                "errors": _.sample([["More ects needed", "You have too many courses"],["a different error!"]])
-            }, {
-                "courseId": 35297,
-                "errors": ["Not allowed here", "Some other meaningless error"]
-            }, {
-                "courseId": 37836,
-                "errors": ["Why am I doing this course"]
-            }, {
-                "courseId": 35723,
-                "errors": ["Testing some long ass error statement for a long course something"]
-            }, {
-                "catId": 5,
-                "errors": ["I have no idea what", "I am ding dong dung"]
-            }, {
-                "masterId": 3,
-                "errors": _.sample([["Max 100 ECTs for this master"],["Max 10 ECTS"]])
-            }, {
-                "trackId": 1,
-                "errors": ["Invalid track, just kidding"]
-            }]
+        {
+          'catId': '43c6c95b-be27-4dfa-a17f-7116154a4dae',
+          'courses': [
+            'f51f4bc7-8feb-445d-a6c9-b00116eb1f40',
+            '5c93e57f-2e36-47fb-859c-6db3a467e3b0'
+          ],
+          'name': 'Specialisation'
+        },
+        {
+          'catId': '06553695-88ef-4ab0-a296-be735310c00e',
+          'courses': [
+            '4df04641-5c10-49da-aea1-21a2ec07163d'
+          ],
+          'name': 'Homologation'
+        },
+        {
+          'catId': '6adcbfcd-7891-4c39-a99d-46c9499bed1e',
+          'courses': [
+            'c6a92674-279d-44ab-b541-91ee99c56e76'
+          ],
+          'name': 'Free Electives'
+        },
+        {
+          'catId': '0aa8e645-3801-4ee9-9a55-e4909dcfe4f4',
+          'courses': [
+            'fdd43aa1-5efe-4ab1-b943-05d3347c0703'
+          ],
+          'name': 'Seminar or Survey'
+        },
+        {
+          'catId': 'unlisted',
+          'courses': [],
+          'name': 'Add to study planning'
         }
+      ],
+      'timeout': 250
     },
-    "/categories/2": {
-        "GET": {
-            "data": [{
-                "catId": "unlisted",
-                "name": "Selected courses",
-                "courses": []
-            }, {
-                "catId": 6,
-                "name": "Main core",
-                "courses": [54]
-            }, {
-                "catId": 7,
-                "name": "Track core",
-                "courses": []
-            }, {
-                "catId": 8,
-                "name": "Free electives",
-                "courses": []
-            }]
+    'POST': {
+      'data': [
+        {
+          'masterId': 'e4f7ee3d-3fb2-4e4c-ae64-7b61796c1211',
+          'errors': _.sample([[
+            'Need at least 75 ECTS in courses, currently 59 ECTS.'
+          ],['You have 10 EC too much']])
+        },
+        {
+          'catId': '9b6888d1-f07e-4ac8-bedd-7ed35acb67be',
+          'errors': [
+            'Requires 1 additional courses.'
+          ]
+        },
+        {
+          'catId': '9b6888d1-f07e-4ac8-bedd-7ed35acb67be',
+          'errors': _.sample([[
+            'Minimum 25 ECTS, currently 21 ECTS, add 4 additional ECTS.'
+          ],[]])
+        },
+        {
+          'courseId': '4df04641-5c10-49da-aea1-21a2ec07163d',
+          'errors': [
+            'This course is not allowed in Common Core.'
+          ]
         }
+      ]
     }
+  }
 };

@@ -1,29 +1,34 @@
 {
-    "/masters": {
-        "GET": {
-            "data": [{
-                "facultyId": 1,
-                "name": "EWI",
-                "masters": [{
-                    "masterId": 3,
-                    "name": "Msc. Computer Science",
-                    "tracks": [{
-                        "trackId": 1,
-                        "year": "2015",
-                        "selected": true,
-                        "name": "Software Technology"
-                    }]
-                }, {
-                    "masterId": 2,
-                    "name": "Msc. Computer Engineering",
-                    "tracks": [{
-                        "trackId": 2,
-                        "year": "2015",
-                        "name": "Track core"
-                    }]
-                }]
-            }],
-            "timeout": 1000
-        }
+  "/masters": {
+    "GET": {
+      "data":
+        [
+          {
+            "facultyId": "126a2c54-09fc-4309-b676-15c0262e4611",
+            "name": "EEMCS",
+            "masters": [
+              {
+                "masterId": "e4f7ee3d-3fb2-4e4c-ae64-7b61796c1211",
+                "name": "Computer Science",
+                "tracks": [
+                  {
+                    "year": "2016",
+                    "trackId": "aae1a4ff-86e4-402e-be29-ff3213bef80e",
+                    "name": "Data Science & Technology",
+                    "selected": false
+                  },
+                  {
+                    "year": "2016",
+                    "trackId": "cd79039f-c1e3-4363-8a48-6e6124e06b94",
+                    "name": "Software Technology",
+                    "selected": true
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+      "timeout": 1000
     }
+  }
 }
