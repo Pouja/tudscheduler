@@ -4,6 +4,7 @@ import CourseCtrl from './CourseCtrl.js';
 import request from 'superagent';
 import FacultyCtrl from './FacultyCtrl.js';
 import Storage from './Storage.js';
+import YearCtrl from './YearCtrl';
 const id = 'CategoryCtrl';
 
 /**
@@ -32,7 +33,8 @@ const CategoryCtrl = {
             request.get(`http://localhost:8000/categories/${trackId}`)
                 .accept('application/json')
                 .then(function(response) {
-                    resolve(response.body);
+                    resolve(response.body.categories);
+                    YearCtrl.init(response.body.years);
                 }, reject);
         });
     },

@@ -1,10 +1,8 @@
 import React from 'react';
 import CourseCtrl from '../../models/CourseCtrl.js';
+import YearCtrl from '../../models/YearCtrl';
 import EventServer from '../../models/EventServer.js';
-import ReactGridLayout, {
-    WidthProvider
-}
-from 'react-grid-layout';
+import ReactGridLayout, {WidthProvider} from 'react-grid-layout';
 import CourseGridItem from './CourseGridItem.js';
 import _ from 'lodash';
 const DecoratedReactGridLayout = WidthProvider(ReactGridLayout); //eslint-disable-line new-cap
@@ -56,37 +54,35 @@ const breakPoints = [{
     rowHeight: 160
 }];
 
-const id = 'YearViewBody';
 export
 default React.createClass({
+    propTypes: {
+        year: React.PropTypes.number.isRequired
+    },
     getInitialState() {
         return {
-            courses: CourseCtrl.added.map((id)=>id),
-            windowWidth: window.innerWidth
+            courses: YearCtrl.get(this.props.year).courses.map((id)=>id),
+            windowWidth: window.innerWidth,
+            id: `YearViewBody::${this.props.year}`
         };
     },
     shouldComponentUpdate(nextProps, nextState) {
         return isDifferent(this.state.courses, nextState.courses);
     },
     componentDidMount() {
-        EventServer.on('course::added::*', () => this.updateCourses(), id);
-        EventServer.on('course::removed::*', () => this.updateCourses(), id);
-        EventServer.on('courses::loaded', () => this.updateCourses(), id);
+        EventServer.on('years::loaded', () => this.updateCourses(), this.state.id);
         window.addEventListener('resize', this.handleResize);
-
     },
     handleResize: function() {
         this.setState({windowWidth: window.innerWidth});
     },
     componentWillUnmount() {
-        EventServer.remove('course::added::*', id);
-        EventServer.remove('course::removed::*', id);
-        EventServer.remove('courses::loaded', id);
+        EventServer.remove('years::loaded', this.state.id);
     },
     updateCourses() {
         this.setState({
             // Make a copy of the list, otherwise it will assign a pointer
-            courses: CourseCtrl.added.map((id)=>id)
+            courses: YearCtrl.get(this.props.year).courses.map((id)=>id)
         });
     },
     getRowHeight(){

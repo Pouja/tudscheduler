@@ -164,10 +164,12 @@ const CourseCtrl = {
     /**
      * Calculates the added ects for a certain quarter/period
      * @param  {Number} period The period/quarter
+     * @param {Array | undefined} courses The list of courses to calculate the ects.
+     * if set to undefined, it will use the added courses.
      * @return {Number}        The total ects
      */
-    periodEcts(period) {
-        return _.sumBy(CourseCtrl.added, function(courseId) {
+    periodEcts(period, courses) {
+        return _.sumBy(courses || CourseCtrl.added, function(courseId) {
             const course = CourseCtrl.get(courseId);
             const courseEcts = (course.ects === undefined) ? 0 : parseInt(course.ects, 10);
             const periods = course['Education Period'];

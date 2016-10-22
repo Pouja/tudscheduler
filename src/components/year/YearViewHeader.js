@@ -2,37 +2,46 @@ import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
 import Badge from '../Badge.js';
 import React from 'react';
 import CourseCtrl from '../../models/CourseCtrl.js';
+import YearCtrl from '../../models/YearCtrl';
 import EventServer from '../../models/EventServer.js';
 import _ from 'lodash';
-const id = 'YearViewHeader';
 
 export default React.createClass({
+    propTypes: {
+        year: React.PropTypes.number.isRequired
+    },
     getInitialState(){
-        return {
-            ects: [1,2,3,4].map((index) =>
-                _.round(CourseCtrl.periodEcts(index), 1)),
-            totalEcts: CourseCtrl.addedEcts()
-        };
+        return Object.assign(this.calcEcts(),
+            {id: `YearViewHeader::${this.props.year}`
+        });
     },
     shouldComponentUpdate(nextProps, nextState){
         return !_.isEqual(this.state, nextState);
     },
     componentDidMount() {
-        EventServer.on('course::added::*', () => this.updateEcts(), id);
-        EventServer.on('course::removed::*', () => this.updateEcts(), id);
-        EventServer.on('courses::loaded', () => this.updateEcts(), id);
+        EventServer.on('years::loaded', () => this.updateEcts(), this.state.id);
     },
     componentWillUnmount(){
-        EventServer.remove('course::added::*', id);
-        EventServer.remove('course::removed::*', id);
-        EventServer.remove('courses::loaded', id);
+        EventServer.remove('years::loaded', this.state.id);
     },
     updateEcts() {
-        this.setState({
-            ects: [1,2,3,4].map((index) =>
-                _.round(CourseCtrl.periodEcts(index), 1)),
-            totalEcts: CourseCtrl.addedEcts()
-        });
+        this.setState(this.calcEcts());
+    },
+    calcEcts() {
+        const yearModel = YearCtrl.get(this.props.year);
+        if (yearModel) {
+            return {
+                ects: [1,2,3,4].map((index) =>
+                    _.round(CourseCtrl.periodEcts(index, yearModel.courses), 1)),
+                totalEcts: CourseCtrl.sumEcts(yearModel.courses.map(id => {
+                    return {id: id};
+                }))
+            };
+        }
+        return {
+            ects: [0,0,0,0],
+            totalEcts: 0
+        };
     },
     render(){
         const style = {
