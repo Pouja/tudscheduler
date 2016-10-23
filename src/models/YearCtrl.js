@@ -12,6 +12,13 @@ const YearCtrl = {
         EventServer.on('course::added::*', YearCtrl.updateAdded, id);
         EventServer.on('course::removed::*', YearCtrl.updateRemoved, id);
     },
+    add() {
+        YearCtrl.years.push({
+            year: _.maxBy(YearCtrl.years, 'year').year + 1,
+            courses: []
+        });
+        EventServer.emit('years::loaded');
+    },
     get(yearId) {
         return YearCtrl.years.find(yearModel => yearModel.year === yearId);
     },
@@ -26,10 +33,12 @@ const YearCtrl = {
                 return year.courses.indexOf(courseId) !== -1;
             });
         });
-        const maxYear = _.maxBy(YearCtrl.years, 'year');
-        maxYear.courses = maxYear.courses.concat(newCourses);
-        EventServer.emit(`year::added::${maxYear.year}`);
-        Storage.save();
+        if (newCourses.length > 0) {
+            const maxYear = _.maxBy(YearCtrl.years, 'year');
+            maxYear.courses = maxYear.courses.concat(newCourses);
+            EventServer.emit(`year::added::${maxYear.year}`);
+            Storage.save('yearctrl:updateadded');
+        }
     },
     /**
      * Called when one or more courses are removed.
@@ -37,16 +46,20 @@ const YearCtrl = {
      */
     updateRemoved() {
         const allCourses = CourseCtrl.added;
+        let removed = false;
         YearCtrl.years.forEach(function(year) {
             const removeCourses = _.filter(year.courses, function(courseId) {
                 return allCourses.indexOf(courseId) === -1;
             });
             if (removeCourses.length > 0) {
+                removed = true;
                 year.courses = _.difference(year.courses, removeCourses);
                 EventServer.emit(`year::removed::${year.year}`);
             }
         });
-        Storage.save();
+        if (removed) {
+            Storage.save('yearctrl:updateremoved');
+        }
     }
 };
 export default YearCtrl;

@@ -16,7 +16,6 @@ function panelMove(target, targetObj, courseId) {
         targetObj.courses = _.union(targetObj.courses, [courseId]);
     }
     CourseCtrl._add(courseTree);
-    Storage.save();
     EventServer.emit('course::added::*');
     EventServer.emit(`${target.sort}::added::${target.id}`, courseId);
 }

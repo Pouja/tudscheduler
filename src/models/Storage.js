@@ -2,6 +2,8 @@ import EventServer from './EventServer.js';
 import request from 'superagent';
 import CategoryCtrl from './CategoryCtrl.js';
 import FacultyCtrl from './FacultyCtrl.js';
+import YearCtrl from './YearCtrl';
+import CourseCtrl from './CourseCtrl';
 import _ from 'lodash';
 
 const errorMapping = [{
@@ -18,19 +20,38 @@ const errorMapping = [{
     value: 'track'
 }];
 
+/**
+ * Checks if the application is in a legal state befores it saves.
+ * @return {boolean} true iff the number courses add equals to all the courses in the year planner
+ * and in the categories.
+ */
+function invariant() {
+    return CourseCtrl.added.length ===
+        _.sumBy(YearCtrl.years, 'courses.length') &&
+        CourseCtrl.added.length ===
+        _.sumBy(CategoryCtrl.categories, 'courses.length');
+}
+
 const Storage = {
     /**
      * Saves the current state of the categories.
+     * Only if the invariant holds!
      * This should be called explicitly and it should not save an illegal state.
      * As in, make sure the state is legal and then call this function.
      * @return {Promise} empty resolve if the post succeeeds otherwise a reject with the error object.
      */
     save() {
+        if (!invariant()) {
+            return new Promise((resolve) => resolve());
+        }
         const trackId = FacultyCtrl.selectedTrack().trackId;
         return new Promise(function(resolve, reject) {
             request
                 .post(`http://localhost:8000/categories/${trackId}`)
-                .send(CategoryCtrl.categories)
+                .send({
+                    categories: CategoryCtrl.categories,
+                    years: YearCtrl.years
+                })
                 .accept('application/json')
                 .then(function(response) {
                     Storage.errors = {};

@@ -4,12 +4,14 @@ import YearViewHeader from './YearViewHeader.js';
 import DropPanel from '../dnd/DropPanel.js';
 import YearCtrl from '../../models/YearCtrl';
 import EventServer from '../../models/EventServer';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 
 export
 default React.createClass({
     getInitialState() {
         return {
-            loaded: YearCtrl.years.length > 0
+            loaded: YearCtrl.years.length
         };
     },
     propTypes:{
@@ -21,7 +23,7 @@ default React.createClass({
     componentWillMount() {
         EventServer.on('years::loaded', () => {
             this.setState({
-                loaded: true
+                loaded: YearCtrl.years.length
             });
         }, 'YearView');
     },
@@ -42,8 +44,19 @@ default React.createClass({
         </DropPanel>;
     },
     render() {
-        if (this.state.loaded) {
-            return <div>{YearCtrl.years.map(this.renderYear)}</div>;
+        const style = {
+            display: 'flex',
+            justifyContent: 'space-around'
+        };
+        if (this.state.loaded > 0) {
+            return <div>
+                {YearCtrl.years.map(this.renderYear)}
+                <div style={style}>
+                    <FloatingActionButton onTouchTap={YearCtrl.add}>
+                        <ContentAdd />
+                    </FloatingActionButton>
+                </div>
+            </div>;
         }
         return null;
     }
