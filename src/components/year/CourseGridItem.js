@@ -15,6 +15,7 @@ const CourseGridItem = React.createClass({
             PropTypes.string.isRequired,
             PropTypes.number.isRequired
         ]).isRequired,
+        year: PropTypes.number.isRequired,
         style: React.PropTypes.object,
         connectDragSource: PropTypes.func.isRequired
     },
@@ -54,6 +55,6 @@ const CourseGridItem = React.createClass({
         </Paper>;
     }
 });
-export default createDragSource(createSource(() => 'yearview', (props) => { return {
+export default createDragSource(createSource((props) => props.year, (props) => { return {
     id: props.courseId
 };}), defaultCollect, CourseGridItem);

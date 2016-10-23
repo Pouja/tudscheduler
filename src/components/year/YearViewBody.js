@@ -105,9 +105,12 @@ default React.createClass({
             </span>;
         }
 
-        const gridItems = this.state.courses.map(function(courseId, index) {
-            return <CourseGridItem data-grid={courseGrid(courseId, index)}
-                key={courseId} courseId={courseId}/>;
+        const gridItems = this.state.courses.map((courseId, index) => {
+            return <CourseGridItem
+                year={this.props.year}
+                data-grid={courseGrid(courseId, index)}
+                key={courseId}
+                courseId={courseId}/>;
         });
         return <DecoratedReactGridLayout
             isResizable={false}

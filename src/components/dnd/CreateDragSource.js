@@ -29,7 +29,7 @@ export function createSource(getCurrentFieldId, getCourse) {
             if (!monitor.didDrop() || item.currentFieldId === dropResult.id) {
                 return;
             }
-            DnDCtrl.move(item.course.id, item.currentFieldId, dropResult.id);
+            DnDCtrl.move(item.course.id, item.currentFieldId, dropResult);
         }
     };
 }

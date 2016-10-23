@@ -16,7 +16,7 @@ const target = {
      * @return {Object}       Object which identifies the DropTarget.
      */
     drop(props) {
-        return {id: props.id};
+        return {id: props.id, sort: props.sort};
     }
 };
 
@@ -30,6 +30,7 @@ export default class DropPanel extends Component {
         isOver: PropTypes.bool.isRequired,
         connectDropTarget: PropTypes.func.isRequired,
         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        sort: PropTypes.string.isRequired,
         style: PropTypes.object,
         className: PropTypes.string,
         children: PropTypes.arrayOf(PropTypes.element).isRequired

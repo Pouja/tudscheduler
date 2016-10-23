@@ -3,7 +3,6 @@ const plugins = require('./plugins.js');
 const loaders = require('./loaders.js');
 const util = require('./util.js');
 const pkg = require('../../package.json');
-const webpack = require('webpack');
 
 const config = {
     entry: {

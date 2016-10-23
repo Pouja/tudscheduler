@@ -32,8 +32,8 @@ default React.createClass({
                 marginBottom: 10
             }
         };
-        return <DropPanel key={yearModel.year}
-            id='yearview' style={style.dropPanel} className={this.props.className} >
+        return <DropPanel key={yearModel.year} sort='year'
+            id={yearModel.year} style={style.dropPanel} className={this.props.className} >
             <YearViewHeader year={yearModel.year}/>
             <YearViewBody year={yearModel.year}/>
         </DropPanel>;

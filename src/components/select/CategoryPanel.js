@@ -26,7 +26,7 @@ default React.createClass({
         });
     },
     render() {
-        return <DropPanel id={this.props.category.catId} className={this.props.className} style={this.props.style}>
+        return <DropPanel id={this.props.category.catId} sort="category" className={this.props.className} style={this.props.style}>
             <CategoryPanelHeader
             category={this.props.category}
             options={this.props.options}
