@@ -9,7 +9,7 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            loaded: false
+            loaded: YearCtrl.years.length > 0
         };
     },
     propTypes:{
@@ -24,6 +24,9 @@ default React.createClass({
                 loaded: true
             });
         }, 'YearView');
+    },
+    componentWillUnmount() {
+        EventServer.remove('years::loaded', 'YearView');
     },
     renderYear(yearModel) {
         const style = {

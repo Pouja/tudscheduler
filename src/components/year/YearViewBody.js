@@ -56,6 +56,7 @@ const breakPoints = [{
 
 export
 default React.createClass({
+    listener: null,
     propTypes: {
         year: React.PropTypes.number.isRequired
     },
@@ -71,13 +72,18 @@ default React.createClass({
     },
     componentDidMount() {
         EventServer.on('years::loaded', () => this.updateCourses(), this.state.id);
-        window.addEventListener('resize', this.handleResize);
+        EventServer.on(`year::added::${this.props.year}`, () => this.updateCourses(), this.state.id);
+        EventServer.on(`year::removed::${this.props.year}`, () => this.updateCourses(), this.state.id);
+        this.listener = window.addEventListener('resize', this.handleResize);
     },
     handleResize: function() {
         this.setState({windowWidth: window.innerWidth});
     },
     componentWillUnmount() {
         EventServer.remove('years::loaded', this.state.id);
+        EventServer.remove(`year::added::${this.props.year}`, this.state.id);
+        EventServer.remove(`year::removed::${this.props.year}`, this.state.id);
+        window.removeEventListener('resize', this.listener);
     },
     updateCourses() {
         this.setState({
