@@ -261,7 +261,7 @@ const CourseCtrl = {
         if (CourseCtrl.isAGroup(courseTree.id)) {
             courseTree.children.forEach(CourseCtrl._remove);
         } else {
-            _.pull(CourseCtrl.added, courseTree.id);
+            CourseCtrl.added = _.without(CourseCtrl.added, courseTree.id);
         }
     },
     /**

@@ -24,7 +24,8 @@
     "test:dev": "npm run test:mocha -- --reporter min --watch",
     "lint": "eslint src;exit 0",
     "start": "webpack-dev-server --config config/webpack/dev.config.js --progress --inline",
-    "build": "rimraf build && NODE_ENV=production webpack --config config/webpack/production.config.js --progress --colors",
+    "build": "npm run test && npm run pack",
+    "pack": "rimraf build && NODE_ENV=production webpack --config config/webpack/production.config.js --progress --colors",
     "mock-server": "mock-server config/mock-server.dev.json",
     "mock-server:test": "mock-server config/mock-server.test.json",
     "zip": "zip -j tud-scheduler.${npm_package_version}.zip build/**"
