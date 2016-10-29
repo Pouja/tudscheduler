@@ -29,12 +29,16 @@ const CategoryCtrl = {
     },
     fetch() {
         const trackId = FacultyCtrl.selectedTrack().trackId;
+        let years;
         return new Promise(function(resolve, reject) {
             request.get(`http://localhost:8000/categories/${trackId}`)
                 .accept('application/json')
                 .then(function(response) {
-                    resolve(response.body.categories);
-                    YearCtrl.init(response.body.years);
+                    years = response.body.years;
+                    return resolve(response.body.categories);
+                })
+                .then(function() {
+                    YearCtrl.init(years);
                 }, reject);
         });
     },
@@ -63,8 +67,9 @@ const CategoryCtrl = {
 
             // (re)start listening
             CategoryCtrl.startListening();
-            Storage.save().then(() => EventServer.emit('categories::loaded'));
-        });
+            return Storage.save();
+        })
+        .then(() => EventServer.emit('categories::loaded'));
     },
     /**
      * Called when a course is selected by an user.

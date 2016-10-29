@@ -32,13 +32,15 @@ function move(courseId, currentFieldId, target) {
     } else if (target.sort === 'category') {
         CategoryCtrl.move(courseId, currentFieldId, target.id);
     } else if (target.sort === 'year') {
-        console.log(currentFieldId, target);
         const yearFrom = YearCtrl.get(currentFieldId);
         const yearTo = YearCtrl.get(target.id);
+
         yearFrom.courses = _.difference(yearFrom.courses, [courseId]);
         yearTo.courses.push(courseId);
+
         EventServer.emit(`year::removed::${yearFrom.year}`);
         EventServer.emit(`year::added::${yearTo.year}`);
+
         Storage.save();
     }
 }
