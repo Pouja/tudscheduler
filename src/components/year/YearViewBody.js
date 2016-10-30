@@ -58,7 +58,8 @@ export
 default React.createClass({
     listener: null,
     propTypes: {
-        year: React.PropTypes.number.isRequired
+        year: React.PropTypes.number.isRequired,
+        collapse: React.PropTypes.bool.isRequired
     },
     getInitialState() {
         return {
@@ -67,8 +68,13 @@ default React.createClass({
             id: `YearViewBody::${this.props.year}`
         };
     },
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            collapse: nextProps.collapse
+        });
+    },
     shouldComponentUpdate(nextProps, nextState) {
-        return isDifferent(this.state.courses, nextState.courses);
+        return isDifferent(this.state.courses, nextState.courses) || this.state.collapse !== nextState.collapse;
     },
     componentDidMount() {
         EventServer.on('years::loaded', () => this.updateCourses(), this.state.id);
@@ -105,6 +111,9 @@ default React.createClass({
             },{});
     },
     render() {
+        if (this.state.collapse) {
+            return null;
+        }
         if (this.state.courses.length === 0) {
             return <span className='empty'>
                 No courses added yet

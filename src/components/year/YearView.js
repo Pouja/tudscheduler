@@ -1,12 +1,9 @@
 import React,{PropTypes} from 'react';
-import YearViewBody from './YearViewBody.js';
-import YearViewHeader from './YearViewHeader.js';
-import DropPanel from '../dnd/DropPanel.js';
 import YearCtrl from '../../models/YearCtrl';
 import EventServer from '../../models/EventServer';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-
+import YearViewPanel from './YearViewPanel';
 export
 default React.createClass({
     getInitialState() {
@@ -31,17 +28,7 @@ default React.createClass({
         EventServer.remove('years::loaded', 'YearView');
     },
     renderYear(yearModel) {
-        const style = {
-            dropPanel: {
-                minWidth: 500,
-                marginBottom: 10
-            }
-        };
-        return <DropPanel key={yearModel.year} sort='year'
-            id={yearModel.year} style={style.dropPanel} className={this.props.className} >
-            <YearViewHeader year={yearModel.year}/>
-            <YearViewBody year={yearModel.year}/>
-        </DropPanel>;
+        return <YearViewPanel className={this.props.className} key={yearModel.year} year={yearModel.year}/>;
     },
     render() {
         const style = {

@@ -4,11 +4,13 @@ import React from 'react';
 import CourseCtrl from '../../models/CourseCtrl.js';
 import YearCtrl from '../../models/YearCtrl';
 import EventServer from '../../models/EventServer.js';
+import ToolbarCollapse from '../Toolbars/ToolbarCollapse';
 import _ from 'lodash';
 
 export default React.createClass({
     propTypes: {
-        year: React.PropTypes.number.isRequired
+        year: React.PropTypes.number.isRequired,
+        toggleView: React.PropTypes.func.isRequired
     },
     getInitialState(){
         return Object.assign(this.calcEcts(),
@@ -39,8 +41,8 @@ export default React.createClass({
                     _.round(CourseCtrl.periodEcts(index, yearModel.courses), 1)),
                 yearEcts: CourseCtrl.sumEcts(yearModel.courses.map(id => {
                     return {id: id};
-                })),
-                totalEcts: CourseCtrl.addedEcts()
+                })) || 0,
+                totalEcts: CourseCtrl.addedEcts() || 0
             };
         }
         return {
@@ -52,10 +54,13 @@ export default React.createClass({
     render(){
         const style = {
             root: {
-            padding: 10,
-            flexDirection: 'column',
-            color: 'rgba(0,0,0,0.4)'},
-            totalEcts: {
+                height: 'auto',
+                display: 'flex',
+                padding: 5,
+                flexDirection: 'column',
+                color: 'rgba(0,0,0,0.4)'
+            },
+            title: {
                 flexBasis: '100%'
             },
             ects: {
@@ -63,11 +68,12 @@ export default React.createClass({
             }
         };
         return <Toolbar style={style.root}>
-            <ToolbarGroup>
-                <span style={style.totalEcts}>
-                    Total ects: {this.state.yearEcts}/{this.state.totalEcts}
-                </span>
-                <span>{this.props.year}/{this.props.year + 1}</span>
+            <ToolbarGroup style={style.totalEcts}>
+                <ToolbarGroup>
+                    {`Total ects: ${this.state.yearEcts}/${this.state.totalEcts}`}<br/>
+                    {this.props.year}/{this.props.year + 1}
+                </ToolbarGroup>
+                <ToolbarCollapse toggleView={this.props.toggleView}/>
             </ToolbarGroup>
             <ToolbarGroup style={style.ects}>
             {this.state.ects.map(function(ects, index){

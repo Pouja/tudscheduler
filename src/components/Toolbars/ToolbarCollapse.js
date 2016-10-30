@@ -21,7 +21,7 @@ export default class ToolbarCollapse extends Component {
         };
     }
     static propTypes = {
-        collapsed: PropTypes.bool.isRequired,
+        collapsed: PropTypes.bool,
         toggleView: PropTypes.func.isRequired
     }
     componentWillReceiveProps(nextProps) {
@@ -29,16 +29,21 @@ export default class ToolbarCollapse extends Component {
             collapsed: nextProps.collapsed
         });
     }
+    toggle() {
+        this.setState({
+            collapsed: !this.state.collapsed
+        }, () => this.props.toggleView(this.state.collapsed));
+    }
     render() {
         let collapse;
         if(this.state.collapsed) {
-            collapse = <IconButton onTouchTap={this.props.toggleView}
+            collapse = <IconButton onTouchTap={() => this.toggle()}
                 tooltip="Show courses"
                 tooltipPosition="bottom-center">
                 <ExpandMore/>
             </IconButton>;
         } else {
-            collapse = <IconButton onTouchTap={this.props.toggleView}
+            collapse = <IconButton onTouchTap={() => this.toggle()}
                 tooltip="Hide courses"
                 tooltipPosition="bottom-center">
                 <ExpandLess/>
