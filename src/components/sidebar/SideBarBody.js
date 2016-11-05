@@ -28,16 +28,11 @@ default React.createClass({
         });
     },
     componentDidMount() {
-        EventServer.on('courses::loaded', () => this.setState({
-            tree: CourseCtrl.flatten(null, null, 'nr'),
-            courses: CourseCtrl.courses.map(id => id)
-        }), this.state.id);
         EventServer.on('course::searching', (nextFilter) => this.setState({
             filter: nextFilter
         }), this.state.id);
     },
     componentWillUnmount() {
-        EventServer.remove('courses::loaded', this.state.id);
         EventServer.remove('course::searching', this.state.id);
     },
     createCourse(course) {

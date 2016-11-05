@@ -1,7 +1,5 @@
 import _ from 'lodash';
 import EventServer from './EventServer.js';
-import request from 'superagent';
-import FacultyCtrl from './FacultyCtrl.js';
 import SearchUtil from '../util/search.js';
 
 /**
@@ -21,24 +19,17 @@ const CourseCtrl = {
     added: [],
     /**
      * Initialises the course controller.
-     * Fetches the course tree and all the courses.
-     * Sets the depth and numbers the tree
+     * Sets the course tree and all the courses.
+     * Sets the depth and numbers the tree.
+     * @param {Object} tree The course tree consisting only have children and id.
+     * @param {Array} courses All the courses.
      */
-    init() {
-        const masterId = FacultyCtrl.selectedMaster().masterId;
-        Promise.all([request.get(`http://localhost:8000/courseTree/${masterId}`)
-            .accept('application/json'),
-            request.get(`http://localhost:8000/courseData/${masterId}`)
-            .accept('application/json')
-        ])
-            .then(function(responses) {
-                CourseCtrl.tree = responses[0].body;
-                CourseCtrl.courses = responses[1].body;
-                CourseCtrl.setDepth(CourseCtrl.tree, 0);
-                CourseCtrl.added = [];
-                CourseCtrl.numberTree();
-                EventServer.emit('courses::loaded');
-            });
+    init(tree, courses) {
+        CourseCtrl.tree = tree;
+        CourseCtrl.courses = courses;
+        CourseCtrl.setDepth(CourseCtrl.tree, 0);
+        CourseCtrl.added = [];
+        CourseCtrl.numberTree();
     },
     /**
      * In the view tree tree the courses are not unique.
@@ -280,7 +271,5 @@ const CourseCtrl = {
         EventServer.emit('reset');
     }
 };
-EventServer.on('masters::loaded', CourseCtrl.init, 'CourseCtrl');
-
 export
 default CourseCtrl;

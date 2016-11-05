@@ -8,7 +8,6 @@ const YearCtrl = {
     years: [],
     init(years) {
         YearCtrl.years = years;
-        EventServer.emit('years::loaded');
         EventServer.on('course::added::*', YearCtrl.updateAdded, id);
         EventServer.on('course::removed::*', YearCtrl.updateRemoved, id);
     },
@@ -17,7 +16,7 @@ const YearCtrl = {
             year: _.maxBy(YearCtrl.years, 'year').year + 1,
             courses: []
         });
-        EventServer.emit('years::loaded');
+        EventServer.emit('years::changed');
     },
     get(yearId) {
         return YearCtrl.years.find(yearModel => yearModel.year === yearId);

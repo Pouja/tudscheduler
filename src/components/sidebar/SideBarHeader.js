@@ -15,38 +15,13 @@ export default React.createClass({
             collapsed: false,
             searching: false,
             showSettings: false,
-            faculty: '',
-            master: '',
-            track: ''
+            faculty: FacultyCtrl.selectedFaculty().name,
+            master: FacultyCtrl.selectedMaster().name,
+            track: FacultyCtrl.selectedTrack().name
         };
     },
     shouldComponentUpdate(nextProps, nextState) {
         return !_.isEqual(this.state, nextState);
-    },
-    componentDidMount(){
-        this.setTitle();
-        this.startListening();
-    },
-    componentWillUnmount() {
-        EventServer.remove('masters::loaded', 'SideBarHeader');
-    },
-    startListening(){
-        EventServer.on('masters::loaded', this.setTitle, 'SideBarHeader');
-    },
-    setTitle(){
-        if(FacultyCtrl.selectedTrack() === undefined) {
-            this.setState({
-                faculty: '',
-                master: '',
-                track: ''
-            });
-        } else {
-            this.setState({
-                faculty: FacultyCtrl.selectedFaculty().name,
-                master: FacultyCtrl.selectedMaster().name,
-                track: FacultyCtrl.selectedTrack().name
-            });
-        }
     },
     /**
      * Called when the TextField changes.

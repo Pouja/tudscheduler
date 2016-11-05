@@ -21,12 +21,10 @@ export default React.createClass({
         return !_.isEqual(this.state, nextState);
     },
     componentDidMount() {
-        EventServer.on('years::loaded', () => this.updateEcts(), this.state.id);
         EventServer.on('year::added::*', () => this.updateEcts(), this.state.id);
         EventServer.on('year::removed::*', () => this.updateEcts(), this.state.id);
     },
     componentWillUnmount(){
-        EventServer.remove('years::loaded', this.state.id);
         EventServer.remove('year::added::*', this.state.id);
         EventServer.remove('year::removed::*', this.state.id);
     },

@@ -8,24 +8,24 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            loaded: YearCtrl.years.length
+            nrYears: YearCtrl.years.length
         };
     },
     propTypes:{
         className: PropTypes.string
     },
     shouldComponentUpdate(nextState){
-        return this.state.loaded !== nextState.loaded;
+        return this.state.nrYears !== nextState.nrYears;
     },
     componentWillMount() {
-        EventServer.on('years::loaded', () => {
+        EventServer.on('years::changed', () => {
             this.setState({
-                loaded: YearCtrl.years.length
+                nrYears: YearCtrl.years.length
             });
         }, 'YearView');
     },
     componentWillUnmount() {
-        EventServer.remove('years::loaded', 'YearView');
+        EventServer.remove('years::changed', 'YearView');
     },
     renderYear(yearModel) {
         return <YearViewPanel className={this.props.className} key={yearModel.year} year={yearModel.year}/>;
@@ -35,7 +35,7 @@ default React.createClass({
             display: 'flex',
             justifyContent: 'space-around'
         };
-        if (this.state.loaded > 0) {
+        if (this.state.nrYears > 0) {
             return <div>
                 {YearCtrl.years.map(this.renderYear)}
                 <div style={style}>

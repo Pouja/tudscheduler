@@ -27,11 +27,9 @@ export default React.createClass({
         };
     },
     componentDidMount(){
-        EventServer.on('masters::loaded', this.updateTitle, 'GlobalTrack');
         this.startListening();
     },
     componentWillUnmount() {
-        EventServer.remove('masters::loaded', 'GlobalTrack');
         this.stopListening();
     },
     startListening() {
@@ -43,14 +41,6 @@ export default React.createClass({
     stopListening() {
         EventServer.remove(`master::warning::${this.state.masterId}`, 'GlobalTrack');
         EventServer.remove(`track::warning::${this.state.trackId}`, 'GlobalTrack');
-    },
-    updateTitle() {
-        this.stopListening();
-        this.setState({
-            title: FacultyCtrl.selectedTrack().name,
-            trackId: FacultyCtrl.selectedTrack().trackId,
-            masterId: FacultyCtrl.selectedMaster().masterId
-        }, () => this.startListening());
     },
     updateErrors(errors, type) {
         this.setState({

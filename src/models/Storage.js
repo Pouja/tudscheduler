@@ -33,6 +33,47 @@ function invariant() {
 }
 
 const Storage = {
+    fetchFaculties(){
+        return request.get('http://localhost:8000/masters')
+            .accept('application/json');
+    },
+    fetchCourses(){
+        const masterId = FacultyCtrl.selectedMaster().masterId;
+        return Promise.all([request.get(`http://localhost:8000/courseTree/${masterId}`)
+            .accept('application/json'),
+            request.get(`http://localhost:8000/courseData/${masterId}`)
+            .accept('application/json')
+        ]);
+    },
+    fetchCategories() {
+        const trackId = FacultyCtrl.selectedTrack().trackId;
+        return request.get(`http://localhost:8000/categories/${trackId}`)
+                .accept('application/json');
+    },
+    init() {
+        return new Promise((resolve, reject) => {
+            Storage.fetchFaculties()
+                .then(function(response) {
+                    FacultyCtrl.init(response.body);
+                    return Storage.fetchCourses();
+                })
+                .then(function(responses) {
+                    CourseCtrl.init(responses[0].body, responses[1].body);
+                    return Storage.fetchCategories();
+                })
+                .then(function(response) {
+                    CategoryCtrl.init(response.body.categories);
+                    YearCtrl.init(response.body.years);
+                    return Storage.save();
+                })
+                .then(function(){
+                    resolve();
+                }, function(err) {
+                    console.error(err);
+                    reject(err);
+                });
+        });
+    },
     /**
      * Saves the current state of the categories.
      * Only if the invariant holds!

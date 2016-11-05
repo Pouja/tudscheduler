@@ -1,19 +1,7 @@
-import request from 'superagent';
-import EventServer from './EventServer.js';
-import DialogCtrl from './DialogCtrl.js';
 const FacultyCtrl = {
     faculties: [],
-    init() {
-        request.get('http://localhost:8000/masters')
-            .accept('application/json')
-            .then(function(response) {
-                FacultyCtrl.faculties = response.body;
-                if (FacultyCtrl.selectedTrack() === undefined) {
-                    DialogCtrl.open('TrackSelection', true);
-                } else {
-                    EventServer.emit('masters::loaded');
-                }
-            });
+    init(faculties) {
+        FacultyCtrl.faculties = faculties;
     },
     selectedFaculty() {
         return FacultyCtrl.faculties.find(function(faculty) {
@@ -42,6 +30,5 @@ const FacultyCtrl = {
         return track;
     }
 };
-FacultyCtrl.init();
 export
 default FacultyCtrl;

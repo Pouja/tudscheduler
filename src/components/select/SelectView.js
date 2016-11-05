@@ -2,7 +2,6 @@ import './SelectView.css';
 import React from 'react';
 import CategoryPanel from './CategoryPanel.js';
 import CategoryCtrl from '../../models/CategoryCtrl.js';
-import EventServer from '../../models/EventServer.js';
 import GlobalTrack from './GlobalTrack.js';
 
 /**
@@ -10,12 +9,6 @@ import GlobalTrack from './GlobalTrack.js';
  * Lets the user set up his isp form which should be printed/send.
  */
 export default React.createClass({
-    componentWillMount() {
-        EventServer.on('categories::loaded', () => this.forceUpdate(), 'SelectView');
-    },
-    componentWillUnmount() {
-        EventServer.remove('categories::loaded', 'SelectView');
-    },
     render() {
         if(!CategoryCtrl.unlisted || CategoryCtrl.categories.length === 0){
             return null;

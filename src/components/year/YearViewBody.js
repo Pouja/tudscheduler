@@ -77,7 +77,6 @@ default React.createClass({
         return isDifferent(this.state.courses, nextState.courses) || this.state.collapse !== nextState.collapse;
     },
     componentDidMount() {
-        EventServer.on('years::loaded', () => this.updateCourses(), this.state.id);
         EventServer.on(`year::added::${this.props.year}`, () => this.updateCourses(), this.state.id);
         EventServer.on(`year::removed::${this.props.year}`, () => this.updateCourses(), this.state.id);
         this.listener = window.addEventListener('resize', this.handleResize);
@@ -86,7 +85,6 @@ default React.createClass({
         this.setState({windowWidth: window.innerWidth});
     },
     componentWillUnmount() {
-        EventServer.remove('years::loaded', this.state.id);
         EventServer.remove(`year::added::${this.props.year}`, this.state.id);
         EventServer.remove(`year::removed::${this.props.year}`, this.state.id);
         window.removeEventListener('resize', this.listener);

@@ -1,10 +1,7 @@
 import _ from 'lodash';
 import EventServer from '../models/EventServer.js';
 import CourseCtrl from './CourseCtrl.js';
-import request from 'superagent';
-import FacultyCtrl from './FacultyCtrl.js';
 import Storage from './Storage.js';
-import YearCtrl from './YearCtrl';
 const id = 'CategoryCtrl';
 
 /**
@@ -27,49 +24,33 @@ const CategoryCtrl = {
             return category.catId === catId;
         });
     },
-    fetch() {
-        const trackId = FacultyCtrl.selectedTrack().trackId;
-        let years;
-        return new Promise(function(resolve, reject) {
-            request.get(`http://localhost:8000/categories/${trackId}`)
-                .accept('application/json')
-                .then(function(response) {
-                    years = response.body.years;
-                    return resolve(response.body.categories);
-                })
-                .then(function() {
-                    YearCtrl.init(years);
-                }, reject);
-        });
-    },
     /**
      * Should be called when CategoryCtrl is being used for the first time.
+     * Initialises the categories. And adds all the courses which are given in
+     * the categories in CourseCtrl.added.
+     * @param {Array} categories The categories.
      */
-    init() {
-        CategoryCtrl.fetch().then(function(categories) {
-            // reset the listening
-            CategoryCtrl.stopListening();
-            CategoryCtrl.categories = categories;
+    init(categories) {
+        // reset the listening
+        CategoryCtrl.stopListening();
+        CategoryCtrl.categories = categories;
 
-            // Set the unlisted 'special' category
-            CategoryCtrl.unlisted = categories.find(category => category.catId === 'unlisted');
+        // Set the unlisted 'special' category
+        CategoryCtrl.unlisted = categories.find(category => category.catId === 'unlisted');
 
-            // Merge the added courses with the unlisted courses
-            CategoryCtrl.unlisted.courses = _.union(CategoryCtrl.unlisted.courses,
-                CourseCtrl.added.map(course => course.id));
+        // Merge the added courses with the unlisted courses
+        CategoryCtrl.unlisted.courses = _.union(CategoryCtrl.unlisted.courses,
+            CourseCtrl.added.map(course => course.id));
 
-            // Add the courses in all the categories to coursectrl.added
-            CourseCtrl.addMultiple(_(CategoryCtrl.categories)
-                .map('courses')
-                .flatten()
-                .map(CourseCtrl.get)
-                .value());
+        // Add the courses in all the categories to coursectrl.added
+        CourseCtrl.addMultiple(_(CategoryCtrl.categories)
+            .map('courses')
+            .flatten()
+            .map(CourseCtrl.get)
+            .value());
 
-            // (re)start listening
-            CategoryCtrl.startListening();
-            return Storage.save();
-        })
-        .then(() => EventServer.emit('categories::loaded'));
+        // (re)start listening
+        CategoryCtrl.startListening();
     },
     /**
      * Called when a course is selected by an user.
@@ -143,6 +124,5 @@ const CategoryCtrl = {
         EventServer.emit(`category::removed::${categoryIdFrom}`, courseId);
     }
 };
-EventServer.on('courses::loaded', CategoryCtrl.init, 'CategoryCtrl');
 export
 default CategoryCtrl;
