@@ -63,6 +63,7 @@ default React.createClass({
     },
     getInitialState() {
         return {
+            mode: YearCtrl.mode,
             courses: YearCtrl.get(this.props.year).courses.map((id)=>id),
             windowWidth: window.innerWidth,
             id: `YearViewBody::${this.props.year}`
@@ -74,11 +75,16 @@ default React.createClass({
         });
     },
     shouldComponentUpdate(nextProps, nextState) {
-        return isDifferent(this.state.courses, nextState.courses) || this.state.collapse !== nextState.collapse;
+        return isDifferent(this.state.courses, nextState.courses)
+            || this.state.collapse !== nextState.collapse
+            || this.state.mode !== nextState.mode;
     },
     componentDidMount() {
         EventServer.on(`year::added::${this.props.year}`, () => this.updateCourses(), this.state.id);
         EventServer.on(`year::removed::${this.props.year}`, () => this.updateCourses(), this.state.id);
+        EventServer.on('years::mode', (mode) => this.setState({
+            mode: mode
+        }), this.state.id);
         this.listener = window.addEventListener('resize', this.handleResize);
     },
     handleResize: function() {
@@ -87,6 +93,7 @@ default React.createClass({
     componentWillUnmount() {
         EventServer.remove(`year::added::${this.props.year}`, this.state.id);
         EventServer.remove(`year::removed::${this.props.year}`, this.state.id);
+        EventServer.remove('years::mode', this.state.id);
         window.removeEventListener('resize', this.listener);
     },
     updateCourses() {
@@ -117,14 +124,15 @@ default React.createClass({
                 No courses added yet
             </span>;
         }
-
-        const gridItems = this.state.courses.map((courseId, index) => {
-            return <CourseGridItem
-                year={this.props.year}
-                data-grid={courseGrid(courseId, index)}
-                key={courseId}
-                courseId={courseId}/>;
-        });
+        const gridItems = YearCtrl
+            .applyMode(this.state.courses, this.state.mode)
+            .map((courseId, index) => {
+                return <CourseGridItem
+                    year={this.props.year}
+                    data-grid={courseGrid(courseId, index)}
+                    key={courseId}
+                    courseId={courseId}/>;
+            });
         return <DecoratedReactGridLayout
             isResizable={false}
             isDraggable={false}

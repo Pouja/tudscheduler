@@ -121,7 +121,7 @@ export default React.createClass({
             onTouchTap={() => DoneCtrl.removeDone(courseId)}>Unmark</MenuItem>);
         } else {
             menus.push(<MenuItem key={4} style={style.menuItem}
-            onTouchTap={() => DoneCtrl.addDone(courseId)}>Mark as finished</MenuItem>);
+            onTouchTap={() => DoneCtrl.addDone(courseId)}>Mark as completed</MenuItem>);
         }
         return menus;
     },

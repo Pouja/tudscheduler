@@ -6,6 +6,7 @@ import YearCtrl from '../../models/YearCtrl';
 import EventServer from '../../models/EventServer.js';
 import ToolbarCollapse from '../Toolbars/ToolbarCollapse';
 import _ from 'lodash';
+import YearSettings from './YearSettings';
 
 export default React.createClass({
     propTypes: {
@@ -14,30 +15,33 @@ export default React.createClass({
     },
     getInitialState(){
         return Object.assign(this.calcEcts(),
-            {id: `YearViewHeader::${this.props.year}`
-        });
+            {
+                id: `YearViewHeader::${this.props.year}`,
+                mode: YearCtrl.mode
+            }
+        );
     },
     shouldComponentUpdate(nextProps, nextState){
         return !_.isEqual(this.state, nextState);
     },
     componentDidMount() {
-        EventServer.on('year::added::*', () => this.updateEcts(), this.state.id);
-        EventServer.on('year::removed::*', () => this.updateEcts(), this.state.id);
+        EventServer.on('year::added::*', () => this.setState(this.calcEcts()), this.state.id);
+        EventServer.on('year::removed::*', () =>this.setState(this.calcEcts()), this.state.id);
+        EventServer.on('years::mode', (mode) => this.setState(this.calcEcts(mode)), this.state.id);
     },
     componentWillUnmount(){
         EventServer.remove('year::added::*', this.state.id);
         EventServer.remove('year::removed::*', this.state.id);
+        EventServer.remove('years::mode', this.state.id);
     },
-    updateEcts() {
-        this.setState(this.calcEcts());
-    },
-    calcEcts() {
+    calcEcts(mode) {
         const yearModel = YearCtrl.get(this.props.year);
+        const courses = YearCtrl.applyMode(yearModel.courses, mode);
         if (yearModel) {
             return {
                 ects: [1,2,3,4].map((index) =>
-                    _.round(CourseCtrl.periodEcts(index, yearModel.courses), 1)),
-                yearEcts: CourseCtrl.sumEcts(yearModel.courses.map(id => {
+                    _.round(CourseCtrl.periodEcts(index, courses), 1)),
+                yearEcts: CourseCtrl.sumEcts(courses.map(id => {
                     return {id: id};
                 })) || 0,
                 totalEcts: CourseCtrl.addedEcts() || 0
@@ -68,6 +72,7 @@ export default React.createClass({
         return <Toolbar style={style.root}>
             <ToolbarGroup style={style.totalEcts}>
                 <ToolbarGroup>
+                    <YearSettings year={this.props.year}/>
                     {`Total ects: ${this.state.yearEcts}/${this.state.totalEcts}`}<br/>
                     {this.props.year}/{this.props.year + 1}
                 </ToolbarGroup>

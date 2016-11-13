@@ -2,10 +2,13 @@ import EventServer from './EventServer';
 import CourseCtrl from './CourseCtrl';
 import Storage from './Storage';
 import _ from 'lodash';
+import DoneCtrl from './DoneCtrl';
 
 const id = 'YearCtrl';
 const YearCtrl = {
     years: [],
+    // See YearSettings for the different modes.
+    mode: 0,
     init(years) {
         YearCtrl.years = years;
         EventServer.on('course::added::*', YearCtrl.updateAdded, id);
@@ -59,6 +62,18 @@ const YearCtrl = {
         if (removed) {
             Storage.save('yearctrl:updateremoved');
         }
+    },
+    changeMode(modeId) {
+        YearCtrl.mode = modeId;
+        EventServer.emit('years::mode', modeId);
+    },
+    applyMode(courseIds, mode) {
+        if (mode === 0) {
+            return courseIds;
+        } else if (mode === 1) {
+            return courseIds.filter(DoneCtrl.isDone);
+        }
+        return courseIds.filter((courseId) => !DoneCtrl.isDone(courseId));
     }
 };
 export default YearCtrl;
