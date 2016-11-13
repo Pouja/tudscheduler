@@ -5,6 +5,9 @@ import CourseCtrl from '../../models/CourseCtrl.js';
 import Paper from 'material-ui/Paper';
 import {grey100} from 'material-ui/styles/colors.js';
 import {createSource, defaultCollect, createDragSource} from '../dnd/CreateDragSource';
+import DoneCtrl from '../../models/DoneCtrl';
+import EventServer from '../../models/EventServer';
+import _ from 'lodash';
 
 /**
  * Used by YearView to render a course in the grid layout.
@@ -18,6 +21,23 @@ const CourseGridItem = React.createClass({
         year: PropTypes.number.isRequired,
         style: React.PropTypes.object,
         connectDragSource: PropTypes.func.isRequired
+    },
+    getInitialState() {
+        return {
+            isDone: DoneCtrl.isDone(this.props.courseId),
+            id: `CourseGridItem::${this.props.courseId}::${_.uniqueId()}`
+        };
+    },
+    componentWillMount() {
+        EventServer.on(`done::changed::${this.props.courseId}`, () => this.update(), this.state.id);
+    },
+    componentWillUnmount() {
+        EventServer.remove(`done::changed::${this.props.courseId}`, this.state.id);
+    },
+    update() {
+        this.setState({
+            isDone: DoneCtrl.isDone(this.props.courseId)
+        });
     },
     render(){
         const style = {
@@ -45,6 +65,9 @@ const CourseGridItem = React.createClass({
                 wordWrap: 'break-word'
             }
         };
+        if (this.state.isDone) {
+            style.root.backgroundColor = 'rgba(104, 159, 56, 0.3)';
+        }
         const course = CourseCtrl.get(this.props.courseId);
         return <Paper zDepth={1} style={style.root}>
             {this.props.connectDragSource(<div style={style.inner}>

@@ -57,7 +57,9 @@ module.exports = {
                 '4df04641-5c10-49da-aea1-21a2ec07163d',
                 'f51f4bc7-8feb-445d-a6c9-b00116eb1f40',
                 '5c93e57f-2e36-47fb-859c-6db3a467e3b0']
-            }]
+            }],
+            done: ['fdd43aa1-5efe-4ab1-b943-05d3347c0703',
+                '997dde1f-e186-4211-877c-28e7a6383809']
         },
       'timeout': 250
     },

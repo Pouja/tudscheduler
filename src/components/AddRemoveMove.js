@@ -9,6 +9,7 @@ import Divider from 'material-ui/Divider';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import CategoryCtrl from '../models/CategoryCtrl.js';
 import DialogCtrl from '../models/DialogCtrl.js';
+import DoneCtrl from '../models/DoneCtrl';
 import _ from 'lodash';
 import EventServer from '../models/EventServer.js';
 
@@ -22,7 +23,6 @@ import EventServer from '../models/EventServer.js';
  * Renders add/remove/info/move
  *
  */
-
 export default React.createClass({
     propTypes:{
         style: PropTypes.object,
@@ -40,25 +40,29 @@ export default React.createClass({
         return {
             added: CourseCtrl.isAdded(this.props.courseId),
             nonAdded: CourseCtrl.isNotAdded(this.props.courseId),
-            id: `AddRemoveMove::${this.props.courseId}::${_.uniqueId()}`
+            id: `AddRemoveMove::${this.props.courseId}::${_.uniqueId()}`,
+            isDone: DoneCtrl.isDone(this.props.courseId)
         };
     },
     shouldComponentUpdate(nextProps, nextState){
-        return this.state.added !== nextState.added;
+        return this.state.added !== nextState.added ||
+            this.state.isDone !== nextState.isDone;
     },
     componentWillMount(){
-        // Bug when removing a CourseDnD through drag n drop it will call update when it is unmounting
         EventServer.on('course::added::*', this.updateAdded, this.state.id);
         EventServer.on('course::removed::*', this.updateAdded, this.state.id);
+        EventServer.on(`done::changed::${this.props.courseId}`, this.updateAdded, this.state.id);
     },
     componentWillUnmount(){
-        EventServer.remove('course::removed::*', this.state.id);
         EventServer.remove('course::added::*', this.state.id);
+        EventServer.remove('course::removed::*', this.state.id);
+        EventServer.remove(`done::changed::${this.props.courseId}`, this.state.id);
     },
     updateAdded(){
         this.setState({
             added: CourseCtrl.isAdded(this.props.courseId),
-            nonAdded: CourseCtrl.isNotAdded(this.props.courseId)
+            nonAdded: CourseCtrl.isNotAdded(this.props.courseId),
+            isDone: DoneCtrl.isDone(this.props.courseId)
         });
     },
     /**
@@ -74,7 +78,7 @@ export default React.createClass({
      * @return {React.element}   A material-ui/MenuItem component
      */
     renderMoveItem(category, idx) {
-        return <MenuItem key={idx}
+        return <MenuItem key={idx + 5}
             primaryText={category.name}
             onTouchTap={() => CategoryCtrl.move(this.props.courseId, this.props.category,
                 category.catId)}
@@ -104,12 +108,22 @@ export default React.createClass({
     },
     renderAddRemoveCourse(style) {
         const courseId = this.props.courseId;
+        const menus = [];
         if(this.state.added) {
-            return <MenuItem style={style.menuItem}
-            onTouchTap={() => CourseCtrl.remove(courseId)}>Remove</MenuItem>;
+            menus.push(<MenuItem key={1} style={style.menuItem}
+            onTouchTap={() => CourseCtrl.remove(courseId)}>Remove</MenuItem>);
+        } else {
+            menus.push(<MenuItem key={2} style={style.menuItem}
+            onTouchTap={() => CourseCtrl.add(courseId)}>Add</MenuItem>);
         }
-        return <MenuItem style={style.menuItem}
-            onTouchTap={() => CourseCtrl.add(courseId)}>Add</MenuItem>;
+        if(this.state.isDone) {
+            menus.push(<MenuItem key={3} style={style.menuItem}
+            onTouchTap={() => DoneCtrl.removeDone(courseId)}>Unmark</MenuItem>);
+        } else {
+            menus.push(<MenuItem key={4} style={style.menuItem}
+            onTouchTap={() => DoneCtrl.addDone(courseId)}>Mark as finished</MenuItem>);
+        }
+        return menus;
     },
     render(){
         const courseId = this.props.courseId;

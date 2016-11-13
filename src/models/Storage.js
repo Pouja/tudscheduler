@@ -4,6 +4,7 @@ import CategoryCtrl from './CategoryCtrl.js';
 import FacultyCtrl from './FacultyCtrl.js';
 import YearCtrl from './YearCtrl';
 import CourseCtrl from './CourseCtrl';
+import DoneCtrl from './DoneCtrl';
 import _ from 'lodash';
 
 const errorMapping = [
@@ -72,6 +73,7 @@ const Storage = {
           .then(function(response) {
             CategoryCtrl.init(response.body.categories);
             YearCtrl.init(response.body.years);
+            DoneCtrl.init(response.body.done);
             return Storage.save();
           })
           .then(
@@ -96,19 +98,22 @@ const Storage = {
     }
     const trackId = FacultyCtrl.selectedTrack().trackId;
     return new Promise(function(resolve, reject) {
-      request.post(`http://localhost:8000/categories/${trackId}`)
-          .send({categories: CategoryCtrl.categories, years: YearCtrl.years})
-          .accept('application/json')
-          .then(
-              function(response) {
-                Storage.errors = {};
-                response.body.forEach(Storage.emitError);
-                resolve();
-              },
-              function(errors) {
-                console.error(errors);
-                reject(errors);
-              });
+        request.post(`http://localhost:8000/categories/${trackId}`)
+        .send({
+            categories: CategoryCtrl.categories,
+            years: YearCtrl.years,
+            done: DoneCtrl.done
+        })
+        .accept('application/json')
+        .then(function(response) {
+            Storage.errors = {};
+            response.body.forEach(Storage.emitError);
+            resolve();
+        },
+        function(errors) {
+            console.error(errors);
+            reject(errors);
+        });
     });
   },
   /**

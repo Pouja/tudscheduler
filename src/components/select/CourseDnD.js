@@ -8,6 +8,7 @@ import EventServer from '../../models/EventServer.js';
 import _ from 'lodash';
 import Storage from '../../models/Storage.js';
 import {createSource, defaultCollect, createDragSource} from '../dnd/CreateDragSource';
+import DoneCtrl from '../../models/DoneCtrl';
 
 /**
  * The drag and drop list item in the select view.
@@ -21,7 +22,8 @@ class CourseDnD extends Component {
         this.state = {
             warnings: Storage.getWarnings('course', this.props.course.id),
             // The unique identifier of this specifiek instant CourseDnD
-            id: `CourseDndD::${this.props.course.id}::${_.uniqueId()}`
+            id: `CourseDndD::${this.props.course.id}::${_.uniqueId()}`,
+            isDone: DoneCtrl.isDone(this.props.course.id)
         };
     }
     static propTypes = {
@@ -43,9 +45,13 @@ class CourseDnD extends Component {
         EventServer.on(`course::warning::${this.props.course.id}`, (warnings) => this.setState({
             warnings: warnings.map(warning => warning)
         }), this.state.id);
+        EventServer.on(`done::changed::${this.props.course.id}`, () => this.setState({
+            isDone: DoneCtrl.isDone(this.props.course.id)
+        }), this.state.id);
     }
     componentWillUnmount(){
         EventServer.remove(`course::warning::${this.props.course.id}`, this.state.id);
+        EventServer.remove(`done::changed::${this.props.course.id}`, this.state.id);
     }
     renderList() {
         const course = CourseCtrl.get(this.props.course.id);
@@ -62,6 +68,9 @@ class CourseDnD extends Component {
                 }
             }
         };
+        if (this.state.isDone) {
+            style.root.backgroundColor = 'rgba(104, 159, 56, 0.3)';
+        }
         return <ListItem
                 style={style.root}
                 innerDivStyle={style.innerDiv}
@@ -76,7 +85,6 @@ class CourseDnD extends Component {
                 leftIcon={<EditorDragHandle/>}/>;
     }
     render() {
-        // ReactDnD only accepts native elements
         return this.props.connectDragSource(<div key={`coursednd.${this.props.course.id}`}>
             {this.renderList()}</div>);
     }

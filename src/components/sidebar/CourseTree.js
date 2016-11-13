@@ -5,11 +5,12 @@ import AddRemoveMove from './../AddRemoveMove.js';
 import {ListItem} from 'material-ui/List';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
-import {green500} from 'material-ui/styles/colors';
 import Badge from '../Badge.js';
 import _ from 'lodash';
 import EditorDragHandle from 'material-ui/svg-icons/editor/drag-handle';
 import {createSource, defaultCollect, createDragSource} from '../dnd/CreateDragSource';
+import DoneCtrl from '../../models/DoneCtrl';
+import Mark from '../Mark';
 
 /**
  * A list group item for in the sidebar.
@@ -36,7 +37,8 @@ const CourseTree = React.createClass({
             // Changed when the visibility of the parent is changed
             visible: this.props.visible,
             // The unique identifier of this CourseTree instant
-            id: `CourseTree::${this.props.course.id}::${_.uniqueId()}`
+            id: `CourseTree::${this.props.course.id}::${_.uniqueId()}`,
+            isDone: DoneCtrl.isDone(this.props.course.id)
         };
     },
     /**
@@ -99,6 +101,7 @@ const CourseTree = React.createClass({
     startListening() {
         EventServer.on('course::added::*', () => this.update(), this.state.id);
         EventServer.on('course::removed::*', () => this.update(), this.state.id);
+        EventServer.on(`done::changed::${this.props.course.id}`, () => this.update(), this.state.id);
     },
     /**
      * Stops listening to events. Should be called when it is not visible or
@@ -107,6 +110,7 @@ const CourseTree = React.createClass({
     stopListening() {
         EventServer.remove('course::added::*', this.state.id);
         EventServer.remove('course::removed::*', this.state.id);
+        EventServer.remove(`done::changed::${this.props.course.id}`, this.state.id);
     },
     /**
      * Called when the ects or isAdded should be updated
@@ -114,7 +118,8 @@ const CourseTree = React.createClass({
     update() {
         this.setState({
             ects: CourseCtrl.addedEcts(this.props.course),
-            isAdded: CourseCtrl.isAdded(this.props.course.id)
+            isAdded: CourseCtrl.isAdded(this.props.course.id),
+            isDone: DoneCtrl.isDone(this.props.course.id)
         });
     },
     /**
@@ -168,7 +173,7 @@ const CourseTree = React.createClass({
         const course = CourseCtrl.get(this.props.course.id);
         const style = {
             root: Object.assign({}, this.props.style, {
-                marginLeft: (this.props.course.depth - 1) * 10
+                paddingLeft: (this.props.course.depth - 1) * 10
             }),
             innerDiv: {
                 paddingTop: 6,
@@ -179,24 +184,19 @@ const CourseTree = React.createClass({
             },
             secondaryText: {
                 height: 22
-            },
-            check:{
-                width: 11,
-                height: 11,
-                display: this.state.isAdded ? 'inline-block' : 'none',
-                position: 'absolute',
-                right: 40,
-                top: 18,
-                borderRadius: '50%',
-                backgroundColor: green500
             }
         };
+        if (this.state.isDone) {
+            style.root.backgroundColor = 'rgba(104, 159, 56, 0.3)';
+        }
         return <ListItem
             disableTouchRipple
             disableFocusRipple
             onTouchTap={this.toggle}
-            primaryText={<span>{course.name} {course.courseName}
-                <div style={style.check}/></span>}
+            primaryText={<span>
+                    <Mark display={this.state.isAdded}/>
+                    {course.name} {course.courseName}
+                </span>}
             secondaryText={<div style={style.secondaryText}>
                 {this.renderECBadge()}{this.renderQBadge()}
             </div>}
