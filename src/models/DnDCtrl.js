@@ -54,7 +54,7 @@ function move(courseId, currentFieldId, target) {
         EventServer.emit(`year::removed::${yearFrom.year}`);
         EventServer.emit(`year::added::${yearTo.year}`);
 
-        Storage.save();
+        Storage.save('dndctrl::move');
     }
 }
 

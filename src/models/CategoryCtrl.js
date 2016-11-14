@@ -65,7 +65,7 @@ const CategoryCtrl = {
             })
             .union(CategoryCtrl.unlisted.courses)
             .value();
-        Storage.save();
+        Storage.save('category::updateAdded');
         EventServer.emit('category::added::unlisted');
     },
     /**
@@ -83,17 +83,7 @@ const CategoryCtrl = {
                 EventServer.emit(`category::removed::${category.catId}`);
             }
         });
-        Storage.save();
-    },
-    /**
-     * Called when reset event is emitted.
-     * Resets all the categories.
-     */
-    reset() {
-        CategoryCtrl.categories.forEach(function(category) {
-            category.reset();
-            EventServer.emit(`category::added::${category.catId}`);
-        });
+        Storage.save('categoryctrl::updateRemoved');
     },
     stopListening() {
         EventServer.remove('course::added::*', id);
@@ -119,7 +109,7 @@ const CategoryCtrl = {
         });
         categoryTo.courses = _.union(categoryTo.courses, [courseId]);
         categoryFrom.courses = _.without(categoryFrom.courses, courseId);
-        Storage.save();
+        Storage.save('category::move');
         EventServer.emit(`category::added::${categoryIdTo}`, courseId);
         EventServer.emit(`category::removed::${categoryIdFrom}`, courseId);
     }

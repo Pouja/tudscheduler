@@ -15,8 +15,7 @@ const errorMapping = [
 /**
  * Checks if the application is in a legal state befores it saves.
  * @return {boolean} true iff the number courses add equals to all the courses
- * in the year planner
- * and in the categories.
+ * in the year planner and in the categories.
  */
 function invariant() {
   return CourseCtrl.added.length ===
@@ -27,8 +26,7 @@ function invariant() {
 
 const Storage = {
   // Holds all the errors, usefull when you have fetched the error but the
-  // component renders
-  // afterwords.
+  // component renders afterwards.
   errors: {},
   fetchFaculties() {
     return request.get('http://localhost:8000/masters')

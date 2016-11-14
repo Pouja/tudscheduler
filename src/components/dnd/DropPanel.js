@@ -20,6 +20,15 @@ const target = {
     }
 };
 
+/**
+ * Creates a wrapper around a native element to make a drop container.
+ * Creates a Material-ui/Paper and wraps it with connectDropTarget of react-dnd.
+ * Sets a 2px dashed border when an draggable component is hovering of the instance.
+ * @example
+ * <DropPanel id={myIdentifier} sort="example" className="col-xs-12" style={overrideStyle}>
+ *  <div> A container </div>
+ * </DropPanel
+ */
 @DropTarget(CourseTypes.COMPULSORY, target, (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver(),
@@ -27,8 +36,11 @@ const target = {
 }))
 export default class DropPanel extends Component {
     static propTypes = {
+        // Set by React-DnD, true if a draggable component is allowed to drop on this panel
         isOver: PropTypes.bool.isRequired,
+        // Set by React-DnD, the wrapper function to create a droppable container/panel
         connectDropTarget: PropTypes.func.isRequired,
+        // The id and sort combined are the identifiers of this instance
         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
         sort: PropTypes.string.isRequired,
         style: PropTypes.object,

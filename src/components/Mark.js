@@ -1,6 +1,11 @@
 import React from 'react';
 import {green500} from 'material-ui/styles/colors';
 
+/**
+ * Creates a green dot
+ * @example
+ * <Mark></Mark>
+ */
 export default React.createClass({
     propTypes: {
         display: React.PropTypes.bool

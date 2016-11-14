@@ -2,6 +2,9 @@ import Storage from './Storage';
 import EventServer from './EventServer';
 import _ from 'lodash';
 
+/**
+ * Keeps track of all the courses which are marked complete aka done aka finished
+ */
 const DoneCtrl = {
     done: [],
     init(done) {
@@ -12,7 +15,7 @@ const DoneCtrl = {
             DoneCtrl.done.push(courseId);
             EventServer.emit(`done::added::${courseId}`);
             EventServer.emit(`done::changed::${courseId}`);
-            Storage.save();
+            Storage.save('donectrl::addone');
         }
     },
     removeDone(courseId) {
@@ -20,7 +23,7 @@ const DoneCtrl = {
             DoneCtrl.done = _.without(DoneCtrl.done, courseId);
             EventServer.emit(`done::removed::${courseId}`);
             EventServer.emit(`done::changed::${courseId}`);
-            Storage.save();
+            Storage.save('donectrl::remove');
         }
     },
     isDone(courseId) {

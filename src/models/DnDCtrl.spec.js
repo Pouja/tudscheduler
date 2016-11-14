@@ -1,19 +1,16 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import DnDCtrl from './DnDCtrl';
-import EventServer from './EventServer';
 import CourseCtrl from './CourseCtrl';
 import CategoryCtrl from './CategoryCtrl';
-import FacutlyCtrl from './FacultyCtrl';
+import Storage from './Storage';
 
 describe('DnDCtrl', function() {
-    beforeEach(function(done) {
-        EventServer.remove('categories::loaded', 'dndctrl.spec');
-        FacutlyCtrl.init();
-        EventServer.on('categories::loaded', function() {
+    before(function(done) {
+        Storage.init().then(function() {
             CourseCtrl.added.forEach(CourseCtrl.remove);
             done();
-        }, 'dndctrl.spec');
+        });
     });
     describe('sidebar -> panel', function() {
         it('should add only the single course if it a leaf course', function() {
@@ -33,7 +30,7 @@ describe('DnDCtrl', function() {
                 sort: 'category',
                 id: category.catId
             });
-            expect(category.courses.length).to.eql(researchGroup.children.length);
+            expect(category.courses.length).to.eql(researchGroup.children.length + 1);
             researchGroup.children.forEach((child) => expect(category.courses.indexOf(child.id)).to.be.above(-1));
         });
     });
