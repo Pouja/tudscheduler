@@ -49,9 +49,9 @@ const EventListener = {
      */
     emit(name, ...values) {
         // console.log(`emitting ${name}`);
-        EventListener.getWildCardFn(name)
+        _.uniq(EventListener.getWildCardFn(name)
             .concat(listeners[name])
-            .filter(Boolean)
+            .filter(Boolean))
             .forEach(function(listener) {
                 if (_.find(currentListeners, {id: listener.id}) !== undefined) {
                     // console.log(`invoking ${listener.id} for event ${name}`);
