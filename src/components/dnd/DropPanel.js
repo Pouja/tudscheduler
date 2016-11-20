@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import Paper from 'material-ui/Paper';
 import {grey400} from 'material-ui/styles/colors';
 import {DropTarget} from 'react-dnd';
-import CourseTypes from '../../constants/CourseTypes.js';
 
 /**
  * Required by react-dnd, contains the functionality which is used by other react-dnd components to interect.
@@ -29,7 +28,7 @@ const target = {
  *  <div> A container </div>
  * </DropPanel
  */
-@DropTarget(CourseTypes.COMPULSORY, target, (connect, monitor) => ({
+@DropTarget('any', target, (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver(),
   canDrop: monitor.canDrop()

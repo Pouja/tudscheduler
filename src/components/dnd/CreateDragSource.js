@@ -1,6 +1,5 @@
 import DnDCtrl from '../../models/DnDCtrl';
 import {DragSource} from 'react-dnd';
-import CourseTypes from '../../constants/CourseTypes.js';
 
 export function createSource(getCurrentFieldId, getCourse) {
     return {
@@ -43,5 +42,5 @@ export function defaultCollect(connect, monitor) {
 }
 
 export function createDragSource(source, collect, component) {
-    return DragSource(CourseTypes.COMPULSORY, source, collect)(component);
+    return DragSource('any', source, collect)(component);
 }
