@@ -22,6 +22,14 @@ const modes = [{
     id: 2
 }];
 
+/**
+ * Renders the gear icon in the YearViewHeader.
+ * Displays the different modes that the user can select.
+ * Every selected mode will be application wide.
+ * To make it only for the panel which the user has selected: change the emitted to specify the yearId.
+ * From there listen in the yearviewbody and in the header only for the selected year.
+ * And apply when necessary.
+ */
 export default React.createClass({
     propTypes: {
         style: PropTypes.object

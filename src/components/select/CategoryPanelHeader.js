@@ -9,6 +9,11 @@ import ToolbarCollapse from '../Toolbars/ToolbarCollapse';
 
 /**
  * Renders the header of an CategoryPanel
+ * Shows the searchbar is options.search is set to true.
+ * It will display all errors/warnings related the to the given categoryId.
+ * @example
+ * <CategoryPanelHeader category={categoryId} toggleView={(toggle) => this.setState({view:toggle})}
+ *  options={{search:false}}/>
  */
 export
 default React.createClass({

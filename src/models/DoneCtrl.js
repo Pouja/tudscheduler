@@ -10,6 +10,10 @@ const DoneCtrl = {
     init(done) {
         DoneCtrl.done = done.map(id => id);
     },
+    /**
+     * Marks the course as done if it is not already marked.
+     * @param {String} courseId The course id.
+     */
     addDone(courseId) {
         if(!DoneCtrl.done.find(dId => dId === courseId)) {
             DoneCtrl.done.push(courseId);
@@ -18,6 +22,10 @@ const DoneCtrl = {
             Storage.save('donectrl::addone');
         }
     },
+    /**
+     * Removes the mark of the course.
+     * @param {String} courseId The course id.
+     */
     removeDone(courseId) {
         if(DoneCtrl.done.find(dId => dId === courseId)) {
             DoneCtrl.done = _.without(DoneCtrl.done, courseId);

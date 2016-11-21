@@ -6,7 +6,10 @@ import CourseList from '../CourseList.js';
 import CourseCtrl from '../../models/CourseCtrl.js';
 
 /**
- * Renders the isp panel body.
+ * The body of the category.
+ * Renders all the courses.
+ * @example
+ * <CategoryPanelBody options={{onEmpty:'No courses :('}} category={categoryId} collapse={false}/>
  */
 export
 default React.createClass({
@@ -31,37 +34,25 @@ default React.createClass({
         };
     },
     componentWillReceiveProps(nextProps){
-        const shouldReset = this.state.catId !== nextProps.category.catId;
         this.setState({
             collapsed: nextProps.collapse,
             catId: nextProps.category.catId,
             courses: nextProps.category.courses
-        }, () => {
-            if(shouldReset) {
-                this.stopListening();
-                this.startListening();
-            }
         });
     },
     componentWillUnmount(){
-        this.stopListening();
+        const id = this.state.catId;
+        EventServer.remove(`category::added::${id}`, id);
+        EventServer.remove(`category::removed::${id}`, id);
+        EventServer.remove(`category::searching::${id}`, id);
     },
     componentDidMount() {
-        this.startListening();
-    },
-    startListening() {
         const id = this.state.catId;
-        EventServer.on(`category::added::${id}`, this.updateCourses, this.state.id);
-        EventServer.on(`category::removed::${id}`, this.updateCourses, this.state.id);
+        EventServer.on(`category::added::${id}`, this.updateCourses, id);
+        EventServer.on(`category::removed::${id}`, this.updateCourses, id);
         EventServer.on(`category::searching::${id}`, (filter) => this.setState({
             filter: filter
-        }), this.state.id);
-    },
-    stopListening() {
-        const id = this.state.catId;
-        EventServer.remove(`category::added::${id}`, this.state.id);
-        EventServer.remove(`category::removed::${id}`, this.state.id);
-        EventServer.remove(`category::searching::${id}`, this.state.id);
+        }), id);
     },
     updateCourses(){
         this.setState({

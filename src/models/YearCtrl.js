@@ -63,10 +63,21 @@ const YearCtrl = {
             Storage.save('yearctrl:updateremoved');
         }
     },
+    /**
+     * Changes the mode for all the years.
+     * See YearSettings for which mode is what.
+     * @param {number} modeId One of the modes defined in YearSettings
+     */
     changeMode(modeId) {
         YearCtrl.mode = modeId;
         EventServer.emit('years::mode', modeId);
     },
+    /**
+     * Applies a mode the list of courses.
+     * @param {Array} courseIds A array of course ids.
+     * @param {number} mode One of the modes defined in YearSettings
+     * @return {Array} All the course ids if the mode 0, all the marked if it is 1 and all the unmarked otherwise.
+     */
     applyMode(courseIds, mode) {
         if (mode === 0) {
             return courseIds;

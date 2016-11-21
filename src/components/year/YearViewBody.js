@@ -40,6 +40,10 @@ function isDifferent(left, right) {
     return left.some((el) => right.indexOf(el) === -1);
 }
 
+/**
+ * Defines which breakpoints there are and which row height should be used.
+ * It goes from small to large.
+ */
 const breakPoints = [{
     windowWidth: 768,
     rowHeight: 160
@@ -102,6 +106,10 @@ default React.createClass({
             courses: YearCtrl.get(this.props.year).courses.map((id)=>id)
         });
     },
+    /**
+     * Returns which rowhight to use for the current window width.
+     * @return {Number} the rowheight to use.
+     */
     getRowHeight(){
         const windowWidth = this.state.windowWidth;
         return _.reduce(breakPoints, function(result, value){

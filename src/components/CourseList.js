@@ -15,11 +15,17 @@ import {List} from 'material-ui/List';
 export
 default React.createClass({
     propTypes: {
+        // If true, it will display nothing
         hide: PropTypes.bool.isRequired,
+        // All the courses to be rendered, should match how a course looks in GET /courseData
         courses: PropTypes.arrayOf(PropTypes.object).isRequired,
+        // The filter string to be applied. Can consist of tokens. See search.js for more info.
         filter: PropTypes.string.isRequired,
+        // How to render a single course.
         createItem: PropTypes.func.isRequired,
+        // What to display if there are no courses matching the filter. Or if there is any course passed.
         onEmpty: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.element.isRequired]).isRequired,
+        // If true, it will sort on 'nr' and otherwise on 'name' and 'courseName'
         tree: PropTypes.bool
     },
     getInitialState() {

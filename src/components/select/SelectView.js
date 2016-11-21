@@ -20,15 +20,11 @@ export default React.createClass({
         };
         const unlistedOptions = {
             search: true,
-            hideExpand: true,
-            onEmpty: 'Add a course from the bar on the left to start creating your study planning',
-            onHover: 'Drop'
+            onEmpty: 'Add a course from the bar on the left to start creating your study planning'
         };
         const categoryOptions = {
             info: true,
-            hideExpand: true,
-            onEmpty: 'Drag \'n drop a course here',
-            onHover: 'Drop'
+            onEmpty: 'Drag \'n drop a course here'
         };
         return <div className="select-view">
             <CategoryPanel className="unlisted" key={1} category={CategoryCtrl.unlisted}

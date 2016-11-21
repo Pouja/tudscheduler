@@ -8,6 +8,11 @@ import ToolbarCollapse from '../Toolbars/ToolbarCollapse';
 import _ from 'lodash';
 import YearSettings from './YearSettings';
 
+/**
+ * Shows the year, settings and the total ects over all the years, for this year and per quarter.
+ * @example
+ * <YearViewHeader year={2016}/>
+ */
 export default React.createClass({
     propTypes: {
         year: React.PropTypes.number.isRequired,
@@ -34,6 +39,11 @@ export default React.createClass({
         EventServer.remove('year::removed::*', this.state.id);
         EventServer.remove('years::mode', this.state.id);
     },
+    /**
+     * Calculates the ects for each quarter and total for this year filtered on the user selected mode.
+     * @param {number} mode The mode to apply to filter the courses for calculating the ects. See YearSettings for which modes there are.
+     * @return {Object} the ects.
+     */
     calcEcts(mode) {
         const yearModel = YearCtrl.get(this.props.year);
         const courses = YearCtrl.applyMode(yearModel.courses, mode);
@@ -48,8 +58,11 @@ export default React.createClass({
             };
         }
         return {
+            // Ects for each quarter filtered based on the user selected mode.
             ects: [0,0,0,0],
+            // The total ects over all the years
             totalEcts: 0,
+            // The total ects for this year filtered base on the user selected mode.
             yearEcts: 0
         };
     },

@@ -6,6 +6,10 @@ import _ from 'lodash';
 import ToolbarSearch from '../Toolbars/ToolbarSearch';
 import ToolbarCollapse from '../Toolbars/ToolbarCollapse';
 
+/**
+ * Renders the header of the sidebar.
+ * Displays the selected track information and the searchbar.
+ */
 export default React.createClass({
     propTypes: {
         toggleView: PropTypes.func.isRequired

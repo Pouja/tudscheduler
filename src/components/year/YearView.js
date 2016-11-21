@@ -4,6 +4,10 @@ import EventServer from '../../models/EventServer';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import YearViewPanel from './YearViewPanel';
+
+/**
+ * Renders all the years that the user has in his/her planning.
+ */
 export
 default React.createClass({
     getInitialState() {

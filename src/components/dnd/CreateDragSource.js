@@ -33,14 +33,29 @@ export function createSource(getCurrentFieldId, getCourse) {
     };
 }
 
+/**
+ * Defines which functions should be injected in the DragSource.
+ * See http://gaearon.github.io/react-dnd/docs-drag-source.html and
+ * @param {Object} connect http://gaearon.github.io/react-dnd/docs-overview.html#connectors
+ * @param {Object} monitor http://gaearon.github.io/react-dnd/docs-overview.html#monitors
+ * @return {Object} The DragSource The connectDragSource defines which node in the drag source is the clickable draggable node.
+ * The isDragging function returns true if the source is dragging or not.
+ */
 export function defaultCollect(connect, monitor) {
     return {
         connectDragSource: connect.dragSource(),
-        connectDragPreview: connect.dragPreview(),
         isDragging: monitor.isDragging()
     };
 }
 
+/**
+ * Creates a DragSource basically.
+ * See http://gaearon.github.io/react-dnd/docs-drag-source.html for more info.
+ * @param {Object} source Defines which lifecycle methods of a draggable source should be called.
+ * @param {Object} collect The react dnd functions that should be injected in the DragSource.
+ * @param {Element} component The react component which should be wrapped.
+ * @return {Element} A react dnd drag source element.
+ */
 export function createDragSource(source, collect, component) {
     return DragSource('any', source, collect)(component);
 }

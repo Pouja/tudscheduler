@@ -3,6 +3,9 @@ import YearViewBody from './YearViewBody.js';
 import YearViewHeader from './YearViewHeader.js';
 import DropPanel from '../dnd/DropPanel.js';
 
+/**
+ * Renders a single year view.
+ */
 export default React.createClass({
     getInitialState() {
         return {

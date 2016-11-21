@@ -6,10 +6,10 @@ import _ from 'lodash';
 const queryMapper = {
     _: {
         fn: function(needle, course) {
-                const lowerNeedle = needle.toLowerCase();
-                return course.name.toLowerCase().indexOf(lowerNeedle) !== -1 ||
-                    (!!course.courseName &&
-                        course.courseName.toLowerCase().indexOf(lowerNeedle) !== -1);
+            const lowerNeedle = needle.toLowerCase();
+            return course.name.toLowerCase().indexOf(lowerNeedle) !== -1 ||
+                (!!course.courseName &&
+                    course.courseName.toLowerCase().indexOf(lowerNeedle) !== -1);
         }
     },
     ec: {
@@ -24,7 +24,7 @@ const queryMapper = {
                 return false;
             }
             return course['Education Period'].indexOf(periods) !== -1;
-        }, 
+        },
         pattern: /period:\s?([0-9](\s*,[0-9])*)/
     }
 };
