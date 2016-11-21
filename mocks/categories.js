@@ -1,6 +1,6 @@
 const _ = require('lodash');
 module.exports = {
-    '/categories/cd79039f-c1e3-4363-8a48-6e6124e06b94': {
+    '/categories': {
     'GET': {
       'data': {
           categories: [

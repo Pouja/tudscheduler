@@ -33,17 +33,15 @@ const Storage = {
         .accept('application/json');
   },
   fetchCourses() {
-    const masterId = FacultyCtrl.selectedMaster().masterId;
     return Promise.all([
-      request.get(`http://localhost:8000/courseTree/${masterId}`)
+      request.get('http://localhost:8000/courseTree')
           .accept('application/json'),
-      request.get(`http://localhost:8000/courseData/${masterId}`)
+      request.get('http://localhost:8000/courseData')
           .accept('application/json')
     ]);
   },
   fetchCategories() {
-    const trackId = FacultyCtrl.selectedTrack().trackId;
-    return request.get(`http://localhost:8000/categories/${trackId}`)
+    return request.get('http://localhost:8000/categories')
         .accept('application/json');
   },
   /**
@@ -94,9 +92,8 @@ const Storage = {
     if (!invariant()) {
       return new Promise((resolve) => resolve());
     }
-    const trackId = FacultyCtrl.selectedTrack().trackId;
     return new Promise(function(resolve, reject) {
-        request.post(`http://localhost:8000/categories/${trackId}`)
+        request.post('http://localhost:8000/categories')
         .send({
             categories: CategoryCtrl.categories,
             years: YearCtrl.years,

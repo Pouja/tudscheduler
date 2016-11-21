@@ -1,33 +1,5 @@
 {
-  "/categories/2": {
-    "GET": {
-      "data": [
-        {
-          "catId": "unlisted",
-          "name": "Selected courses",
-          "courses": []
-        },
-        {
-          "catId": 6,
-          "name": "Main core",
-          "courses": [
-            54
-          ]
-        },
-        {
-          "catId": 7,
-          "name": "Track core",
-          "courses": []
-        },
-        {
-          "catId": 8,
-          "name": "Free electives",
-          "courses": []
-        }
-      ]
-    }
-  },
-  "/courseData/e4f7ee3d-3fb2-4e4c-ae64-7b61796c1211": {
+  "/courseData": {
     "GET": {
       "data": [
         {
@@ -1165,20 +1137,6 @@
           "name": "CS4105",
           "Start Education": "2",
           "id": "bcfda4c6-c55e-4fca-9d10-cb236da0ae56"
-        }
-      ]
-    }
-  },
-  "/courseData/2": {
-    "GET": {
-      "data": [
-        {
-          "id": 54,
-          "name": "TE4013",
-          "courseName": "Quantum Awesome",
-          "ects": 3,
-          "Education Period": "3,4",
-          "Start Education": "3"
         }
       ]
     }
